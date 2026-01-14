@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LandingSEO } from "@/components/seo";
-import { ArrowRight, Sparkles, BarChart3, GitBranch, Clock, Target, Shield, Layers, Loader2 } from "lucide-react";
+import { ArrowRight, Sparkles, BarChart3, GitBranch, Clock, Target, Shield, Layers, Loader2, Zap, FileText, Settings, CheckCircle } from "lucide-react";
 
 export default function Landing() {
   const { isLoading, startDemo, isStartingDemo } = useAuth();
@@ -52,90 +52,189 @@ export default function Landing() {
       </header>
 
       <main>
-        <section className="py-16 lg:py-24">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50 text-sm">
-                  <Sparkles className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-muted-foreground">AI-Powered Operations</span>
-                </div>
-                <h1 className="text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.1]">
-                  Automate operations with intelligent blueprints
-                </h1>
-                <p className="text-lg text-muted-foreground leading-relaxed max-w-lg">
-                  Document your workflows, identify bottlenecks, and generate actionable automation plans. Built for teams who want to move fast.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <Link href="/auth/signup">
-                    <Button size="lg" className="w-full sm:w-auto" data-testid="button-hero-start">
-                      Get started <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="w-full sm:w-auto" 
-                    data-testid="button-demo"
-                    onClick={handleTryDemo}
-                    disabled={isStartingDemo}
-                  >
-                    {isStartingDemo ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Starting...
-                      </>
-                    ) : (
-                      "Try Live Demo"
-                    )}
-                  </Button>
-                </div>
-                <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-chart-3" />
-                    <span>Free to start</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-chart-3" />
-                    <span>No credit card</span>
-                  </div>
-                </div>
+        <section className="relative py-20 lg:py-28 overflow-hidden">
+          {/* Floating icons */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-[8%] w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center animate-pulse">
+              <Zap className="w-6 h-6 text-blue-500" />
+            </div>
+            <div className="absolute top-32 right-[10%] w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <div className="absolute bottom-40 left-[5%] w-11 h-11 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-emerald-500" />
+            </div>
+            <div className="absolute bottom-32 right-[8%] w-14 h-14 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center animate-pulse">
+              <Settings className="w-6 h-6 text-orange-500" />
+            </div>
+          </div>
+
+          <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm mb-8">
+              <span className="text-primary font-medium">For SMBs</span>
+              <span className="text-muted-foreground">AI-powered automation</span>
+              <ArrowRight className="w-3.5 h-3.5 text-primary" />
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
+              Automate workflows smarter
+              <br />
+              <span className="text-primary">with AI blueprints</span>
+            </h1>
+            
+            <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
+              Document your processes, identify bottlenecks, and generate actionable automation plans—faster, easier, and smarter.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+              <Link href="/auth/signup">
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto px-8 py-6 text-base bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 border-0 shadow-lg shadow-orange-500/25" 
+                  data-testid="button-hero-start"
+                >
+                  Start for free
+                </Button>
+              </Link>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="w-full sm:w-auto px-8 py-6 text-base" 
+                data-testid="button-demo"
+                onClick={handleTryDemo}
+                disabled={isStartingDemo}
+              >
+                {isStartingDemo ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Starting...
+                  </>
+                ) : (
+                  "Try Live Demo"
+                )}
+              </Button>
+            </div>
+            
+            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                <span>No time limits on free plan</span>
               </div>
-              <div className="relative lg:pl-8">
-                <div className="absolute -inset-4 bg-gradient-to-tr from-primary/5 via-chart-2/5 to-transparent rounded-3xl blur-2xl" />
-                <Card className="relative">
-                  <CardContent className="p-5 space-y-4">
-                    <div className="flex items-center gap-3 pb-3 border-b">
-                      <div className="w-9 h-9 rounded-lg bg-chart-3/10 flex items-center justify-center">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                <span>No credit card required</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Product screenshots section */}
+        <section className="pb-20 lg:pb-28">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="relative">
+              {/* Background glow */}
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-chart-2/5 to-transparent rounded-3xl blur-3xl -z-10" />
+              
+              {/* Main product card */}
+              <div className="grid lg:grid-cols-3 gap-6">
+                {/* Left panel - Intake */}
+                <Card className="relative -rotate-2 hover:rotate-0 transition-transform duration-300 shadow-xl">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-primary" />
+                      </div>
+                      <span className="font-medium text-sm">Intake Wizard</span>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="p-3 rounded-lg bg-muted/50 border">
+                        <p className="text-xs font-medium mb-1">Process Name</p>
+                        <p className="text-sm text-muted-foreground">Customer Onboarding</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-muted/50 border">
+                        <p className="text-xs font-medium mb-1">Pain Area</p>
+                        <p className="text-sm text-muted-foreground">Manual data entry</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="flex-1 h-2 rounded-full bg-primary/20">
+                          <div className="w-2/3 h-2 rounded-full bg-primary" />
+                        </div>
+                        <span className="text-xs text-muted-foreground">Step 4/6</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Center panel - Blueprint */}
+                <Card className="relative z-10 shadow-2xl border-primary/20">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-chart-2/10 flex items-center justify-center">
+                          <GitBranch className="w-4 h-4 text-chart-2" />
+                        </div>
+                        <span className="font-medium text-sm">AI Blueprint</span>
+                      </div>
+                      <span className="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-medium">Generated</span>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border">
+                        <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-xs font-medium text-blue-500">1</div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Receive Request</p>
+                          <p className="text-xs text-muted-foreground">Email trigger</p>
+                        </div>
+                      </div>
+                      <div className="flex justify-center">
+                        <div className="w-0.5 h-4 bg-border" />
+                      </div>
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                        <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-medium text-orange-500">!</div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Bottleneck</p>
+                          <p className="text-xs text-muted-foreground">Manual approval delay</p>
+                        </div>
+                      </div>
+                      <div className="flex justify-center">
+                        <div className="w-0.5 h-4 bg-border" />
+                      </div>
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border">
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-xs font-medium text-emerald-500">2</div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Auto-route</p>
+                          <p className="text-xs text-muted-foreground">AI classification</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Right panel - ROI */}
+                <Card className="relative rotate-2 hover:rotate-0 transition-transform duration-300 shadow-xl">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-7 h-7 rounded-lg bg-chart-3/10 flex items-center justify-center">
                         <BarChart3 className="w-4 h-4 text-chart-3" />
                       </div>
-                      <div>
-                        <p className="font-medium text-sm">ROI Dashboard</p>
-                        <p className="text-xs text-muted-foreground">Real-time savings</p>
-                      </div>
+                      <span className="font-medium text-sm">ROI Dashboard</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="text-center p-3 rounded-lg bg-muted/30">
-                        <p className="text-xl font-semibold">127</p>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="text-center p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                        <p className="text-2xl font-bold text-emerald-500">127</p>
                         <p className="text-xs text-muted-foreground">Hours Saved</p>
                       </div>
-                      <div className="text-center p-3 rounded-lg bg-muted/30">
-                        <p className="text-xl font-semibold text-chart-3">42%</p>
+                      <div className="text-center p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <p className="text-2xl font-bold text-blue-500">42%</p>
                         <p className="text-xs text-muted-foreground">Faster</p>
                       </div>
-                      <div className="text-center p-3 rounded-lg bg-muted/30">
-                        <p className="text-xl font-semibold">89</p>
-                        <p className="text-xs text-muted-foreground">Score</p>
-                      </div>
                     </div>
-                    <div className="space-y-2 pt-1">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <div className="w-1.5 h-1.5 rounded-full bg-chart-3" />
-                        <span>Email Triage automated 234 tasks</span>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Confidence Score</span>
+                        <span className="font-medium">89%</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <div className="w-1.5 h-1.5 rounded-full bg-chart-2" />
-                        <span>Lead Follow-up queued 89 messages</span>
+                      <div className="h-2 rounded-full bg-muted">
+                        <div className="w-[89%] h-2 rounded-full bg-gradient-to-r from-chart-3 to-emerald-500" />
                       </div>
                     </div>
                   </CardContent>
