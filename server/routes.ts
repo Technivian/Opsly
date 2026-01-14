@@ -4,8 +4,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replit_integrations/auth/replitAuth";
-import { registerAuthRoutes } from "./replit_integrations/auth";
+import { setupAuth, isAuthenticated, isDemoReadOnly, registerAuthRoutes } from "./auth";
 import { generateBlueprint } from "./blueprint";
 
 // Configure file upload
@@ -54,7 +53,7 @@ export async function registerRoutes(
   // Organization endpoints
   app.get("/api/org", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const org = await storage.getOrg(orgId);
       res.json(org);
@@ -66,7 +65,7 @@ export async function registerRoutes(
 
   app.get("/api/org/members", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const members = await storage.getOrgMembers(orgId);
       res.json(members);
@@ -76,9 +75,9 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/org/invite", isAuthenticated, async (req: any, res) => {
+  app.post("/api/org/invite", isAuthenticated, isDemoReadOnly, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const { email, role } = req.body;
       // In MVP, just return success (actual email invites would require email service)
@@ -92,7 +91,7 @@ export async function registerRoutes(
   // Intakes endpoints
   app.get("/api/intakes", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const intakes = await storage.getIntakesByOrg(orgId);
       res.json(intakes);
@@ -115,9 +114,9 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/intakes", isAuthenticated, upload.array("files", 10), async (req: any, res) => {
+  app.post("/api/intakes", isAuthenticated, isDemoReadOnly, upload.array("files", 10), async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const { title, painArea, answers } = req.body;
 
@@ -159,7 +158,7 @@ export async function registerRoutes(
   // Blueprints endpoints
   app.get("/api/blueprints", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const blueprints = await storage.getBlueprintsByOrg(orgId);
       res.json(blueprints);
@@ -209,7 +208,7 @@ export async function registerRoutes(
   // Automation configs endpoints
   app.get("/api/automations/configs", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const configs = await storage.getAutomationConfigsByOrg(orgId);
       res.json(configs);
@@ -219,9 +218,9 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/automations/configs", isAuthenticated, async (req: any, res) => {
+  app.post("/api/automations/configs", isAuthenticated, isDemoReadOnly, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const { templateId, name, configJson, isActive } = req.body;
 
@@ -240,9 +239,9 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/automations/configs/:id/run", isAuthenticated, async (req: any, res) => {
+  app.post("/api/automations/configs/:id/run", isAuthenticated, isDemoReadOnly, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const configId = parseInt(req.params.id);
 
@@ -273,7 +272,7 @@ export async function registerRoutes(
   // Runs endpoints
   app.get("/api/runs", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const runs = await storage.getRunsByOrg(orgId);
       res.json(runs);
@@ -297,7 +296,7 @@ export async function registerRoutes(
   // ROI endpoint
   app.get("/api/roi", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const runs = await storage.getRunsByOrg(orgId);
       
@@ -336,7 +335,7 @@ export async function registerRoutes(
   // Connections endpoints
   app.get("/api/connections", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const connections = await storage.getConnections(orgId);
       res.json(connections);
@@ -346,9 +345,9 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/connections", isAuthenticated, async (req: any, res) => {
+  app.post("/api/connections", isAuthenticated, isDemoReadOnly, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
       const { provider } = req.body;
 

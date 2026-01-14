@@ -1,6 +1,7 @@
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,6 +9,8 @@ import { Loader2 } from "lucide-react";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
+import SignIn from "@/pages/auth/signin";
+import SignUp from "@/pages/auth/signup";
 import Dashboard from "@/pages/dashboard";
 import Intakes from "@/pages/intakes";
 import IntakeWizard from "@/pages/intake-wizard";
@@ -18,6 +21,9 @@ import AutomationConfig from "@/pages/automation-config";
 import Runs from "@/pages/runs";
 import ROIDashboard from "@/pages/roi";
 import Settings from "@/pages/settings";
+import Pricing from "@/pages/pricing";
+import Security from "@/pages/security";
+import Docs from "@/pages/docs";
 import { AppShell } from "@/components/app/app-shell";
 
 function LoadingScreen() {
@@ -66,6 +72,15 @@ function Router() {
       <Route path="/">
         <PublicRoute component={Landing} />
       </Route>
+      <Route path="/auth/signin">
+        <PublicRoute component={SignIn} />
+      </Route>
+      <Route path="/auth/signup">
+        <PublicRoute component={SignUp} />
+      </Route>
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/security" component={Security} />
+      <Route path="/docs" component={Docs} />
       <Route path="/app">
         <ProtectedRoute component={Dashboard} />
       </Route>
@@ -103,12 +118,14 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 

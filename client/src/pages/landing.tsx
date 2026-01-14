@@ -1,13 +1,26 @@
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Sparkles, BarChart3, GitBranch, Clock, Target, Shield, Layers } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LandingSEO } from "@/components/seo";
+import { ArrowRight, Sparkles, BarChart3, GitBranch, Clock, Target, Shield, Layers, Loader2 } from "lucide-react";
 
 export default function Landing() {
-  const { isLoading } = useAuth();
+  const { isLoading, startDemo, isStartingDemo } = useAuth();
+
+  const handleTryDemo = async () => {
+    try {
+      await startDemo();
+      window.location.href = "/app";
+    } catch (error) {
+      console.error("Failed to start demo:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
+      <LandingSEO />
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
@@ -19,18 +32,21 @@ export default function Landing() {
           <nav className="hidden md:flex items-center gap-1 text-sm">
             <a href="#features" className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors">Features</a>
             <a href="#how-it-works" className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
+            <Link href="/pricing" className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+            <Link href="/docs" className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors">Docs</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <a href="/api/login">
+            <ThemeToggle />
+            <Link href="/auth/signin">
               <Button variant="ghost" size="sm" disabled={isLoading} data-testid="button-login">
                 Sign In
               </Button>
-            </a>
-            <a href="/api/login">
+            </Link>
+            <Link href="/auth/signup">
               <Button size="sm" disabled={isLoading} data-testid="button-get-started">
                 Get Started
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -51,13 +67,27 @@ export default function Landing() {
                   Document your workflows, identify bottlenecks, and generate actionable automation plans. Built for teams who want to move fast.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <a href="/api/login">
+                  <Link href="/auth/signup">
                     <Button size="lg" className="w-full sm:w-auto" data-testid="button-hero-start">
                       Get started <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
-                  </a>
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto" data-testid="button-demo">
-                    See how it works
+                  </Link>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="w-full sm:w-auto" 
+                    data-testid="button-demo"
+                    onClick={handleTryDemo}
+                    disabled={isStartingDemo}
+                  >
+                    {isStartingDemo ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Starting...
+                      </>
+                    ) : (
+                      "Try Live Demo"
+                    )}
                   </Button>
                 </div>
                 <div className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -211,28 +241,71 @@ export default function Landing() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 rounded-xl border bg-card">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Ready to get started?</h2>
+                <h2 className="text-xl font-semibold mb-2">Set up your first automation in minutes</h2>
                 <p className="text-muted-foreground">
-                  Start documenting processes and generating blueprints today.
+                  Document processes and generate AI-powered blueprints today.
                 </p>
               </div>
-              <a href="/api/login">
-                <Button size="lg" data-testid="button-cta-final">
-                  Get started <ArrowRight className="w-4 h-4 ml-2" />
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link href="/auth/signup">
+                  <Button size="lg" data-testid="button-cta-final">
+                    Get started free <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  data-testid="button-cta-demo"
+                  onClick={handleTryDemo}
+                  disabled={isStartingDemo}
+                >
+                  {isStartingDemo ? "Starting..." : "Try Demo"}
                 </Button>
-              </a>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t py-6">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4" />
-            <span>Ops Copilot</span>
+      <footer className="border-t py-8">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4" />
+              <span className="font-medium">Ops Copilot</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
+              <div>
+                <h4 className="font-medium mb-3">Product</h4>
+                <div className="space-y-2 text-muted-foreground">
+                  <Link href="/#features" className="block hover:text-foreground">Features</Link>
+                  <Link href="/pricing" className="block hover:text-foreground">Pricing</Link>
+                  <Link href="/docs" className="block hover:text-foreground">Docs</Link>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium mb-3">Company</h4>
+                <div className="space-y-2 text-muted-foreground">
+                  <Link href="/security" className="block hover:text-foreground">Security</Link>
+                  <a href="mailto:support@opscopilot.com" className="block hover:text-foreground">Support</a>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium mb-3">Get Started</h4>
+                <div className="space-y-2 text-muted-foreground">
+                  <Link href="/auth/signup" className="block hover:text-foreground">Sign up</Link>
+                  <Link href="/auth/signin" className="block hover:text-foreground">Sign in</Link>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>&copy; {new Date().getFullYear()} Ops Copilot</p>
+          <div className="border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+            <p>&copy; {new Date().getFullYear()} Ops Copilot. All rights reserved.</p>
+            <div className="flex items-center gap-4">
+              <a href="#" className="hover:text-foreground">Privacy</a>
+              <a href="#" className="hover:text-foreground">Terms</a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
