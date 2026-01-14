@@ -154,60 +154,72 @@ export default function Landing() {
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-5 rounded-lg border bg-card hover-elevate">
-                <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Target className="w-4 h-4 text-primary" />
+              <Link href="/auth/signup">
+                <div className="p-5 rounded-lg border bg-gradient-to-br from-primary/10 to-card border-l-2 border-l-primary/50 hover-elevate cursor-pointer h-full">
+                  <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center mb-4">
+                    <Target className="w-4 h-4 text-primary" />
+                  </div>
+                  <h3 className="font-medium mb-1.5 text-foreground">Guided Intake</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Step-by-step wizard to document pain points and upload relevant files.
+                  </p>
                 </div>
-                <h3 className="font-medium mb-1.5">Guided Intake</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Step-by-step wizard to document pain points and upload relevant files.
-                </p>
-              </div>
-              <div className="p-5 rounded-lg border bg-card hover-elevate">
-                <div className="w-9 h-9 rounded-lg bg-chart-2/10 flex items-center justify-center mb-4">
-                  <GitBranch className="w-4 h-4 text-chart-2" />
+              </Link>
+              <Link href="/auth/signup">
+                <div className="p-5 rounded-lg border bg-gradient-to-br from-chart-2/10 to-card border-l-2 border-l-chart-2/50 hover-elevate cursor-pointer h-full">
+                  <div className="w-9 h-9 rounded-lg bg-chart-2/20 flex items-center justify-center mb-4">
+                    <GitBranch className="w-4 h-4 text-chart-2" />
+                  </div>
+                  <h3 className="font-medium mb-1.5 text-foreground">AI Blueprints</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Process maps with bottlenecks identified and prioritized backlog.
+                  </p>
                 </div>
-                <h3 className="font-medium mb-1.5">AI Blueprints</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Process maps with bottlenecks identified and prioritized backlog.
-                </p>
-              </div>
-              <div className="p-5 rounded-lg border bg-card hover-elevate">
-                <div className="w-9 h-9 rounded-lg bg-chart-3/10 flex items-center justify-center mb-4">
-                  <Sparkles className="w-4 h-4 text-chart-3" />
+              </Link>
+              <Link href="/auth/signup">
+                <div className="p-5 rounded-lg border bg-gradient-to-br from-chart-3/10 to-card border-l-2 border-l-chart-3/50 hover-elevate cursor-pointer h-full">
+                  <div className="w-9 h-9 rounded-lg bg-chart-3/20 flex items-center justify-center mb-4">
+                    <Sparkles className="w-4 h-4 text-chart-3" />
+                  </div>
+                  <h3 className="font-medium mb-1.5 text-foreground">Automation Templates</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Pre-built templates for email triage, lead follow-up, and more.
+                  </p>
                 </div>
-                <h3 className="font-medium mb-1.5">Automation Templates</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Pre-built templates for email triage, lead follow-up, and more.
-                </p>
-              </div>
-              <div className="p-5 rounded-lg border bg-card hover-elevate">
-                <div className="w-9 h-9 rounded-lg bg-chart-4/10 flex items-center justify-center mb-4">
-                  <BarChart3 className="w-4 h-4 text-chart-4" />
+              </Link>
+              <Link href="/auth/signup">
+                <div className="p-5 rounded-lg border bg-gradient-to-br from-chart-4/10 to-card border-l-2 border-l-chart-4/50 hover-elevate cursor-pointer h-full">
+                  <div className="w-9 h-9 rounded-lg bg-chart-4/20 flex items-center justify-center mb-4">
+                    <BarChart3 className="w-4 h-4 text-chart-4" />
+                  </div>
+                  <h3 className="font-medium mb-1.5 text-foreground">ROI Dashboard</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Track hours saved and efficiency gains in real-time.
+                  </p>
                 </div>
-                <h3 className="font-medium mb-1.5">ROI Dashboard</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Track hours saved and efficiency gains in real-time.
-                </p>
-              </div>
-              <div className="p-5 rounded-lg border bg-card hover-elevate">
-                <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center mb-4">
-                  <Clock className="w-4 h-4 text-muted-foreground" />
+              </Link>
+              <Link href="/auth/signup">
+                <div className="p-5 rounded-lg border bg-gradient-to-br from-blue-500/10 to-card border-l-2 border-l-blue-500/50 hover-elevate cursor-pointer h-full">
+                  <div className="w-9 h-9 rounded-lg bg-blue-500/20 flex items-center justify-center mb-4">
+                    <Clock className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <h3 className="font-medium mb-1.5 text-foreground">Run History</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Detailed logs and execution history for every run.
+                  </p>
                 </div>
-                <h3 className="font-medium mb-1.5">Run History</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Detailed logs and execution history for every run.
-                </p>
-              </div>
-              <div className="p-5 rounded-lg border bg-card hover-elevate">
-                <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center mb-4">
-                  <Shield className="w-4 h-4 text-muted-foreground" />
+              </Link>
+              <Link href="/auth/signup">
+                <div className="p-5 rounded-lg border bg-gradient-to-br from-emerald-500/10 to-card border-l-2 border-l-emerald-500/50 hover-elevate cursor-pointer h-full">
+                  <div className="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-4">
+                    <Shield className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <h3 className="font-medium mb-1.5 text-foreground">Team Collaboration</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Invite members and manage roles across your organization.
+                  </p>
                 </div>
-                <h3 className="font-medium mb-1.5">Team Collaboration</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Invite members and manage roles across your organization.
-                </p>
-              </div>
+              </Link>
             </div>
           </div>
         </section>
