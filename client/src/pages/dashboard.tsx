@@ -8,7 +8,7 @@ import {
   ArrowRight,
   ClipboardList,
   GitBranch,
-  Zap,
+  Sparkles,
   BarChart3,
   TrendingUp,
   Clock,
@@ -70,7 +70,7 @@ export default function Dashboard() {
         description: "You have blueprints ready! Set up an automation template to start saving time.",
         action: "View Automations",
         href: "/app/automations",
-        icon: Zap,
+        icon: Sparkles,
         color: "text-chart-3",
       };
     }
@@ -95,21 +95,21 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <Card className="border-primary/20 bg-primary/5">
-        <CardContent className="p-6">
+      <Card className="border-l-2 border-l-primary">
+        <CardContent className="p-5">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className={`w-12 h-12 rounded-lg bg-background flex items-center justify-center ${nextAction.color}`}>
-                <nextAction.icon className="w-6 h-6" />
+              <div className={`w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0`}>
+                <nextAction.icon className={`w-5 h-5 ${nextAction.color}`} />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">{nextAction.title}</h3>
+                <h3 className="font-medium">{nextAction.title}</h3>
                 <p className="text-sm text-muted-foreground max-w-md">{nextAction.description}</p>
               </div>
             </div>
             <Link href={nextAction.href}>
-              <Button data-testid="button-next-action">
-                {nextAction.action} <ArrowRight className="w-4 h-4 ml-2" />
+              <Button size="sm" data-testid="button-next-action">
+                {nextAction.action} <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
           </div>
@@ -231,7 +231,7 @@ export default function Dashboard() {
                 <ClipboardList className="w-10 h-10 mx-auto mb-3 opacity-50" />
                 <p>No intakes yet</p>
                 <Link href="/app/intakes/new">
-                  <Button variant="link" size="sm" data-testid="button-create-first-intake">
+                  <Button variant="ghost" size="sm" data-testid="button-create-first-intake">
                     Create your first intake
                   </Button>
                 </Link>
@@ -299,10 +299,10 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                <Zap className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                <Sparkles className="w-10 h-10 mx-auto mb-3 opacity-50" />
                 <p>No runs yet</p>
                 <Link href="/app/automations">
-                  <Button variant="link" size="sm" data-testid="button-configure-automation">
+                  <Button variant="ghost" size="sm" data-testid="button-configure-automation">
                     Configure an automation
                   </Button>
                 </Link>

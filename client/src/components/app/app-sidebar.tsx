@@ -23,13 +23,13 @@ import {
   LayoutDashboard,
   ClipboardList,
   GitBranch,
-  Zap,
+  Sparkles,
   Play,
   BarChart3,
   Settings,
   ChevronDown,
   LogOut,
-  Building2,
+  Layers,
 } from "lucide-react";
 
 const navItems = [
@@ -42,7 +42,7 @@ const intakeItems = [
 ];
 
 const automationItems = [
-  { title: "Automations", url: "/app/automations", icon: Zap },
+  { title: "Automations", url: "/app/automations", icon: Sparkles },
   { title: "Runs", url: "/app/runs", icon: Play },
 ];
 
@@ -82,19 +82,19 @@ export function AppSidebar() {
               className="flex items-center gap-2 w-full p-2 rounded-md hover-elevate"
               data-testid="dropdown-org-switcher"
             >
-              <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-                <Building2 className="w-4 h-4 text-primary-foreground" />
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center">
+                <Layers className="w-3.5 h-3.5 text-white" />
               </div>
               <div className="flex-1 text-left min-w-0">
                 <p className="text-sm font-medium truncate">My Organization</p>
-                <p className="text-xs text-muted-foreground">Free Plan</p>
+                <p className="text-xs text-muted-foreground">Free</p>
               </div>
               <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
             <DropdownMenuItem>
-              <Building2 className="w-4 h-4 mr-2" />
+              <Layers className="w-4 h-4 mr-2" />
               My Organization
             </DropdownMenuItem>
           </DropdownMenuContent>
