@@ -45,7 +45,7 @@ export interface IStorage {
   
   // Org Members
   getOrgMember(orgId: number, userId: string): Promise<OrgMember | undefined>;
-  getOrgMembers(orgId: number): Promise<(OrgMember & { user?: User })[]>;
+  getOrgMembers(orgId: number): Promise<(OrgMember & { user?: { email: string | null; firstName: string | null; lastName: string | null; profileImageUrl: string | null; } })[]>;
   createOrgMember(member: InsertOrgMember): Promise<OrgMember>;
   
   // Intakes
@@ -127,7 +127,7 @@ class DrizzleStorage implements IStorage {
     return member;
   }
 
-  async getOrgMembers(orgId: number): Promise<(OrgMember & { user?: User })[]> {
+  async getOrgMembers(orgId: number): Promise<(OrgMember & { user?: { email: string | null; firstName: string | null; lastName: string | null; profileImageUrl: string | null; } })[]> {
     const members = await db
       .select({
         id: orgMembers.id,
@@ -135,7 +135,10 @@ class DrizzleStorage implements IStorage {
         userId: orgMembers.userId,
         role: orgMembers.role,
         createdAt: orgMembers.createdAt,
-        user: users,
+        userEmail: users.email,
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+        userProfileImageUrl: users.profileImageUrl,
       })
       .from(orgMembers)
       .leftJoin(users, eq(orgMembers.userId, users.id))
@@ -146,7 +149,12 @@ class DrizzleStorage implements IStorage {
       userId: m.userId,
       role: m.role,
       createdAt: m.createdAt,
-      user: m.user || undefined,
+      user: m.userEmail ? {
+        email: m.userEmail,
+        firstName: m.userFirstName,
+        lastName: m.userLastName,
+        profileImageUrl: m.userProfileImageUrl,
+      } : undefined,
     }));
   }
 
