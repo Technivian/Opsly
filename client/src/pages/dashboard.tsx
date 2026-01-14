@@ -201,30 +201,50 @@ export default function Dashboard() {
               </div>
             ) : intakes?.length ? (
               <div className="space-y-3">
-                {intakes.slice(0, 5).map((intake) => (
-                  <div
-                    key={intake.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-                  >
-                    <div className="min-w-0">
-                      <p className="font-medium truncate">{intake.title}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {intake.painArea} &middot; {new Date(intake.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={
-                        intake.status === "PROCESSED"
-                          ? "default"
-                          : intake.status === "SUBMITTED"
-                          ? "secondary"
-                          : "outline"
-                      }
+                {intakes.slice(0, 5).map((intake) => {
+                  const blueprint = blueprints?.find(b => b.intakeId === intake.id);
+                  const isClickable = intake.status === "PROCESSED" && blueprint;
+                  
+                  const content = (
+                    <div
+                      className={`flex items-center justify-between p-3 rounded-lg bg-muted/50 ${
+                        isClickable ? "hover-elevate cursor-pointer" : ""
+                      }`}
+                      data-testid={`intake-item-${intake.id}`}
                     >
-                      {intake.status}
-                    </Badge>
-                  </div>
-                ))}
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{intake.title}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {intake.painArea} &middot; {new Date(intake.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={
+                            intake.status === "PROCESSED"
+                              ? "default"
+                              : intake.status === "SUBMITTED"
+                              ? "secondary"
+                              : "outline"
+                          }
+                        >
+                          {intake.status}
+                        </Badge>
+                        {isClickable && (
+                          <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                        )}
+                      </div>
+                    </div>
+                  );
+                  
+                  return isClickable ? (
+                    <Link key={intake.id} href={`/app/blueprints/${blueprint.id}`}>
+                      {content}
+                    </Link>
+                  ) : (
+                    <div key={intake.id}>{content}</div>
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">

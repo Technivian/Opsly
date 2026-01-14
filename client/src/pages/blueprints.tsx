@@ -23,6 +23,22 @@ export default function Blueprints() {
         </div>
       </div>
 
+      <Card className="bg-muted/30 border-dashed">
+        <CardContent className="py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <GitBranch className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium">What are Blueprints?</p>
+              <p className="text-sm text-muted-foreground">
+                Blueprints are AI-analyzed process maps created from your intakes. Each blueprint shows the step-by-step workflow, identifies bottlenecks causing delays, and provides a prioritized list of automation opportunities. Click on any blueprint to see details and take action.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {isLoading ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
