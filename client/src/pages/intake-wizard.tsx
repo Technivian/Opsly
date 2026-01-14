@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
 import {
   ArrowLeft,
@@ -21,6 +23,7 @@ import {
   Settings,
   X,
   Loader2,
+  Info,
 } from "lucide-react";
 
 const PAIN_AREAS = [
@@ -83,8 +86,10 @@ export default function IntakeWizard() {
   const [data, setData] = useState<WizardData>(initialData);
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  const isDemo = user?.isDemo === true;
   const totalSteps = 6;
   const progress = (step / totalSteps) * 100;
 
@@ -93,8 +98,12 @@ export default function IntakeWizard() {
       const res = await fetch("/api/intakes", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
-      if (!res.ok) throw new Error("Failed to create intake");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to create intake");
+      }
       return res.json();
     },
     onSuccess: () => {
@@ -105,10 +114,13 @@ export default function IntakeWizard() {
       });
       navigate("/app/intakes");
     },
-    onError: () => {
+    onError: (error: any) => {
+      const message = error?.message?.includes("read-only") 
+        ? "Demo accounts cannot create new intakes. Sign up for a free account to get started!"
+        : "Failed to submit intake. Please try again.";
       toast({
         title: "Error",
-        description: "Failed to submit intake. Please try again.",
+        description: message,
         variant: "destructive",
       });
     },
@@ -190,6 +202,15 @@ export default function IntakeWizard() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
+      {isDemo && (
+        <Alert className="mb-6 border-amber-500/50 bg-amber-500/10">
+          <Info className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-700 dark:text-amber-400">
+            You're in demo mode. Create a free account to submit your own intakes and generate custom blueprints.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-bold">New Intake</h1>
