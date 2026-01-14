@@ -207,8 +207,10 @@ export default function Dashboard() {
                   
                   const content = (
                     <div
-                      className={`flex items-center justify-between p-3 rounded-lg bg-muted/50 ${
-                        isClickable ? "hover-elevate cursor-pointer" : ""
+                      className={`flex items-center justify-between p-3 rounded-lg ${
+                        isClickable 
+                          ? "bg-gradient-to-r from-primary/10 to-muted/50 border-l-2 border-l-primary/60 hover-elevate cursor-pointer" 
+                          : "bg-muted/50"
                       }`}
                       data-testid={`intake-item-${intake.id}`}
                     >
@@ -231,7 +233,7 @@ export default function Dashboard() {
                           {intake.status}
                         </Badge>
                         {isClickable && (
-                          <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                          <ArrowRight className="w-4 h-4 text-primary" />
                         )}
                       </div>
                     </div>

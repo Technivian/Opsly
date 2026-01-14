@@ -53,13 +53,13 @@ export default function Blueprints() {
             const backlogItems = blueprint.backlogJson?.length || 0;
 
             return (
-              <Card key={blueprint.id} className="hover-elevate" data-testid={`card-blueprint-${blueprint.id}`}>
+              <Card key={blueprint.id} className="hover-elevate border-l-2 border-l-primary/60 bg-gradient-to-br from-primary/5 to-transparent" data-testid={`card-blueprint-${blueprint.id}`}>
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
                       <GitBranch className="w-5 h-5 text-primary" />
                     </div>
-                    <Badge variant="outline" className="shrink-0">
+                    <Badge variant="secondary" className="shrink-0">
                       {processSteps} steps
                     </Badge>
                   </div>
@@ -85,7 +85,7 @@ export default function Blueprints() {
                       {new Date(blueprint.createdAt).toLocaleDateString()}
                     </div>
                     <Link href={`/app/blueprints/${blueprint.id}`}>
-                      <Button variant="ghost" size="sm" data-testid={`button-view-blueprint-${blueprint.id}`}>
+                      <Button variant="outline" size="sm" className="border-primary/30 text-primary hover:bg-primary/10" data-testid={`button-view-blueprint-${blueprint.id}`}>
                         View <ArrowRight className="w-4 h-4 ml-1" />
                       </Button>
                     </Link>
