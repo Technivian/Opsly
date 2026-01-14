@@ -284,39 +284,50 @@ export default function Dashboard() {
             ) : recentRuns.length ? (
               <div className="space-y-3">
                 {recentRuns.map((run) => (
-                  <div
-                    key={run.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      {run.status === "SUCCESS" ? (
-                        <CheckCircle className="w-5 h-5 text-chart-3 shrink-0" />
-                      ) : run.status === "FAILED" ? (
-                        <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
-                      ) : (
-                        <Clock className="w-5 h-5 text-chart-4 shrink-0" />
-                      )}
-                      <div className="min-w-0">
-                        <p className="font-medium truncate">Run #{run.id}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {run.startedAt
-                            ? new Date(run.startedAt).toLocaleString()
-                            : "Queued"}
-                        </p>
+                  <Link key={run.id} href="/app/runs">
+                    <div
+                      className={`flex items-center justify-between p-3 rounded-lg hover-elevate cursor-pointer ${
+                        run.status === "SUCCESS" 
+                          ? "bg-gradient-to-r from-chart-3/10 to-muted/50 border-l-2 border-l-chart-3/60"
+                          : run.status === "FAILED"
+                          ? "bg-gradient-to-r from-destructive/10 to-muted/50 border-l-2 border-l-destructive/60"
+                          : "bg-gradient-to-r from-chart-4/10 to-muted/50 border-l-2 border-l-chart-4/60"
+                      }`}
+                      data-testid={`run-item-${run.id}`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        {run.status === "SUCCESS" ? (
+                          <CheckCircle className="w-5 h-5 text-chart-3 shrink-0" />
+                        ) : run.status === "FAILED" ? (
+                          <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
+                        ) : (
+                          <Clock className="w-5 h-5 text-chart-4 shrink-0" />
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">Run #{run.id}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {run.startedAt
+                              ? new Date(run.startedAt).toLocaleString()
+                              : "Queued"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={
+                            run.status === "SUCCESS"
+                              ? "default"
+                              : run.status === "FAILED"
+                              ? "destructive"
+                              : "secondary"
+                          }
+                        >
+                          {run.status}
+                        </Badge>
+                        <ArrowRight className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </div>
-                    <Badge
-                      variant={
-                        run.status === "SUCCESS"
-                          ? "default"
-                          : run.status === "FAILED"
-                          ? "destructive"
-                          : "secondary"
-                      }
-                    >
-                      {run.status}
-                    </Badge>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (

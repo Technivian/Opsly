@@ -131,7 +131,12 @@ export default function Runs() {
                     : null;
 
                   return (
-                    <TableRow key={run.id} data-testid={`row-run-${run.id}`}>
+                    <TableRow 
+                      key={run.id} 
+                      data-testid={`row-run-${run.id}`}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => setSelectedRunId(run.id)}
+                    >
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
                           {getStatusIcon(run.status)}
