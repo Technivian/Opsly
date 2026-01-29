@@ -1,9 +1,21 @@
+import { useState } from "react";
 import { useRoute } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -22,17 +34,106 @@ import {
   Zap,
   FileText,
   Database,
+  Share2,
+  Pencil,
+  Copy,
+  Check,
+  Download,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Blueprint } from "@shared/schema";
 
 export default function BlueprintDetail() {
   const [, params] = useRoute("/app/blueprints/:id");
   const blueprintId = params?.id;
+  const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editSummary, setEditSummary] = useState("");
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const { data: blueprint, isLoading } = useQuery<Blueprint>({
     queryKey: ["/api/blueprints", blueprintId],
     enabled: !!blueprintId,
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ title, summary }: { title: string; summary: string }) => {
+      return apiRequest("PATCH", `/api/blueprints/${blueprintId}`, { title, summary });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/blueprints", blueprintId] });
+      setIsEditing(false);
+      toast({ title: "Blueprint updated", description: "Your changes have been saved." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update blueprint.", variant: "destructive" });
+    },
+  });
+
+  const shareMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/blueprints/${blueprintId}/share`, {});
+      return res.json() as Promise<{ shareUrl: string }>;
+    },
+    onSuccess: (data) => {
+      setShareUrl(window.location.origin + data.shareUrl);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create share link.", variant: "destructive" });
+    },
+  });
+
+  const handleStartEdit = () => {
+    if (blueprint) {
+      setEditTitle(blueprint.title);
+      setEditSummary(blueprint.summary || "");
+      setIsEditing(true);
+    }
+  };
+
+  const handleSaveEdit = () => {
+    updateMutation.mutate({ title: editTitle, summary: editSummary });
+  };
+
+  const handleCopyLink = () => {
+    if (shareUrl) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleExportMarkdown = () => {
+    if (!blueprint) return;
+    const processSteps = blueprint.processJson || [];
+    const bottlenecks = blueprint.bottlenecksJson || [];
+    const backlog = blueprint.backlogJson || [];
+
+    let md = `# ${blueprint.title}\n\n${blueprint.summary || ""}\n\n`;
+    md += `## Process Map\n\n`;
+    processSteps.forEach((step: any, i: number) => {
+      md += `${i + 1}. **${step.step}** (${step.avgTimeMin} min)\n   - Owner: ${step.ownerRole}\n   - Tools: ${step.tools?.join(", ")}\n\n`;
+    });
+    md += `## Bottlenecks\n\n`;
+    bottlenecks.forEach((b: any) => {
+      md += `- **${b.type}**: ${b.description} (Impact: ${b.impact})\n`;
+    });
+    md += `\n## Backlog\n\n`;
+    backlog.forEach((item: any, i: number) => {
+      md += `${i + 1}. [${item.type}] ${item.item} - ${item.effort} effort\n`;
+    });
+
+    const blob = new Blob([md], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${blueprint.title.replace(/\s+/g, "-").toLowerCase()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   if (isLoading) {
     return (
@@ -90,9 +191,80 @@ export default function BlueprintDetail() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">{blueprint.title}</h1>
-        <p className="text-muted-foreground">{blueprint.summary}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          {isEditing ? (
+            <div className="space-y-3">
+              <Input
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                className="text-xl font-bold"
+                placeholder="Blueprint title"
+                data-testid="input-edit-title"
+              />
+              <Textarea
+                value={editSummary}
+                onChange={(e) => setEditSummary(e.target.value)}
+                placeholder="Blueprint summary"
+                rows={2}
+                data-testid="input-edit-summary"
+              />
+              <div className="flex items-center gap-2">
+                <Button size="sm" onClick={handleSaveEdit} disabled={updateMutation.isPending} data-testid="button-save-edit">
+                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} data-testid="button-cancel-edit">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h1 className="text-2xl font-bold mb-2">{blueprint.title}</h1>
+              <p className="text-muted-foreground">{blueprint.summary}</p>
+            </>
+          )}
+        </div>
+        {!isEditing && (
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={handleStartEdit} data-testid="button-edit-blueprint">
+              <Pencil className="w-4 h-4 mr-2" />
+              Edit
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleExportMarkdown} data-testid="button-export-markdown">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="sm" onClick={() => shareMutation.mutate()} data-testid="button-share-blueprint">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Share Blueprint</DialogTitle>
+                  <DialogDescription>
+                    Anyone with this link can view this blueprint.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  {shareUrl ? (
+                    <div className="flex items-center gap-2">
+                      <Input value={shareUrl} readOnly className="flex-1" data-testid="input-share-url" />
+                      <Button size="icon" variant="outline" onClick={handleCopyLink} data-testid="button-copy-share-link">
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Generating share link...</p>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )}
       </div>
 
       <Tabs defaultValue="process" className="space-y-4">
