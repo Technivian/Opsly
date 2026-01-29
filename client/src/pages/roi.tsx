@@ -35,7 +35,7 @@ interface ROIData {
 }
 
 export default function ROIDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { data: roiData, isLoading: roiLoading } = useQuery<ROIData>({
     queryKey: ["/api/roi"],
@@ -59,14 +59,14 @@ export default function ROIDashboard() {
 
   const getConfigName = (configId: number) => {
     const config = configs?.find((c) => c.id === configId);
-    return config?.name || "Unknown";
+    return config?.name || t("common.noResults");
   };
 
   const getTemplateName = (configId: number) => {
     const config = configs?.find((c) => c.id === configId);
-    if (!config) return "Unknown";
+    if (!config) return t("common.noResults");
     const template = templates?.find((t) => t.id === config.templateId);
-    return template?.name || "Unknown";
+    return template?.name || t("common.noResults");
   };
 
   const getConfidenceColor = (score: number) => {
@@ -101,7 +101,7 @@ export default function ROIDashboard() {
         return runDate === dateStr && r.status === "SUCCESS";
       });
       days.push({
-        day: date.toLocaleDateString("en-US", { weekday: "short" }),
+        day: date.toLocaleDateString(i18n.language === "nl" ? "nl-NL" : "en-US", { weekday: "short" }),
         runs: dayRuns.length,
         items: dayRuns.reduce((sum, r) => sum + (r.statsJson?.itemsProcessed || 0), 0),
       });
@@ -116,9 +116,9 @@ export default function ROIDashboard() {
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">ROI Dashboard</h1>
+          <h1 className="text-2xl font-bold">{t("roi.title")}</h1>
           <p className="text-muted-foreground">
-            Track the impact of your automations.
+            {t("roi.subtitle")}
           </p>
         </div>
       </div>
@@ -126,7 +126,7 @@ export default function ROIDashboard() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-chart-3/30 bg-chart-3/5">
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Hours Saved</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("roi.hoursSaved")}</CardTitle>
             <Clock className="h-5 w-5 text-chart-3" />
           </CardHeader>
           <CardContent>
@@ -136,7 +136,7 @@ export default function ROIDashboard() {
               <>
                 <div className="text-3xl font-bold">{roiData?.hoursSaved || 0}</div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Total time saved through automation
+                  {t("roi.hoursSavedDesc")}
                 </p>
               </>
             )}
@@ -145,7 +145,7 @@ export default function ROIDashboard() {
 
         <Card className="border-chart-2/30 bg-chart-2/5">
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cycle Time Reduction</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("roi.cycleTime")}</CardTitle>
             <TrendingUp className="h-5 w-5 text-chart-2" />
           </CardHeader>
           <CardContent>
@@ -160,7 +160,7 @@ export default function ROIDashboard() {
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Improvement in process time
+                  {t("roi.cycleTimeDesc")}
                 </p>
               </>
             )}
@@ -169,7 +169,7 @@ export default function ROIDashboard() {
 
         <Card className="border-primary/30 bg-primary/5">
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Confidence Score</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("roi.confidenceScore")}</CardTitle>
             <Target className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
@@ -181,7 +181,7 @@ export default function ROIDashboard() {
                   {roiData?.confidenceScore || 0}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Based on {roiData?.totalRuns || 0} runs
+                  {t("roi.confidenceScoreDesc")}
                 </p>
               </>
             )}
@@ -191,8 +191,8 @@ export default function ROIDashboard() {
 
       <Card>
         <CardHeader>
-          <CardTitle>7-Day Activity Trend</CardTitle>
-          <CardDescription>Successful runs over the past week</CardDescription>
+          <CardTitle>{t("roi.trend")}</CardTitle>
+          <CardDescription>{t("roi.trendDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           {runsLoading ? (
@@ -215,7 +215,7 @@ export default function ROIDashboard() {
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               <TrendingUp className="w-10 h-10 mx-auto mb-3 opacity-50" />
-              <p>No activity in the past 7 days</p>
+              <p>{t("roi.noData")}</p>
             </div>
           )}
         </CardContent>
@@ -224,8 +224,8 @@ export default function ROIDashboard() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Summary Statistics</CardTitle>
-            <CardDescription>Overall automation performance</CardDescription>
+            <CardTitle>{t("roi.breakdown")}</CardTitle>
+            <CardDescription>{t("roi.breakdownDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -239,28 +239,28 @@ export default function ROIDashboard() {
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-3">
                     <Zap className="w-5 h-5 text-primary" />
-                    <span className="font-medium">Total Runs</span>
+                    <span className="font-medium">{t("roi.totalRuns")}</span>
                   </div>
                   <span className="text-xl font-bold">{roiData?.totalRuns || 0}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-chart-3" />
-                    <span className="font-medium">Successful Runs</span>
+                    <span className="font-medium">{t("roi.successfulRuns")}</span>
                   </div>
                   <span className="text-xl font-bold">{roiData?.successfulRuns || 0}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-3">
                     <BarChart3 className="w-5 h-5 text-chart-2" />
-                    <span className="font-medium">Items Processed</span>
+                    <span className="font-medium">{t("roi.itemsProcessed")}</span>
                   </div>
                   <span className="text-xl font-bold">{roiData?.totalItemsProcessed || 0}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-3">
                     <Target className="w-5 h-5 text-chart-4" />
-                    <span className="font-medium">Tasks Created</span>
+                    <span className="font-medium">{t("roi.tasksCreated")}</span>
                   </div>
                   <span className="text-xl font-bold">{roiData?.totalTasksCreated || 0}</span>
                 </div>
@@ -271,8 +271,8 @@ export default function ROIDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Impact by Automation</CardTitle>
-            <CardDescription>Breakdown by configuration</CardDescription>
+            <CardTitle>{t("roi.impactByAutomation")}</CardTitle>
+            <CardDescription>{t("roi.impactByAutomationDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             {runsLoading ? (

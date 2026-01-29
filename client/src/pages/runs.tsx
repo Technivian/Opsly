@@ -100,18 +100,18 @@ export default function Runs() {
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Runs</h1>
+          <h1 className="text-2xl font-bold">{t("runs.title")}</h1>
           <p className="text-muted-foreground">
-            View automation run history and logs.
+            {t("runs.subtitle")}
           </p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Run History</CardTitle>
+          <CardTitle>{t("runs.runHistory")}</CardTitle>
           <CardDescription>
-            All automation runs across your configurations
+            {t("runs.allRuns")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -125,12 +125,12 @@ export default function Runs() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Run ID</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Started</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Stats</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t("runs.runId")}</TableHead>
+                  <TableHead>{t("common.status")}</TableHead>
+                  <TableHead>{t("runs.started")}</TableHead>
+                  <TableHead>{t("runs.duration")}</TableHead>
+                  <TableHead>{t("runs.stats")}</TableHead>
+                  <TableHead className="text-right">{t("runs.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -160,7 +160,7 @@ export default function Runs() {
                       <TableCell className="text-muted-foreground">
                         {run.startedAt
                           ? new Date(run.startedAt).toLocaleString()
-                          : "Queued"}
+                          : t("runs.status.queued")}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {duration !== null ? `${duration}s` : "-"}
@@ -169,10 +169,10 @@ export default function Runs() {
                         {run.statsJson && (
                           <div className="flex items-center gap-3 text-sm">
                             {run.statsJson.itemsProcessed !== undefined && (
-                              <span>{run.statsJson.itemsProcessed} items</span>
+                              <span>{run.statsJson.itemsProcessed} {t("runs.itemsProcessed")}</span>
                             )}
                             {run.statsJson.tasksCreated !== undefined && (
-                              <span>{run.statsJson.tasksCreated} tasks</span>
+                              <span>{run.statsJson.tasksCreated} {t("runs.tasksCreated")}</span>
                             )}
                           </div>
                         )}
@@ -184,7 +184,7 @@ export default function Runs() {
                           onClick={() => setSelectedRunId(run.id)}
                           data-testid={`button-view-logs-${run.id}`}
                         >
-                          <Terminal className="w-4 h-4 mr-1" /> Logs
+                          <Terminal className="w-4 h-4 mr-1" /> {t("runs.viewLogs")}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -195,9 +195,9 @@ export default function Runs() {
           ) : (
             <div className="text-center py-12">
               <Play className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-              <h3 className="font-semibold text-lg mb-2">No runs yet</h3>
+              <h3 className="font-semibold text-lg mb-2">{t("runs.noRuns")}</h3>
               <p className="text-muted-foreground mb-4 max-w-sm mx-auto">
-                Configure an automation and run it to see your run history here.
+                {t("runs.noRunsDesc")}
               </p>
             </div>
           )}
@@ -209,7 +209,7 @@ export default function Runs() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Terminal className="w-5 h-5" />
-              Run #{selectedRunId} Logs
+              {t("runs.runLogs")} #{selectedRunId}
             </DialogTitle>
             <DialogDescription>
               {selectedRun && (
@@ -219,7 +219,7 @@ export default function Runs() {
                   </Badge>
                   {selectedRun.startedAt && (
                     <span className="text-sm">
-                      Started: {new Date(selectedRun.startedAt).toLocaleString()}
+                      {t("runs.started")}: {new Date(selectedRun.startedAt).toLocaleString()}
                     </span>
                   )}
                 </div>

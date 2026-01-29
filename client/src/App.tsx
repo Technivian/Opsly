@@ -27,6 +27,7 @@ import Docs from "@/pages/docs";
 import Connections from "@/pages/connections";
 import { AppShell } from "@/components/app/app-shell";
 import { CookieConsent } from "@/components/cookie-consent";
+import { PreferencesLoader } from "@/components/preferences-loader";
 
 function LoadingScreen() {
   return (
@@ -48,9 +49,11 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   }
 
   return (
-    <AppShell>
-      <Component />
-    </AppShell>
+    <PreferencesLoader>
+      <AppShell>
+        <Component />
+      </AppShell>
+    </PreferencesLoader>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -41,6 +45,9 @@ import {
   Download,
   FileDown,
   ChevronDown,
+  Plus,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -52,13 +59,37 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Blueprint } from "@shared/schema";
 
+interface ProcessStep {
+  step: string;
+  avgTimeMin: number;
+  ownerRole: string;
+  tools: string[];
+}
+
+interface Bottleneck {
+  type: string;
+  description: string;
+  impact: string;
+}
+
+interface BacklogItem {
+  item: string;
+  type: string;
+  effort: string;
+}
+
 export default function BlueprintDetail() {
+  const { t } = useTranslation();
   const [, params] = useRoute("/app/blueprints/:id");
   const blueprintId = params?.id;
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [editTab, setEditTab] = useState("general");
   const [editTitle, setEditTitle] = useState("");
   const [editSummary, setEditSummary] = useState("");
+  const [editProcessSteps, setEditProcessSteps] = useState<ProcessStep[]>([]);
+  const [editBottlenecks, setEditBottlenecks] = useState<Bottleneck[]>([]);
+  const [editBacklog, setEditBacklog] = useState<BacklogItem[]>([]);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -68,16 +99,22 @@ export default function BlueprintDetail() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ title, summary }: { title: string; summary: string }) => {
-      return apiRequest("PATCH", `/api/blueprints/${blueprintId}`, { title, summary });
+    mutationFn: async (data: { 
+      title: string; 
+      summary: string; 
+      processJson?: ProcessStep[]; 
+      bottlenecksJson?: Bottleneck[]; 
+      backlogJson?: BacklogItem[] 
+    }) => {
+      return apiRequest("PATCH", `/api/blueprints/${blueprintId}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/blueprints", blueprintId] });
       setIsEditing(false);
-      toast({ title: "Blueprint updated", description: "Your changes have been saved." });
+      toast({ title: t("common.success"), description: t("blueprints.updateSuccess") });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update blueprint.", variant: "destructive" });
+      toast({ title: t("common.error"), description: t("blueprints.updateError"), variant: "destructive" });
     },
   });
 
@@ -98,12 +135,68 @@ export default function BlueprintDetail() {
     if (blueprint) {
       setEditTitle(blueprint.title);
       setEditSummary(blueprint.summary || "");
+      setEditProcessSteps(blueprint.processJson as ProcessStep[] || []);
+      setEditBottlenecks(blueprint.bottlenecksJson as Bottleneck[] || []);
+      setEditBacklog(blueprint.backlogJson as BacklogItem[] || []);
+      setEditTab("general");
       setIsEditing(true);
     }
   };
 
   const handleSaveEdit = () => {
-    updateMutation.mutate({ title: editTitle, summary: editSummary });
+    updateMutation.mutate({ 
+      title: editTitle, 
+      summary: editSummary,
+      processJson: editProcessSteps,
+      bottlenecksJson: editBottlenecks,
+      backlogJson: editBacklog
+    });
+  };
+
+  const addProcessStep = () => {
+    setEditProcessSteps([...editProcessSteps, { step: "", avgTimeMin: 5, ownerRole: "", tools: [] }]);
+  };
+
+  const updateProcessStep = (index: number, field: keyof ProcessStep, value: any) => {
+    const updated = [...editProcessSteps];
+    if (field === "tools") {
+      updated[index][field] = value.split(",").map((t: string) => t.trim());
+    } else {
+      (updated[index] as any)[field] = value;
+    }
+    setEditProcessSteps(updated);
+  };
+
+  const removeProcessStep = (index: number) => {
+    setEditProcessSteps(editProcessSteps.filter((_, i) => i !== index));
+  };
+
+  const addBottleneck = () => {
+    setEditBottlenecks([...editBottlenecks, { type: "Delay", description: "", impact: "Medium" }]);
+  };
+
+  const updateBottleneck = (index: number, field: keyof Bottleneck, value: string) => {
+    const updated = [...editBottlenecks];
+    updated[index][field] = value;
+    setEditBottlenecks(updated);
+  };
+
+  const removeBottleneck = (index: number) => {
+    setEditBottlenecks(editBottlenecks.filter((_, i) => i !== index));
+  };
+
+  const addBacklogItem = () => {
+    setEditBacklog([...editBacklog, { item: "", type: "Automation", effort: "M" }]);
+  };
+
+  const updateBacklogItem = (index: number, field: keyof BacklogItem, value: string) => {
+    const updated = [...editBacklog];
+    updated[index][field] = value;
+    setEditBacklog(updated);
+  };
+
+  const removeBacklogItem = (index: number) => {
+    setEditBacklog(editBacklog.filter((_, i) => i !== index));
   };
 
   const handleCopyLink = () => {
@@ -274,44 +367,238 @@ export default function BlueprintDetail() {
     <div className="p-6 space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          {isEditing ? (
-            <div className="space-y-3">
-              <Input
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                className="text-xl font-bold"
-                placeholder="Blueprint title"
-                data-testid="input-edit-title"
-              />
-              <Textarea
-                value={editSummary}
-                onChange={(e) => setEditSummary(e.target.value)}
-                placeholder="Blueprint summary"
-                rows={2}
-                data-testid="input-edit-summary"
-              />
-              <div className="flex items-center gap-2">
-                <Button size="sm" onClick={handleSaveEdit} disabled={updateMutation.isPending} data-testid="button-save-edit">
-                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
+          <h1 className="text-2xl font-bold mb-2">{blueprint.title}</h1>
+          <p className="text-muted-foreground">{blueprint.summary}</p>
+
+          <Dialog open={isEditing} onOpenChange={setIsEditing}>
+            <DialogContent className="max-w-4xl max-h-[85vh]">
+              <DialogHeader>
+                <DialogTitle>{t("blueprints.editBlueprint")}</DialogTitle>
+                <DialogDescription>
+                  Edit blueprint details, process steps, bottlenecks, and backlog items.
+                </DialogDescription>
+              </DialogHeader>
+              <Tabs value={editTab} onValueChange={setEditTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="general">{t("blueprints.general")}</TabsTrigger>
+                  <TabsTrigger value="process">{t("blueprints.processSteps")}</TabsTrigger>
+                  <TabsTrigger value="bottlenecks">{t("blueprints.bottlenecks")}</TabsTrigger>
+                  <TabsTrigger value="backlog">{t("blueprints.backlog")}</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="general" className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-title">Title</Label>
+                    <Input
+                      id="edit-title"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      placeholder="Blueprint title"
+                      data-testid="input-edit-title"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-summary">Summary</Label>
+                    <Textarea
+                      id="edit-summary"
+                      value={editSummary}
+                      onChange={(e) => setEditSummary(e.target.value)}
+                      placeholder="Blueprint summary"
+                      rows={4}
+                      data-testid="input-edit-summary"
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="process" className="mt-4">
+                  <ScrollArea className="h-[400px] pr-4">
+                    <div className="space-y-4">
+                      {editProcessSteps.map((step, idx) => (
+                        <Card key={idx} className="p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 grid grid-cols-2 gap-3">
+                              <div className="col-span-2">
+                                <Label className="text-xs">{t("blueprints.stepName")}</Label>
+                                <Input
+                                  value={step.step}
+                                  onChange={(e) => updateProcessStep(idx, "step", e.target.value)}
+                                  placeholder="Step name"
+                                  data-testid={`input-step-name-${idx}`}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">{t("blueprints.duration")}</Label>
+                                <Input
+                                  type="number"
+                                  value={step.avgTimeMin}
+                                  onChange={(e) => updateProcessStep(idx, "avgTimeMin", parseInt(e.target.value) || 0)}
+                                  data-testid={`input-step-duration-${idx}`}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">{t("blueprints.owner")}</Label>
+                                <Input
+                                  value={step.ownerRole}
+                                  onChange={(e) => updateProcessStep(idx, "ownerRole", e.target.value)}
+                                  placeholder="Owner role"
+                                  data-testid={`input-step-owner-${idx}`}
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <Label className="text-xs">{t("blueprints.tools")} (comma-separated)</Label>
+                                <Input
+                                  value={step.tools?.join(", ") || ""}
+                                  onChange={(e) => updateProcessStep(idx, "tools", e.target.value)}
+                                  placeholder="Tool1, Tool2"
+                                  data-testid={`input-step-tools-${idx}`}
+                                />
+                              </div>
+                            </div>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => removeProcessStep(idx)}
+                              data-testid={`button-remove-step-${idx}`}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                      <Button variant="outline" onClick={addProcessStep} className="w-full" data-testid="button-add-step">
+                        <Plus className="w-4 h-4 mr-2" />
+                        {t("blueprints.addStep")}
+                      </Button>
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="bottlenecks" className="mt-4">
+                  <ScrollArea className="h-[400px] pr-4">
+                    <div className="space-y-4">
+                      {editBottlenecks.map((bn, idx) => (
+                        <Card key={idx} className="p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 grid grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-xs">{t("blueprints.bottleneckType")}</Label>
+                                <Input
+                                  value={bn.type}
+                                  onChange={(e) => updateBottleneck(idx, "type", e.target.value)}
+                                  placeholder="Delay, Error, etc."
+                                  data-testid={`input-bottleneck-type-${idx}`}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">{t("blueprints.impact")}</Label>
+                                <Input
+                                  value={bn.impact}
+                                  onChange={(e) => updateBottleneck(idx, "impact", e.target.value)}
+                                  placeholder="High, Medium, Low"
+                                  data-testid={`input-bottleneck-impact-${idx}`}
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <Label className="text-xs">{t("blueprints.description")}</Label>
+                                <Textarea
+                                  value={bn.description}
+                                  onChange={(e) => updateBottleneck(idx, "description", e.target.value)}
+                                  placeholder="Describe the bottleneck..."
+                                  rows={2}
+                                  data-testid={`input-bottleneck-desc-${idx}`}
+                                />
+                              </div>
+                            </div>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => removeBottleneck(idx)}
+                              data-testid={`button-remove-bottleneck-${idx}`}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                      <Button variant="outline" onClick={addBottleneck} className="w-full" data-testid="button-add-bottleneck">
+                        <Plus className="w-4 h-4 mr-2" />
+                        {t("blueprints.addBottleneck")}
+                      </Button>
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="backlog" className="mt-4">
+                  <ScrollArea className="h-[400px] pr-4">
+                    <div className="space-y-4">
+                      {editBacklog.map((item, idx) => (
+                        <Card key={idx} className="p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 grid grid-cols-2 gap-3">
+                              <div className="col-span-2">
+                                <Label className="text-xs">{t("blueprints.itemDescription")}</Label>
+                                <Input
+                                  value={item.item}
+                                  onChange={(e) => updateBacklogItem(idx, "item", e.target.value)}
+                                  placeholder="Backlog item description"
+                                  data-testid={`input-backlog-item-${idx}`}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">{t("blueprints.bottleneckType")}</Label>
+                                <Input
+                                  value={item.type}
+                                  onChange={(e) => updateBacklogItem(idx, "type", e.target.value)}
+                                  placeholder="Automation, Integration, etc."
+                                  data-testid={`input-backlog-type-${idx}`}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">{t("blueprints.effort")}</Label>
+                                <Input
+                                  value={item.effort}
+                                  onChange={(e) => updateBacklogItem(idx, "effort", e.target.value)}
+                                  placeholder="S, M, L, XL"
+                                  data-testid={`input-backlog-effort-${idx}`}
+                                />
+                              </div>
+                            </div>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => removeBacklogItem(idx)}
+                              data-testid={`button-remove-backlog-${idx}`}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                      <Button variant="outline" onClick={addBacklogItem} className="w-full" data-testid="button-add-backlog">
+                        <Plus className="w-4 h-4 mr-2" />
+                        {t("blueprints.addBacklogItem")}
+                      </Button>
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsEditing(false)}>
+                  {t("common.cancel")}
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} data-testid="button-cancel-edit">
-                  Cancel
+                <Button onClick={handleSaveEdit} disabled={updateMutation.isPending} data-testid="button-save-edit">
+                  {updateMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  {t("common.save")}
                 </Button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <h1 className="text-2xl font-bold mb-2">{blueprint.title}</h1>
-              <p className="text-muted-foreground">{blueprint.summary}</p>
-            </>
-          )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
-        {!isEditing && (
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={handleStartEdit} data-testid="button-edit-blueprint">
-              <Pencil className="w-4 h-4 mr-2" />
-              Edit
-            </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={handleStartEdit} data-testid="button-edit-blueprint">
+            <Pencil className="w-4 h-4 mr-2" />
+            {t("common.edit")}
+          </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="sm" variant="outline" data-testid="button-export">
@@ -360,7 +647,6 @@ export default function BlueprintDetail() {
               </DialogContent>
             </Dialog>
           </div>
-        )}
       </div>
 
       <Tabs defaultValue="process" className="space-y-4">

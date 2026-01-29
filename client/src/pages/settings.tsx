@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { useRbac } from "@/hooks/use-rbac";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,16 +47,29 @@ import {
   Crown,
   Shield,
   User,
+  Calculator,
+  Eye,
+  Wrench,
 } from "lucide-react";
+import { SiGoogle, SiSlack, SiHubspot, SiSalesforce } from "react-icons/si";
 import type { Org, OrgMember, Connection } from "@shared/schema";
 
-const INTEGRATIONS = [
-  { provider: "gmail", name: "Gmail", description: "Connect Gmail for email automation" },
-  { provider: "outlook", name: "Outlook", description: "Connect Outlook for email automation" },
-  { provider: "salesforce", name: "Salesforce", description: "Connect Salesforce CRM" },
-  { provider: "hubspot", name: "HubSpot", description: "Connect HubSpot CRM" },
-  { provider: "slack", name: "Slack", description: "Connect Slack for notifications" },
-  { provider: "jira", name: "Jira", description: "Connect Jira for task management" },
+interface Integration {
+  provider: string;
+  name: string;
+  description: string;
+  icon: JSX.Element;
+  category: "email" | "communication" | "crm" | "accounting";
+}
+
+const INTEGRATIONS: Integration[] = [
+  { provider: "gmail", name: "Gmail / Google Workspace", description: "Connect Gmail for email automation", icon: <SiGoogle className="w-5 h-5 text-red-500" />, category: "email" },
+  { provider: "outlook", name: "Outlook / Microsoft 365", description: "Connect Outlook for email and calendar", icon: <Mail className="w-5 h-5 text-blue-500" />, category: "email" },
+  { provider: "slack", name: "Slack", description: "Connect Slack for notifications", icon: <SiSlack className="w-5 h-5 text-purple-500" />, category: "communication" },
+  { provider: "hubspot", name: "HubSpot", description: "Sync leads and contacts with HubSpot", icon: <SiHubspot className="w-5 h-5 text-orange-500" />, category: "crm" },
+  { provider: "salesforce", name: "Salesforce", description: "Connect Salesforce CRM", icon: <SiSalesforce className="w-5 h-5 text-blue-400" />, category: "crm" },
+  { provider: "exact", name: "Exact Online", description: "Dutch accounting and ERP integration", icon: <Calculator className="w-5 h-5 text-blue-600" />, category: "accounting" },
+  { provider: "afas", name: "AFAS Software", description: "Dutch ERP and accounting system", icon: <Calculator className="w-5 h-5 text-green-600" />, category: "accounting" },
 ];
 
 interface OrgMemberWithUser extends OrgMember {
@@ -70,6 +85,7 @@ export default function Settings() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { can, isAdmin } = useRbac();
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("MEMBER");
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
@@ -134,16 +150,22 @@ export default function Settings() {
         return <Crown className="w-4 h-4 text-chart-4" />;
       case "ADMIN":
         return <Shield className="w-4 h-4 text-primary" />;
+      case "OPERATOR":
+        return <Wrench className="w-4 h-4 text-chart-2" />;
+      case "VIEWER":
+        return <Eye className="w-4 h-4 text-muted-foreground" />;
       default:
         return <User className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
-  const getRoleBadgeVariant = (role: string) => {
+  const getRoleBadgeVariant = (role: string): "default" | "secondary" | "outline" => {
     switch (role) {
       case "OWNER":
         return "default";
       case "ADMIN":
+        return "secondary";
+      case "OPERATOR":
         return "secondary";
       default:
         return "outline";
@@ -238,6 +260,7 @@ export default function Settings() {
                     Manage who has access to your organization
                   </CardDescription>
                 </div>
+                {can("inviteMembers") && (
                 <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
                   <DialogTrigger asChild>
                     <Button data-testid="button-invite-member">
@@ -270,8 +293,10 @@ export default function Settings() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="MEMBER">Member</SelectItem>
-                            <SelectItem value="ADMIN">Admin</SelectItem>
+                            <SelectItem value="ADMIN">Admin - Full access</SelectItem>
+                            <SelectItem value="OPERATOR">Operator - Run automations</SelectItem>
+                            <SelectItem value="VIEWER">Viewer - Read-only access</SelectItem>
+                            <SelectItem value="MEMBER">Member - Basic access</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -297,7 +322,7 @@ export default function Settings() {
                       </Button>
                     </DialogFooter>
                   </DialogContent>
-                </Dialog>
+                </Dialog>)}
               </div>
             </CardHeader>
             <CardContent>
@@ -385,7 +410,7 @@ export default function Settings() {
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                          <Link2 className="w-5 h-5" />
+                          {integration.icon}
                         </div>
                         <div>
                           <p className="font-medium">{integration.name}</p>

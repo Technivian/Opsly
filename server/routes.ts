@@ -79,6 +79,13 @@ export async function registerRoutes(
     try {
       const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
+      
+      // Server-side RBAC enforcement: Only OWNER and ADMIN can invite
+      const membership = await storage.getOrgMember(orgId, userId);
+      if (!membership || !["OWNER", "ADMIN"].includes(membership.role)) {
+        return res.status(403).json({ message: "Insufficient permissions to invite members" });
+      }
+      
       const { email, role } = req.body;
       // In MVP, just return success (actual email invites would require email service)
       res.json({ success: true, message: `Invitation sent to ${email}` });

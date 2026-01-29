@@ -8,14 +8,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
 import { languages } from '@/i18n';
+import { usePreferences } from '@/hooks/use-preferences';
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
+  const { setLocale } = usePreferences();
 
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   const handleLanguageChange = (code: string) => {
-    i18n.changeLanguage(code);
+    setLocale(code);
   };
 
   return (
