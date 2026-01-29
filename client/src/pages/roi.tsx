@@ -82,6 +82,30 @@ export default function ROIDashboard() {
     return acc;
   }, {} as Record<number, { runs: number; itemsProcessed: number; tasksCreated: number; minutesSaved: number }>);
 
+  const getLast7DaysTrend = () => {
+    if (!runs || runs.length === 0) return [];
+    const today = new Date();
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+      const dayRuns = runs.filter((r) => {
+        const runDate = r.startedAt ? new Date(r.startedAt).toISOString().split("T")[0] : null;
+        return runDate === dateStr && r.status === "SUCCESS";
+      });
+      days.push({
+        day: date.toLocaleDateString("en-US", { weekday: "short" }),
+        runs: dayRuns.length,
+        items: dayRuns.reduce((sum, r) => sum + (r.statsJson?.itemsProcessed || 0), 0),
+      });
+    }
+    return days;
+  };
+
+  const trendData = getLast7DaysTrend();
+  const maxRuns = Math.max(...trendData.map((d) => d.runs), 1);
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -158,6 +182,38 @@ export default function ROIDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>7-Day Activity Trend</CardTitle>
+          <CardDescription>Successful runs over the past week</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {runsLoading ? (
+            <Skeleton className="h-32 w-full" />
+          ) : trendData.length > 0 && trendData.some(d => d.runs > 0) ? (
+            <div className="flex items-end justify-between gap-2 h-32">
+              {trendData.map((day, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <div className="w-full flex flex-col items-center justify-end h-24">
+                    <div
+                      className="w-full max-w-8 rounded-t bg-primary transition-all duration-300"
+                      style={{ height: `${Math.max((day.runs / maxRuns) * 100, 4)}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground">{day.day}</span>
+                  <span className="text-xs font-medium">{day.runs}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <TrendingUp className="w-10 h-10 mx-auto mb-3 opacity-50" />
+              <p>No activity in the past 7 days</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
