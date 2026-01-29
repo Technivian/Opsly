@@ -39,7 +39,15 @@ import {
   Copy,
   Check,
   Download,
+  FileDown,
+  ChevronDown,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Blueprint } from "@shared/schema";
@@ -133,6 +141,79 @@ export default function BlueprintDetail() {
     a.download = `${blueprint.title.replace(/\s+/g, "-").toLowerCase()}.md`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportPDF = () => {
+    if (!blueprint) return;
+    const processSteps = blueprint.processJson || [];
+    const bottlenecks = blueprint.bottlenecksJson || [];
+    const backlog = blueprint.backlogJson || [];
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>${blueprint.title}</title>
+        <style>
+          body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; color: #1a1a1a; }
+          h1 { color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+          h2 { color: #374151; margin-top: 30px; }
+          .summary { font-size: 1.1em; color: #4b5563; margin-bottom: 30px; }
+          .process-step { background: #f3f4f6; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #2563eb; }
+          .step-title { font-weight: 600; color: #1f2937; }
+          .step-meta { font-size: 0.9em; color: #6b7280; margin-top: 5px; }
+          .bottleneck { background: #fef3c7; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid #f59e0b; }
+          .bottleneck-type { font-weight: 600; color: #92400e; }
+          .backlog-item { background: #e0e7ff; padding: 12px; margin: 8px 0; border-radius: 6px; }
+          .backlog-type { display: inline-block; background: #4f46e5; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px; }
+          .effort { float: right; color: #6366f1; font-weight: 500; }
+          @media print { body { padding: 20px; } }
+        </style>
+      </head>
+      <body>
+        <h1>${blueprint.title}</h1>
+        <p class="summary">${blueprint.summary || ""}</p>
+        
+        <h2>Process Map</h2>
+        ${processSteps.map((step: any, i: number) => `
+          <div class="process-step">
+            <div class="step-title">${i + 1}. ${step.step}</div>
+            <div class="step-meta">
+              <strong>Duration:</strong> ${step.avgTimeMin} min &nbsp;|&nbsp;
+              <strong>Owner:</strong> ${step.ownerRole} &nbsp;|&nbsp;
+              <strong>Tools:</strong> ${step.tools?.join(", ") || "N/A"}
+            </div>
+          </div>
+        `).join("")}
+        
+        <h2>Bottlenecks</h2>
+        ${bottlenecks.map((b: any) => `
+          <div class="bottleneck">
+            <span class="bottleneck-type">${b.type}:</span> ${b.description}
+            <div class="step-meta">Impact: ${b.impact}</div>
+          </div>
+        `).join("")}
+        
+        <h2>Automation Backlog</h2>
+        ${backlog.map((item: any, i: number) => `
+          <div class="backlog-item">
+            <span class="backlog-type">${item.type}</span>
+            ${item.item}
+            <span class="effort">${item.effort} effort</span>
+          </div>
+        `).join("")}
+        
+        <script>window.print();</script>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(html);
+      printWindow.document.close();
+    }
   };
 
   if (isLoading) {
@@ -231,10 +312,25 @@ export default function BlueprintDetail() {
               <Pencil className="w-4 h-4 mr-2" />
               Edit
             </Button>
-            <Button size="sm" variant="outline" onClick={handleExportMarkdown} data-testid="button-export-markdown">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" data-testid="button-export">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                  <ChevronDown className="w-3 h-3 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportMarkdown} data-testid="button-export-markdown">
+                  <FileDown className="w-4 h-4 mr-2" />
+                  Export as Markdown
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportPDF} data-testid="button-export-pdf">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Export as PDF
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Dialog>
               <DialogTrigger asChild>
                 <Button size="sm" onClick={() => shareMutation.mutate()} data-testid="button-share-blueprint">

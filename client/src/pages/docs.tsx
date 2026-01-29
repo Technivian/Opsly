@@ -1,10 +1,11 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Layers, ArrowLeft, BookOpen, Zap, HelpCircle, FileText, ArrowRight, ExternalLink } from "lucide-react";
+import { Layers, ArrowLeft, BookOpen, Zap, HelpCircle, FileText, ArrowRight, ExternalLink, Plug, Mail, MessageSquare, Building } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DocsSEO } from "@/components/seo";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { SiSlack, SiHubspot, SiSalesforce, SiGoogle } from "react-icons/si";
 
 const quickStartSteps = [
   {
@@ -61,6 +62,64 @@ const faqs = [
   },
 ];
 
+const integrationGuides = [
+  {
+    name: "Gmail / Google Workspace",
+    icon: SiGoogle,
+    steps: [
+      "Go to Settings → Connections in your Ops Copilot dashboard",
+      "Click 'Connect' next to Gmail/Google Workspace",
+      "Sign in with your Google account and authorize Ops Copilot",
+      "Select the scopes you want to grant (read emails, send emails, etc.)",
+      "Once connected, you can use Gmail triggers in your automations",
+    ],
+  },
+  {
+    name: "Microsoft Outlook / 365",
+    icon: Mail,
+    steps: [
+      "Navigate to Settings → Connections",
+      "Click 'Connect' next to Microsoft Outlook",
+      "Sign in with your Microsoft 365 account",
+      "Grant the required permissions for email access",
+      "Your Outlook inbox is now available for automation triggers",
+    ],
+  },
+  {
+    name: "Slack",
+    icon: SiSlack,
+    steps: [
+      "Go to Settings → Connections and find Slack",
+      "Click 'Connect' to start the OAuth flow",
+      "Select your Slack workspace and authorize Ops Copilot",
+      "Choose which channels the bot can access",
+      "You can now send notifications and read messages in automations",
+    ],
+  },
+  {
+    name: "HubSpot",
+    icon: SiHubspot,
+    steps: [
+      "Navigate to Settings → Connections",
+      "Click 'Connect' next to HubSpot",
+      "Sign in to your HubSpot account",
+      "Authorize Ops Copilot to access contacts, deals, and tickets",
+      "Use HubSpot data in your automation templates",
+    ],
+  },
+  {
+    name: "Salesforce",
+    icon: SiSalesforce,
+    steps: [
+      "Go to Settings → Connections and find Salesforce",
+      "Click 'Connect' and log in to Salesforce",
+      "Grant access to your Salesforce org",
+      "Ops Copilot will sync with leads, contacts, and opportunities",
+      "Configure automations to create or update Salesforce records",
+    ],
+  },
+];
+
 const docSections = [
   {
     icon: Zap,
@@ -69,19 +128,17 @@ const docSections = [
     href: "#quick-start",
   },
   {
+    icon: Plug,
+    title: "Integrations",
+    description: "Connect your tools and services",
+    href: "#integrations",
+  },
+  {
     icon: BookOpen,
     title: "User Guide",
     description: "Detailed documentation for all features",
     href: "#",
     external: true,
-  },
-  {
-    icon: FileText,
-    title: "API Reference",
-    description: "Integrate Ops Copilot with your systems",
-    href: "#",
-    external: true,
-    comingSoon: true,
   },
   {
     icon: HelpCircle,
@@ -144,9 +201,6 @@ export default function Docs() {
                   <CardTitle className="text-base flex items-center gap-2">
                     {section.title}
                     {section.external && <ExternalLink className="w-3 h-3" />}
-                    {section.comingSoon && (
-                      <span className="text-xs text-muted-foreground">(Coming Soon)</span>
-                    )}
                   </CardTitle>
                   <CardDescription className="text-sm">{section.description}</CardDescription>
                 </CardHeader>
@@ -178,6 +232,47 @@ export default function Docs() {
             <Link href="/auth/signup">
               <Button>
                 Start Your First Automation <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        <div id="integrations" className="max-w-4xl mx-auto mb-16">
+          <h2 className="text-2xl font-bold mb-6">Integration Setup Guides</h2>
+          <p className="text-muted-foreground mb-8">
+            Connect your favorite tools to Ops Copilot and unlock powerful automations.
+          </p>
+          <div className="grid md:grid-cols-2 gap-6">
+            {integrationGuides.map((integration) => (
+              <Card key={integration.name}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                      <integration.icon className="w-5 h-5" />
+                    </div>
+                    {integration.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ol className="space-y-2">
+                    {integration.steps.map((step, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-xs text-primary font-medium shrink-0 mt-0.5">
+                          {index + 1}
+                        </span>
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-6 text-center">
+            <Link href="/app/connections">
+              <Button variant="outline">
+                <Plug className="w-4 h-4 mr-2" />
+                Go to Connections
               </Button>
             </Link>
           </div>
