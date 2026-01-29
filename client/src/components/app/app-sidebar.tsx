@@ -30,6 +30,7 @@ import {
   ChevronDown,
   LogOut,
   Layers,
+  Plug,
 } from "lucide-react";
 
 const navItems = [
@@ -51,6 +52,7 @@ const analyticsItems = [
 ];
 
 const settingsItems = [
+  { title: "Connections", url: "/app/connections", icon: Plug },
   { title: "Settings", url: "/app/settings", icon: Settings },
 ];
 

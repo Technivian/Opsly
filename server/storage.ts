@@ -12,6 +12,9 @@ import {
   runLogs,
   metricSnapshots,
   connections,
+  blueprintVersions,
+  userPreferences,
+  blueprintShares,
   type InsertOrg,
   type Org,
   type InsertOrgMember,
@@ -34,6 +37,12 @@ import {
   type MetricSnapshot,
   type InsertConnection,
   type Connection,
+  type InsertBlueprintVersion,
+  type BlueprintVersion,
+  type InsertUserPreferences,
+  type UserPreferences,
+  type InsertBlueprintShare,
+  type BlueprintShare,
 } from "@shared/schema";
 import { users, type User } from "@shared/models/auth";
 
@@ -311,6 +320,57 @@ class DrizzleStorage implements IStorage {
 
   async updateConnection(id: number, updates: Partial<InsertConnection>): Promise<Connection | undefined> {
     const [updated] = await db.update(connections).set(updates).where(eq(connections.id, id)).returning();
+    return updated;
+  }
+
+  async deleteConnection(id: number): Promise<void> {
+    await db.delete(connections).where(eq(connections.id, id));
+  }
+
+  async getConnection(id: number): Promise<Connection | undefined> {
+    const [connection] = await db.select().from(connections).where(eq(connections.id, id));
+    return connection;
+  }
+
+  // Blueprint versions
+  async getBlueprintVersions(blueprintId: number): Promise<BlueprintVersion[]> {
+    return db.select().from(blueprintVersions).where(eq(blueprintVersions.blueprintId, blueprintId)).orderBy(desc(blueprintVersions.version));
+  }
+
+  async createBlueprintVersion(version: InsertBlueprintVersion): Promise<BlueprintVersion> {
+    const [newVersion] = await db.insert(blueprintVersions).values(version).returning();
+    return newVersion;
+  }
+
+  // User preferences
+  async getUserPreferences(userId: string): Promise<UserPreferences | undefined> {
+    const [prefs] = await db.select().from(userPreferences).where(eq(userPreferences.userId, userId));
+    return prefs;
+  }
+
+  async upsertUserPreferences(prefs: InsertUserPreferences): Promise<UserPreferences> {
+    const existing = await this.getUserPreferences(prefs.userId);
+    if (existing) {
+      const [updated] = await db.update(userPreferences).set({ ...prefs, updatedAt: new Date() }).where(eq(userPreferences.userId, prefs.userId)).returning();
+      return updated;
+    }
+    const [created] = await db.insert(userPreferences).values(prefs).returning();
+    return created;
+  }
+
+  // Blueprint shares
+  async getBlueprintShare(shareToken: string): Promise<BlueprintShare | undefined> {
+    const [share] = await db.select().from(blueprintShares).where(eq(blueprintShares.shareToken, shareToken));
+    return share;
+  }
+
+  async createBlueprintShare(share: InsertBlueprintShare): Promise<BlueprintShare> {
+    const [newShare] = await db.insert(blueprintShares).values(share).returning();
+    return newShare;
+  }
+
+  async updateBlueprint(id: number, updates: Partial<InsertBlueprint>): Promise<Blueprint | undefined> {
+    const [updated] = await db.update(blueprints).set(updates).where(eq(blueprints.id, id)).returning();
     return updated;
   }
 }

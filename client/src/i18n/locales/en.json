@@ -1,0 +1,262 @@
+{
+  "common": {
+    "appName": "Ops Copilot",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "share": "Share",
+    "settings": "Settings",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "getStarted": "Get Started",
+    "tryDemo": "Try Live Demo",
+    "learnMore": "Learn More",
+    "viewAll": "View All",
+    "noResults": "No results found",
+    "error": "An error occurred",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "intakes": "Intakes",
+    "blueprints": "Blueprints",
+    "automations": "Automations",
+    "runs": "Runs",
+    "roi": "ROI",
+    "connections": "Connections",
+    "settings": "Settings",
+    "docs": "Docs",
+    "pricing": "Pricing",
+    "security": "Security"
+  },
+  "landing": {
+    "hero": {
+      "badge": "For SMBs",
+      "badgeSub": "AI-powered automation",
+      "title": "Automate workflows smarter",
+      "titleHighlight": "with AI blueprints",
+      "subtitle": "Document your processes, identify bottlenecks, and generate actionable automation plans—faster, easier, and smarter.",
+      "cta": "Start for free",
+      "noTimeLimits": "No time limits on free plan",
+      "noCreditCard": "No credit card required"
+    },
+    "features": {
+      "title": "Everything you need",
+      "subtitle": "From intake to automation, a complete toolkit for process improvement.",
+      "guidedIntake": {
+        "title": "Guided Intake",
+        "description": "Step-by-step wizard to document pain points and upload relevant files."
+      },
+      "aiBlueprints": {
+        "title": "AI Blueprints",
+        "description": "Process maps with bottlenecks identified and prioritized backlog."
+      },
+      "automationTemplates": {
+        "title": "Automation Templates",
+        "description": "Pre-built templates for email triage, lead follow-up, and more."
+      },
+      "roiDashboard": {
+        "title": "ROI Dashboard",
+        "description": "Track hours saved and efficiency gains in real-time."
+      },
+      "runHistory": {
+        "title": "Run History",
+        "description": "Detailed logs and execution history for every run."
+      },
+      "teamCollaboration": {
+        "title": "Team Collaboration",
+        "description": "Invite members and manage roles across your organization."
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "Four steps from problem to automated solution.",
+      "step1": {
+        "title": "Document",
+        "description": "Describe your challenges and upload relevant files."
+      },
+      "step2": {
+        "title": "Analyze",
+        "description": "AI generates a blueprint with bottlenecks identified."
+      },
+      "step3": {
+        "title": "Configure",
+        "description": "Set up automation templates for your workflows."
+      },
+      "step4": {
+        "title": "Track",
+        "description": "Monitor time saved and efficiency improvements."
+      }
+    },
+    "cta": {
+      "title": "Set up your first automation in minutes",
+      "subtitle": "Document processes and generate AI-powered blueprints today."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "recentIntakes": "Recent Intakes",
+    "recentRuns": "Recent Runs",
+    "quickActions": "Quick Actions",
+    "newIntake": "New Intake",
+    "viewBlueprints": "View Blueprints",
+    "manageAutomations": "Manage Automations",
+    "stats": {
+      "hoursSaved": "Hours Saved",
+      "cycleTime": "Cycle Time",
+      "confidence": "Confidence"
+    }
+  },
+  "intakes": {
+    "title": "Intakes",
+    "subtitle": "Document operational pain points and challenges.",
+    "newIntake": "New Intake",
+    "wizard": {
+      "step1": "Process Name",
+      "step2": "Pain Area",
+      "step3": "Problem Description",
+      "step4": "Current Tools",
+      "step5": "Volume Metrics",
+      "step6": "File Uploads"
+    },
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "processed": "Processed"
+    }
+  },
+  "blueprints": {
+    "title": "Blueprints",
+    "subtitle": "AI-generated process maps and automation recommendations.",
+    "whatAre": "What are Blueprints?",
+    "explanation": "Blueprints are AI-generated analyses of your operational processes. They identify bottlenecks, map workflows, and suggest automation opportunities.",
+    "processMap": "Process Map",
+    "bottlenecks": "Bottlenecks",
+    "backlog": "Backlog",
+    "exportPdf": "Export PDF",
+    "exportMarkdown": "Export Markdown",
+    "shareLink": "Share Link",
+    "editBlueprint": "Edit Blueprint"
+  },
+  "automations": {
+    "title": "Automations",
+    "subtitle": "Configure and manage automation templates.",
+    "templates": "Templates",
+    "configurations": "Configurations",
+    "newConfig": "New Configuration",
+    "testRun": "Test Run",
+    "runNow": "Run Now",
+    "schedule": "Schedule"
+  },
+  "runs": {
+    "title": "Runs",
+    "subtitle": "View automation run history and logs.",
+    "status": {
+      "queued": "Queued",
+      "running": "Running",
+      "success": "Success",
+      "failed": "Failed"
+    },
+    "viewLogs": "View Logs",
+    "duration": "Duration",
+    "itemsProcessed": "Items Processed",
+    "tasksCreated": "Tasks Created"
+  },
+  "roi": {
+    "title": "ROI Dashboard",
+    "subtitle": "Track efficiency gains and return on investment.",
+    "hoursSaved": "Hours Saved",
+    "totalRuns": "Total Runs",
+    "successRate": "Success Rate",
+    "confidenceScore": "Confidence Score",
+    "trends": "Trends",
+    "perAutomation": "Per Automation Breakdown"
+  },
+  "connections": {
+    "title": "Connections",
+    "subtitle": "Connect your tools and services.",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "connected": "Connected",
+    "pending": "Pending",
+    "error": "Error",
+    "expired": "Expired",
+    "categories": {
+      "email": "Email & Calendar",
+      "communication": "Communication",
+      "crm": "CRM & Sales",
+      "accounting": "Accounting"
+    },
+    "providers": {
+      "gmail": "Gmail / Google Workspace",
+      "outlook": "Outlook / Microsoft 365",
+      "slack": "Slack",
+      "hubspot": "HubSpot",
+      "salesforce": "Salesforce",
+      "exact": "Exact Online",
+      "afas": "AFAS Software"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "organization": "Organization",
+    "team": "Team Members",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Theme",
+    "themeOptions": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "security": {
+    "title": "Security & Privacy",
+    "dataIsolation": "Data Isolation",
+    "encryption": "Encryption",
+    "gdpr": "GDPR Compliance",
+    "dataResidency": "Data Residency",
+    "retention": "Data Retention",
+    "cookieConsent": "Cookie Consent"
+  },
+  "pricing": {
+    "title": "Pricing",
+    "subtitle": "Simple, transparent pricing for teams of all sizes.",
+    "free": {
+      "name": "Free",
+      "price": "€0",
+      "period": "/month",
+      "description": "Perfect for getting started",
+      "features": ["1 user", "3 intakes per month", "2 automation runs per day", "Email support"]
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "€49",
+      "period": "/month",
+      "description": "For growing teams",
+      "features": ["5 users", "Unlimited intakes", "Unlimited runs", "Priority support", "All integrations"]
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "period": "",
+      "description": "For large organizations",
+      "features": ["Unlimited users", "Custom integrations", "Dedicated support", "SLA guarantee", "On-premise option"]
+    }
+  }
+}

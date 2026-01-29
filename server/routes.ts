@@ -349,18 +349,138 @@ export async function registerRoutes(
     try {
       const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
-      const { provider } = req.body;
+      const { provider, apiKey } = req.body;
 
       const connection = await storage.createConnection({
         orgId,
         provider,
-        status: "pending",
+        status: apiKey ? "connected" : "pending",
+        accessToken: apiKey || null,
+        accountName: apiKey ? `${provider} Account` : null,
       });
 
       res.json(connection);
     } catch (error) {
       console.error("Error creating connection:", error);
       res.status(500).json({ message: "Failed to create connection" });
+    }
+  });
+
+  app.delete("/api/connections/:id", isAuthenticated, isDemoReadOnly, async (req: any, res) => {
+    try {
+      const connectionId = parseInt(req.params.id);
+      await storage.deleteConnection(connectionId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting connection:", error);
+      res.status(500).json({ message: "Failed to delete connection" });
+    }
+  });
+
+  // User preferences endpoints
+  app.get("/api/preferences", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      let prefs = await storage.getUserPreferences(userId);
+      if (!prefs) {
+        prefs = await storage.upsertUserPreferences({ userId, locale: "en", theme: "system" });
+      }
+      res.json(prefs);
+    } catch (error) {
+      console.error("Error fetching preferences:", error);
+      res.status(500).json({ message: "Failed to fetch preferences" });
+    }
+  });
+
+  app.patch("/api/preferences", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { locale, theme } = req.body;
+      const prefs = await storage.upsertUserPreferences({ userId, locale, theme });
+      res.json(prefs);
+    } catch (error) {
+      console.error("Error updating preferences:", error);
+      res.status(500).json({ message: "Failed to update preferences" });
+    }
+  });
+
+  // Blueprint editing and sharing
+  app.patch("/api/blueprints/:id", isAuthenticated, isDemoReadOnly, async (req: any, res) => {
+    try {
+      const blueprintId = parseInt(req.params.id);
+      const userId = req.user.id;
+      const { title, summary, processJson, bottlenecksJson, backlogJson } = req.body;
+
+      const existingBlueprint = await storage.getBlueprint(blueprintId);
+      if (!existingBlueprint) {
+        return res.status(404).json({ message: "Blueprint not found" });
+      }
+
+      const versions = await storage.getBlueprintVersions(blueprintId);
+      const nextVersion = (versions[0]?.version || 0) + 1;
+
+      await storage.createBlueprintVersion({
+        blueprintId,
+        version: nextVersion,
+        title: existingBlueprint.title,
+        summary: existingBlueprint.summary,
+        processJson: existingBlueprint.processJson,
+        bottlenecksJson: existingBlueprint.bottlenecksJson,
+        backlogJson: existingBlueprint.backlogJson,
+        editedByUserId: userId,
+      });
+
+      const updated = await storage.updateBlueprint(blueprintId, {
+        title: title || existingBlueprint.title,
+        summary: summary || existingBlueprint.summary,
+        processJson: processJson || existingBlueprint.processJson,
+        bottlenecksJson: bottlenecksJson || existingBlueprint.bottlenecksJson,
+        backlogJson: backlogJson || existingBlueprint.backlogJson,
+      });
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating blueprint:", error);
+      res.status(500).json({ message: "Failed to update blueprint" });
+    }
+  });
+
+  app.post("/api/blueprints/:id/share", isAuthenticated, async (req: any, res) => {
+    try {
+      const blueprintId = parseInt(req.params.id);
+      const shareToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+      const share = await storage.createBlueprintShare({
+        blueprintId,
+        shareToken,
+        isActive: true,
+      });
+
+      res.json({ shareUrl: `/share/${share.shareToken}` });
+    } catch (error) {
+      console.error("Error creating share link:", error);
+      res.status(500).json({ message: "Failed to create share link" });
+    }
+  });
+
+  app.get("/api/share/:token", async (req: any, res) => {
+    try {
+      const { token } = req.params;
+      const share = await storage.getBlueprintShare(token);
+
+      if (!share || !share.isActive) {
+        return res.status(404).json({ message: "Share link not found or expired" });
+      }
+
+      if (share.expiresAt && new Date(share.expiresAt) < new Date()) {
+        return res.status(410).json({ message: "Share link has expired" });
+      }
+
+      const blueprint = await storage.getBlueprint(share.blueprintId);
+      res.json(blueprint);
+    } catch (error) {
+      console.error("Error fetching shared blueprint:", error);
+      res.status(500).json({ message: "Failed to fetch shared blueprint" });
     }
   });
 
@@ -392,6 +512,45 @@ async function seedAutomationTemplates() {
         { name: "followUpDelay", label: "Follow-up delay (days)", type: "number", defaultValue: 2 },
         { name: "messageTemplate", label: "Message Template", type: "text", required: false },
         { name: "autoSend", label: "Auto-send messages", type: "checkbox", defaultValue: false },
+      ],
+    });
+
+    await storage.createAutomationTemplate({
+      key: "form_crm_sync",
+      name: "Form to CRM Sync",
+      description: "Automatically sync form submissions from Google Forms or Typeform to your CRM.",
+      configSchema: [
+        { name: "formSource", label: "Form Source", type: "select", options: ["Google Forms", "Typeform", "JotForm"], required: true },
+        { name: "targetCrm", label: "Target CRM", type: "select", options: ["HubSpot", "Salesforce", "Exact Online"], required: true },
+        { name: "fieldMapping", label: "Field Mapping Template", type: "text", defaultValue: "auto" },
+        { name: "createContact", label: "Create new contacts", type: "checkbox", defaultValue: true },
+        { name: "notifyOnSync", label: "Notify on sync", type: "checkbox", defaultValue: false },
+      ],
+    });
+
+    await storage.createAutomationTemplate({
+      key: "lead_slack_notify",
+      name: "Lead Assignment Slack Notification",
+      description: "Send a Slack message to the assigned salesperson when a lead reaches a certain score.",
+      configSchema: [
+        { name: "crm", label: "CRM System", type: "select", options: ["HubSpot", "Salesforce", "Pipedrive"], required: true },
+        { name: "scoreThreshold", label: "Score Threshold", type: "number", defaultValue: 50 },
+        { name: "slackChannel", label: "Slack Channel", type: "text", defaultValue: "#sales" },
+        { name: "messageTemplate", label: "Custom Message", type: "text", defaultValue: "New qualified lead assigned to you!" },
+        { name: "mentionUser", label: "Mention assigned user", type: "checkbox", defaultValue: true },
+      ],
+    });
+
+    await storage.createAutomationTemplate({
+      key: "invoice_intake",
+      name: "Invoice Intake and Coding",
+      description: "Capture invoice PDFs/emails, extract data using AI, and push to Exact Online or AFAS.",
+      configSchema: [
+        { name: "source", label: "Invoice Source", type: "select", options: ["Email", "Upload folder", "API"], required: true },
+        { name: "targetSystem", label: "Accounting System", type: "select", options: ["Exact Online", "AFAS", "Manual Review"], required: true },
+        { name: "autoApprove", label: "Auto-approve below amount", type: "number", defaultValue: 500 },
+        { name: "extractFields", label: "Auto-extract fields", type: "checkbox", defaultValue: true },
+        { name: "escalationEmail", label: "Escalation Email", type: "text", required: false },
       ],
     });
   }

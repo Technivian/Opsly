@@ -1,0 +1,262 @@
+{
+  "common": {
+    "appName": "Ops Copilot",
+    "loading": "Laden...",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "create": "Aanmaken",
+    "back": "Terug",
+    "next": "Volgende",
+    "submit": "Versturen",
+    "close": "Sluiten",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "export": "Exporteren",
+    "share": "Delen",
+    "settings": "Instellingen",
+    "signIn": "Inloggen",
+    "signUp": "Registreren",
+    "signOut": "Uitloggen",
+    "getStarted": "Aan de slag",
+    "tryDemo": "Probeer Demo",
+    "learnMore": "Meer info",
+    "viewAll": "Alles bekijken",
+    "noResults": "Geen resultaten gevonden",
+    "error": "Er is een fout opgetreden",
+    "success": "Gelukt",
+    "confirm": "Bevestigen",
+    "yes": "Ja",
+    "no": "Nee"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "intakes": "Intakes",
+    "blueprints": "Blauwdrukken",
+    "automations": "Automatiseringen",
+    "runs": "Uitvoeringen",
+    "roi": "ROI",
+    "connections": "Koppelingen",
+    "settings": "Instellingen",
+    "docs": "Documentatie",
+    "pricing": "Prijzen",
+    "security": "Beveiliging"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Voor MKB",
+      "badgeSub": "AI-aangedreven automatisering",
+      "title": "Werkstromen slimmer automatiseren",
+      "titleHighlight": "met AI-blauwdrukken",
+      "subtitle": "Documenteer uw processen, identificeer knelpunten en genereer uitvoerbare automatiseringsplannen—sneller, eenvoudiger en slimmer.",
+      "cta": "Gratis starten",
+      "noTimeLimits": "Geen tijdslimieten op gratis plan",
+      "noCreditCard": "Geen creditcard vereist"
+    },
+    "features": {
+      "title": "Alles wat u nodig heeft",
+      "subtitle": "Van intake tot automatisering, een complete toolkit voor procesverbetering.",
+      "guidedIntake": {
+        "title": "Begeleide Intake",
+        "description": "Stapsgewijze wizard om pijnpunten te documenteren en relevante bestanden te uploaden."
+      },
+      "aiBlueprints": {
+        "title": "AI-Blauwdrukken",
+        "description": "Proceskaarten met geïdentificeerde knelpunten en geprioriteerde backlog."
+      },
+      "automationTemplates": {
+        "title": "Automatiseringssjablonen",
+        "description": "Voorgebouwde sjablonen voor e-mailtriage, lead follow-up en meer."
+      },
+      "roiDashboard": {
+        "title": "ROI Dashboard",
+        "description": "Volg bespaarde uren en efficiëntiewinst in realtime."
+      },
+      "runHistory": {
+        "title": "Uitvoeringsgeschiedenis",
+        "description": "Gedetailleerde logs en uitvoeringshistorie voor elke run."
+      },
+      "teamCollaboration": {
+        "title": "Teamsamenwerking",
+        "description": "Nodig leden uit en beheer rollen binnen uw organisatie."
+      }
+    },
+    "howItWorks": {
+      "title": "Hoe het werkt",
+      "subtitle": "Vier stappen van probleem naar geautomatiseerde oplossing.",
+      "step1": {
+        "title": "Documenteren",
+        "description": "Beschrijf uw uitdagingen en upload relevante bestanden."
+      },
+      "step2": {
+        "title": "Analyseren",
+        "description": "AI genereert een blauwdruk met geïdentificeerde knelpunten."
+      },
+      "step3": {
+        "title": "Configureren",
+        "description": "Stel automatiseringssjablonen in voor uw werkstromen."
+      },
+      "step4": {
+        "title": "Volgen",
+        "description": "Monitor tijdsbesparing en efficiëntieverbeteringen."
+      }
+    },
+    "cta": {
+      "title": "Richt uw eerste automatisering in enkele minuten in",
+      "subtitle": "Documenteer processen en genereer vandaag nog AI-aangedreven blauwdrukken."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welkom terug",
+    "recentIntakes": "Recente Intakes",
+    "recentRuns": "Recente Uitvoeringen",
+    "quickActions": "Snelle Acties",
+    "newIntake": "Nieuwe Intake",
+    "viewBlueprints": "Bekijk Blauwdrukken",
+    "manageAutomations": "Beheer Automatiseringen",
+    "stats": {
+      "hoursSaved": "Uren Bespaard",
+      "cycleTime": "Cyclustijd",
+      "confidence": "Betrouwbaarheid"
+    }
+  },
+  "intakes": {
+    "title": "Intakes",
+    "subtitle": "Documenteer operationele pijnpunten en uitdagingen.",
+    "newIntake": "Nieuwe Intake",
+    "wizard": {
+      "step1": "Procesnaam",
+      "step2": "Pijngebied",
+      "step3": "Probleembeschrijving",
+      "step4": "Huidige Tools",
+      "step5": "Volume Metrieken",
+      "step6": "Bestandsuploads"
+    },
+    "status": {
+      "draft": "Concept",
+      "submitted": "Ingediend",
+      "processed": "Verwerkt"
+    }
+  },
+  "blueprints": {
+    "title": "Blauwdrukken",
+    "subtitle": "AI-gegenereerde proceskaarten en automatiseringsaanbevelingen.",
+    "whatAre": "Wat zijn Blauwdrukken?",
+    "explanation": "Blauwdrukken zijn AI-gegenereerde analyses van uw operationele processen. Ze identificeren knelpunten, brengen werkstromen in kaart en suggereren automatiseringsmogelijkheden.",
+    "processMap": "Proceskaart",
+    "bottlenecks": "Knelpunten",
+    "backlog": "Backlog",
+    "exportPdf": "Exporteer PDF",
+    "exportMarkdown": "Exporteer Markdown",
+    "shareLink": "Deel Link",
+    "editBlueprint": "Bewerk Blauwdruk"
+  },
+  "automations": {
+    "title": "Automatiseringen",
+    "subtitle": "Configureer en beheer automatiseringssjablonen.",
+    "templates": "Sjablonen",
+    "configurations": "Configuraties",
+    "newConfig": "Nieuwe Configuratie",
+    "testRun": "Testrun",
+    "runNow": "Nu Uitvoeren",
+    "schedule": "Plannen"
+  },
+  "runs": {
+    "title": "Uitvoeringen",
+    "subtitle": "Bekijk automatiseringsgeschiedenis en logs.",
+    "status": {
+      "queued": "In wachtrij",
+      "running": "Lopend",
+      "success": "Geslaagd",
+      "failed": "Mislukt"
+    },
+    "viewLogs": "Bekijk Logs",
+    "duration": "Duur",
+    "itemsProcessed": "Verwerkte Items",
+    "tasksCreated": "Aangemaakte Taken"
+  },
+  "roi": {
+    "title": "ROI Dashboard",
+    "subtitle": "Volg efficiëntiewinst en rendement op investering.",
+    "hoursSaved": "Uren Bespaard",
+    "totalRuns": "Totaal Uitvoeringen",
+    "successRate": "Slagingspercentage",
+    "confidenceScore": "Betrouwbaarheidsscore",
+    "trends": "Trends",
+    "perAutomation": "Per Automatisering Uitsplitsing"
+  },
+  "connections": {
+    "title": "Koppelingen",
+    "subtitle": "Verbind uw tools en diensten.",
+    "connect": "Verbinden",
+    "disconnect": "Verbreken",
+    "connected": "Verbonden",
+    "pending": "In afwachting",
+    "error": "Fout",
+    "expired": "Verlopen",
+    "categories": {
+      "email": "E-mail & Agenda",
+      "communication": "Communicatie",
+      "crm": "CRM & Sales",
+      "accounting": "Boekhouding"
+    },
+    "providers": {
+      "gmail": "Gmail / Google Workspace",
+      "outlook": "Outlook / Microsoft 365",
+      "slack": "Slack",
+      "hubspot": "HubSpot",
+      "salesforce": "Salesforce",
+      "exact": "Exact Online",
+      "afas": "AFAS Software"
+    }
+  },
+  "settings": {
+    "title": "Instellingen",
+    "organization": "Organisatie",
+    "team": "Teamleden",
+    "preferences": "Voorkeuren",
+    "language": "Taal",
+    "theme": "Thema",
+    "themeOptions": {
+      "light": "Licht",
+      "dark": "Donker",
+      "system": "Systeem"
+    }
+  },
+  "security": {
+    "title": "Beveiliging & Privacy",
+    "dataIsolation": "Data-isolatie",
+    "encryption": "Versleuteling",
+    "gdpr": "AVG Naleving",
+    "dataResidency": "Datalocatie",
+    "retention": "Dataretentie",
+    "cookieConsent": "Cookie Toestemming"
+  },
+  "pricing": {
+    "title": "Prijzen",
+    "subtitle": "Eenvoudige, transparante prijzen voor teams van alle groottes.",
+    "free": {
+      "name": "Gratis",
+      "price": "€0",
+      "period": "/maand",
+      "description": "Perfect om te starten",
+      "features": ["1 gebruiker", "3 intakes per maand", "2 automatiseringen per dag", "E-mail ondersteuning"]
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "€49",
+      "period": "/maand",
+      "description": "Voor groeiende teams",
+      "features": ["5 gebruikers", "Onbeperkte intakes", "Onbeperkte uitvoeringen", "Prioriteitsondersteuning", "Alle integraties"]
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Op maat",
+      "period": "",
+      "description": "Voor grote organisaties",
+      "features": ["Onbeperkte gebruikers", "Aangepaste integraties", "Dedicated ondersteuning", "SLA garantie", "On-premise optie"]
+    }
+  }
+}

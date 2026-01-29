@@ -24,7 +24,9 @@ import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";
 import Security from "@/pages/security";
 import Docs from "@/pages/docs";
+import Connections from "@/pages/connections";
 import { AppShell } from "@/components/app/app-shell";
+import { CookieConsent } from "@/components/cookie-consent";
 
 function LoadingScreen() {
   return (
@@ -111,6 +113,9 @@ function Router() {
       <Route path="/app/settings">
         <ProtectedRoute component={Settings} />
       </Route>
+      <Route path="/app/connections">
+        <ProtectedRoute component={Connections} />
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
@@ -123,6 +128,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <CookieConsent />
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>

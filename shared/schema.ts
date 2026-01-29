@@ -213,15 +213,85 @@ export const insertMetricSnapshotSchema = createInsertSchema(metricSnapshots).om
 export type InsertMetricSnapshot = z.infer<typeof insertMetricSnapshotSchema>;
 export type MetricSnapshot = typeof metricSnapshots.$inferSelect;
 
-// Connections (placeholder for future OAuth integrations)
+// Connections (OAuth integrations)
+export const connectionStatusEnum = pgEnum("connection_status", ["pending", "connected", "error", "expired"]);
+
 export const connections = pgTable("connections", {
   id: serial("id").primaryKey(),
   orgId: integer("org_id").notNull().references(() => orgs.id, { onDelete: "cascade" }),
   provider: text("provider").notNull(),
-  status: text("status").notNull().default("pending"),
+  status: connectionStatusEnum("status").notNull().default("pending"),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  expiresAt: timestamp("expires_at"),
+  accountEmail: text("account_email"),
+  accountName: text("account_name"),
+  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertConnectionSchema = createInsertSchema(connections).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertConnection = z.infer<typeof insertConnectionSchema>;
+export type Connection = typeof connections.$inferSelect;
+
+// Blueprint versions for editing history
+export const blueprintVersions = pgTable("blueprint_versions", {
+  id: serial("id").primaryKey(),
+  blueprintId: integer("blueprint_id").notNull().references(() => blueprints.id, { onDelete: "cascade" }),
+  version: integer("version").notNull().default(1),
+  title: text("title").notNull(),
+  summary: text("summary").notNull(),
+  processJson: jsonb("process_json").$type<ProcessStep[]>(),
+  bottlenecksJson: jsonb("bottlenecks_json").$type<Bottleneck[]>(),
+  backlogJson: jsonb("backlog_json").$type<BacklogItem[]>(),
+  editedByUserId: varchar("edited_by_user_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertConnectionSchema = createInsertSchema(connections).omit({ id: true, createdAt: true });
-export type InsertConnection = z.infer<typeof insertConnectionSchema>;
-export type Connection = typeof connections.$inferSelect;
+export const insertBlueprintVersionSchema = createInsertSchema(blueprintVersions).omit({ id: true, createdAt: true });
+export type InsertBlueprintVersion = z.infer<typeof insertBlueprintVersionSchema>;
+export type BlueprintVersion = typeof blueprintVersions.$inferSelect;
+
+// User preferences (locale, theme, etc.)
+export const userPreferences = pgTable("user_preferences", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique(),
+  locale: text("locale").notNull().default("en"),
+  theme: text("theme").notNull().default("system"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertUserPreferencesSchema = createInsertSchema(userPreferences).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
+export type UserPreferences = typeof userPreferences.$inferSelect;
+
+// Scheduled automations
+export const scheduledAutomations = pgTable("scheduled_automations", {
+  id: serial("id").primaryKey(),
+  automationConfigId: integer("automation_config_id").notNull().references(() => automationConfigs.id, { onDelete: "cascade" }),
+  cronExpression: text("cron_expression").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  lastRunAt: timestamp("last_run_at"),
+  nextRunAt: timestamp("next_run_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertScheduledAutomationSchema = createInsertSchema(scheduledAutomations).omit({ id: true, createdAt: true });
+export type InsertScheduledAutomation = z.infer<typeof insertScheduledAutomationSchema>;
+export type ScheduledAutomation = typeof scheduledAutomations.$inferSelect;
+
+// Blueprint shares for public links
+export const blueprintShares = pgTable("blueprint_shares", {
+  id: serial("id").primaryKey(),
+  blueprintId: integer("blueprint_id").notNull().references(() => blueprints.id, { onDelete: "cascade" }),
+  shareToken: text("share_token").notNull().unique(),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertBlueprintShareSchema = createInsertSchema(blueprintShares).omit({ id: true, createdAt: true });
+export type InsertBlueprintShare = z.infer<typeof insertBlueprintShareSchema>;
+export type BlueprintShare = typeof blueprintShares.$inferSelect;

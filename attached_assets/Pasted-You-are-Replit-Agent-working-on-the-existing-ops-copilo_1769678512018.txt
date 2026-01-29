@@ -1,0 +1,70 @@
+You are Replit Agent working on the existing `ops-copilot` repository. Use the current Next.js 14 + Prisma + Postgres architecture and make the following changes to bring the product to production quality for Dutch SMEs. Maintain multi‑tenant security, clean code and consistency with the existing UI.
+
+## 1. Fix run status and ROI updates
+- Investigate why test runs remain in “RUNNING” state even after logs show completion.
+- Ensure the automation run state transitions to `SUCCESS` or `FAILED` when the job finishes.
+- Update the Run History and ROI dashboard to reflect completed runs immediately and aggregate metrics (hours saved, tasks created, cycle‑time reduction) without requiring a manual page refresh.
+
+## 2. Internationalization & Dutch localization
+- Introduce an i18n framework (e.g. next-i18next) and define default English and Dutch locales.
+- Translate all marketing and app UI strings to Dutch; add a language switcher in the header.
+- Ensure date/number formats respect the user’s locale.
+
+## 3. Real integrations & local connectors
+- Replace “Coming soon” placeholders with working OAuth flows for:
+  - Gmail/Google Workspace
+  - Outlook/Microsoft 365
+  - Slack
+  - HubSpot
+  - Salesforce
+- Add connectors for Dutch accounting packages (Exact Online and AFAS), including OAuth or API key exchange and secure token storage.
+- Build a `/connections` page where users can connect, disconnect, and see connection status.
+
+## 4. Data privacy & security
+- Add a `/security` page that clearly explains:
+  - Org‑level data isolation, encryption at rest/in transit, and least‑privilege access controls.
+  - GDPR compliance, including data processing agreements, retention periods, and EU data residency (configurable via environment variables).
+  - Options for redaction/anonymisation of sensitive fields and auto‑deletion of uploaded files after processing.
+- Include a cookie consent banner and privacy policy link.
+
+## 5. Expanded automation templates
+- Build at least three new ready‑to‑use templates:
+  1. **Form → CRM sync**: automatically ingest Google Forms or Typeform entries into HubSpot/Salesforce/Exact.
+  2. **Lead assignment Slack notification**: send a Slack message to the assigned salesperson when a lead hits a certain score.
+  3. **Invoice intake and coding**: capture PDFs/emails, extract invoice data, and push to Exact/Afas.
+- For each template, define a clear configuration schema, default values, and test run logic. Allow custom message bodies and escalation rules.
+
+## 6. Blueprint editing and export
+- Let users edit generated blueprint details: process steps, owners, tools, and time estimates. Persist these edits with versioning.
+- Implement export options: PDF and Markdown files; include the process map, bottlenecks, and backlog items.
+- Provide a “share” link that renders a read‑only blueprint for external stakeholders.
+
+## 7. UI/UX improvements
+- Add a light/dark mode toggle in the header (persisted in user settings).
+- Refine the ROI dashboard:
+  - Include trend charts (e.g., hours saved over time, run success rate).
+  - Break down metrics per automation configuration.
+- Clarify success messages after saving configurations or test runs.
+- Improve form validation and autosave feedback in the intake wizard.
+
+## 8. Pricing & documentation
+- Create `/pricing` with at least a free tier and two paid tiers. Describe features and limitations clearly.
+- Build `/docs` with a quick‑start guide, integration setup instructions, FAQ, and contact/support information.
+- Update navigation links accordingly.
+
+## 9. Database & migrations
+- Update the Prisma schema to accommodate new integrations, localization preferences, versioned blueprints, and scheduling for recurring automations.
+- Add migrations and seed scripts for new automation templates and locale strings.
+
+Constraints:
+- Do not implement payment processing or subscription management yet.
+- Maintain the existing app structure (Next.js App Router, Tailwind CSS, Prisma).
+- Keep authentication with NextAuth; extend user model only if necessary (e.g., locale preference).
+- Write clean, commented TypeScript.
+
+After implementing these tasks, run smoke tests:
+1. Sign up, create an org, complete an intake, generate a blueprint, edit it, export it, configure multiple automations, run tests, and verify that statuses and metrics update correctly.
+2. Connect to at least one real service (e.g., Slack or Gmail) in the Connections page and confirm the OAuth flow and data retrieval.
+3. Switch the UI to Dutch and confirm translations display correctly.
+
+Provide the final file tree, Prisma migrations, and updated README when done.

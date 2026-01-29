@@ -5,9 +5,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LandingSEO } from "@/components/seo";
 import { ArrowRight, Sparkles, BarChart3, GitBranch, Clock, Target, Shield, Layers, Loader2, Zap, FileText, Settings, CheckCircle } from "lucide-react";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useTranslation } from "react-i18next";
 
 export default function Landing() {
   const { isLoading, startDemo, isStartingDemo } = useAuth();
+  const { t } = useTranslation();
 
   const handleTryDemo = async () => {
     try {
@@ -36,15 +39,16 @@ export default function Landing() {
             <Link href="/docs" className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors">Docs</Link>
           </nav>
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
             <Link href="/auth/signin">
               <Button variant="ghost" size="sm" disabled={isLoading} data-testid="button-login">
-                Sign In
+                {t('common.signIn')}
               </Button>
             </Link>
             <Link href="/auth/signup">
               <Button size="sm" disabled={isLoading} data-testid="button-get-started">
-                Get Started
+                {t('common.getStarted')}
               </Button>
             </Link>
           </div>
