@@ -1,0 +1,147 @@
+You are the Replit Agent responsible for final hardening of the Ops Copilot app
+(https://next-pragmatic.replit.app).
+
+Your objective: make the product READY to hand over to the first Dutch SME customer.
+No new big features. Fix gaps, inconsistencies, and release blockers only.
+
+Work systematically. Do not skip verification.
+
+====================
+ABSOLUTE RELEASE BLOCKERS (must be fixed)
+====================
+
+1. NEW USER INTAKE → BLUEPRINT GENERATION
+Problem:
+- New accounts can submit an intake, but status stays "SUBMITTED".
+- No blueprint is generated.
+
+Tasks:
+- Trace the async intake → blueprint generation pipeline.
+- Ensure background job is triggered for NEW orgs (not only seeded/demo orgs).
+- Fix any missing permissions, org scoping, or queue triggers.
+- Add a fallback retry or error state if generation fails.
+
+Acceptance:
+- A brand-new user can complete intake and see a generated blueprint within 60 seconds.
+- Status transitions: SUBMITTED → PROCESSING → COMPLETED or FAILED (with error).
+
+====================
+AUTOMATION TEMPLATES (PROMISE VS REALITY GAP)
+====================
+
+Problem:
+- UI only shows 2 templates.
+- Product claims 6 templates.
+
+Tasks:
+- Audit template registry / seed data.
+- Ensure ALL 6 templates are:
+  - Seeded for every new org
+  - Returned by Automations page queries
+  - Configurable
+  - Runnable (test run creates a Run record + logs)
+
+Templates that MUST appear:
+- Email → Task Triage
+- Lead Follow-up
+- Form → CRM Sync
+- Slack Lead Assignment Notification
+- Invoice Intake & Coding
+- Generic Ops Automation (or equivalent)
+
+Acceptance:
+- Automations page always shows 6 templates for a new org.
+- Each template can be configured and test-run.
+
+====================
+LOCALISATION (DUTCH SME READINESS)
+====================
+
+Problem:
+- Language switcher exists but localisation is partial.
+- Marketing, Docs, Pricing mostly English.
+- Currency shown in USD.
+
+Tasks:
+1. Make locale persistent (cookie + user profile).
+2. Fully localise:
+   - Marketing pages
+   - Pricing page
+   - Docs navigation + headings
+   - Security page
+   - App navigation & settings
+3. Use existing `format.ts` everywhere:
+   - Dates (nl-NL vs en-US)
+   - Numbers
+   - Currency
+4. Pricing:
+   - Default to EUR for nl-NL
+   - If USD pricing is temporary, label explicitly.
+
+Acceptance:
+- Switching to Dutch results in a consistently Dutch UI.
+- Dates/currency follow Dutch conventions.
+- Pricing clearly understandable for NL customers.
+
+====================
+CONNECTORS CONSISTENCY
+====================
+
+Problem:
+- Previously inconsistent between /connections and Settings → Connections.
+
+Tasks:
+- Ensure both pages use the SAME data source and component.
+- Exact Online and AFAS must appear everywhere connectors are listed.
+- Remove any remaining "Coming Soon" placeholders.
+- Link each connector to its setup guide.
+
+Acceptance:
+- No connector list mismatch anywhere in the app.
+
+====================
+ROLES & PERMISSIONS (VERIFY ENFORCEMENT)
+====================
+
+Problem:
+- Roles exist but must be enforced consistently.
+
+Tasks:
+- Verify RBAC for:
+  - OWNER
+  - ADMIN
+  - OPERATOR
+  - VIEWER
+- Ensure UI + API both enforce:
+  - Viewer = read-only
+  - Operator = run automations only
+  - Admin = config + edit
+- Hide or disable forbidden actions with clear messaging.
+
+Acceptance:
+- Viewer cannot edit, run, or save configs.
+- Operator can run but not configure or invite users.
+
+====================
+FINAL QUALITY CHECKS
+====================
+
+- PDF export works for every blueprint.
+- Share links always show latest published version.
+- ROI dashboard updates after each completed run.
+- No runs stuck in RUNNING state.
+- No English/Dutch mix on same screen.
+- No dead buttons or empty states without explanation.
+
+====================
+DELIVERABLES
+====================
+
+1. Code fixes + migrations (if needed)
+2. Updated seed data (templates, connectors)
+3. Updated translations
+4. Short CHANGELOG: “What was fixed for first customer”
+5. One-page INTERNAL checklist: “How to onboard first SME”
+
+Proceed now.
+Do the fixes, verify end-to-end, then report what is done and what (if anything) remains.

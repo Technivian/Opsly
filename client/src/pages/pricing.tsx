@@ -4,66 +4,49 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Check, Layers, ArrowLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { PricingSEO } from "@/components/seo";
-
-const plans = [
-  {
-    name: "Free",
-    description: "Get started with basic automation",
-    price: "$0",
-    period: "forever",
-    features: [
-      "1 organization",
-      "Up to 3 intakes",
-      "2 automation templates",
-      "100 runs per month",
-      "Community support",
-    ],
-    cta: "Get Started Free",
-    href: "/auth/signup",
-    popular: false,
-  },
-  {
-    name: "Pro",
-    description: "For growing teams",
-    price: "$49",
-    period: "per month",
-    features: [
-      "Unlimited intakes",
-      "All automation templates",
-      "Unlimited runs",
-      "Priority AI processing",
-      "Team collaboration (up to 5)",
-      "Email support",
-      "Custom integrations",
-    ],
-    cta: "Coming Soon",
-    href: "#",
-    popular: true,
-    comingSoon: true,
-  },
-  {
-    name: "Enterprise",
-    description: "For larger organizations",
-    price: "Custom",
-    period: "",
-    features: [
-      "Everything in Pro",
-      "Unlimited team members",
-      "SSO & advanced security",
-      "Dedicated account manager",
-      "Custom SLAs",
-      "On-premise deployment option",
-      "API access",
-    ],
-    cta: "Contact Sales",
-    href: "#",
-    popular: false,
-    comingSoon: true,
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export default function Pricing() {
+  const { t, i18n } = useTranslation();
+  const isNL = i18n.language === "nl";
+  
+  const plans = [
+    {
+      name: t("pricing.free.name"),
+      description: t("pricing.free.description"),
+      price: "€0",
+      period: t("pricing.free.period"),
+      features: t("pricing.free.features", { returnObjects: true }) as string[],
+      cta: t("common.getStarted"),
+      href: "/auth/signup",
+      popular: false,
+    },
+    {
+      name: t("pricing.pro.name"),
+      description: t("pricing.pro.description"),
+      price: "€49",
+      period: t("pricing.pro.period"),
+      features: t("pricing.pro.features", { returnObjects: true }) as string[],
+      cta: isNL ? "Binnenkort" : "Coming Soon",
+      href: "#",
+      popular: true,
+      comingSoon: true,
+    },
+    {
+      name: t("pricing.enterprise.name"),
+      description: t("pricing.enterprise.description"),
+      price: t("pricing.enterprise.price"),
+      period: "",
+      features: t("pricing.enterprise.features", { returnObjects: true }) as string[],
+      cta: isNL ? "Contact Opnemen" : "Contact Sales",
+      href: "#",
+      popular: false,
+      comingSoon: true,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <PricingSEO />
@@ -79,16 +62,17 @@ export default function Pricing() {
           </Link>
           <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center gap-6">
-              <Link href="/pricing" className="text-sm font-medium">Pricing</Link>
-              <Link href="/security" className="text-sm text-muted-foreground hover:text-foreground">Security</Link>
-              <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground">Docs</Link>
+              <Link href="/pricing" className="text-sm font-medium">{t("nav.pricing")}</Link>
+              <Link href="/security" className="text-sm text-muted-foreground hover:text-foreground">{t("nav.security")}</Link>
+              <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground">{t("nav.docs")}</Link>
             </nav>
+            <LanguageSwitcher />
             <ThemeToggle />
             <Link href="/auth/signin">
-              <Button variant="ghost" size="sm" data-testid="button-signin">Sign in</Button>
+              <Button variant="ghost" size="sm" data-testid="button-signin">{t("common.signIn")}</Button>
             </Link>
             <Link href="/auth/signup">
-              <Button size="sm" data-testid="button-signup">Get Started</Button>
+              <Button size="sm" data-testid="button-signup">{t("common.getStarted")}</Button>
             </Link>
           </div>
         </div>
@@ -96,9 +80,9 @@ export default function Pricing() {
 
       <main className="container mx-auto px-4 py-16">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <h1 className="text-4xl font-bold tracking-tight mb-4">Simple, transparent pricing</h1>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">{t("pricing.title")}</h1>
           <p className="text-lg text-muted-foreground">
-            Start free and scale as your automation needs grow. No hidden fees.
+            {t("pricing.subtitle")}
           </p>
         </div>
 
@@ -110,14 +94,18 @@ export default function Pricing() {
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
+                  <Badge className="bg-primary text-primary-foreground">
+                    {isNL ? "Meest Populair" : "Most Popular"}
+                  </Badge>
                 </div>
               )}
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   {plan.name}
                   {plan.comingSoon && (
-                    <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {isNL ? "Binnenkort" : "Coming Soon"}
+                    </Badge>
                   )}
                 </CardTitle>
                 <CardDescription>{plan.description}</CardDescription>
@@ -126,7 +114,7 @@ export default function Pricing() {
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-bold">{plan.price}</span>
                   {plan.period && (
-                    <span className="text-muted-foreground">/{plan.period}</span>
+                    <span className="text-muted-foreground">{plan.period}</span>
                   )}
                 </div>
                 <ul className="space-y-2">
@@ -156,10 +144,12 @@ export default function Pricing() {
 
         <div className="text-center mt-12">
           <p className="text-muted-foreground mb-4">
-            Questions about pricing? We're here to help.
+            {isNL ? "Vragen over prijzen? Wij helpen u graag." : "Questions about pricing? We're here to help."}
           </p>
           <Button variant="outline" asChild>
-            <a href="mailto:sales@opscopilot.com">Contact Sales</a>
+            <a href="mailto:sales@opscopilot.com">
+              {isNL ? "Contact Opnemen" : "Contact Sales"}
+            </a>
           </Button>
         </div>
 
@@ -167,7 +157,7 @@ export default function Pricing() {
           <Link href="/">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to home
+              {t("common.back")}
             </Button>
           </Link>
         </div>

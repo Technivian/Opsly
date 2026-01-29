@@ -4,12 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Mail, UserPlus, ArrowRight, Zap, Settings } from "lucide-react";
+import { Mail, UserPlus, ArrowRight, Zap, Settings, FormInput, MessageSquare, FileText, Database } from "lucide-react";
 import type { AutomationTemplate, AutomationConfig } from "@shared/schema";
 
 const TEMPLATE_ICONS: Record<string, typeof Mail> = {
   email_to_task_triage: Mail,
   lead_followup: UserPlus,
+  form_crm_sync: FormInput,
+  lead_slack_notify: MessageSquare,
+  invoice_intake: FileText,
+  data_entry_automation: Database,
 };
 
 export default function Automations() {

@@ -138,7 +138,10 @@
     "status": {
       "draft": "Concept",
       "submitted": "Ingediend",
-      "processed": "Verwerkt"
+      "processing": "Verwerken...",
+      "completed": "Voltooid",
+      "failed": "Mislukt",
+      "processed": "Voltooid"
     }
   },
   "blueprints": {

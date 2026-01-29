@@ -138,7 +138,10 @@
     "status": {
       "draft": "Draft",
       "submitted": "Submitted",
-      "processed": "Processed"
+      "processing": "Processing...",
+      "completed": "Completed",
+      "failed": "Failed",
+      "processed": "Completed"
     }
   },
   "blueprints": {

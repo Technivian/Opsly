@@ -37,6 +37,14 @@ async function ensureOrgMember(userId: string): Promise<number> {
   return org.id;
 }
 
+type OrgRole = "OWNER" | "ADMIN" | "OPERATOR" | "VIEWER" | "MEMBER";
+
+async function checkRole(userId: string, orgId: number, allowedRoles: OrgRole[]): Promise<boolean> {
+  const membership = await storage.getOrgMember(orgId, userId);
+  if (!membership) return false;
+  return allowedRoles.includes(membership.role as OrgRole);
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -229,6 +237,13 @@ export async function registerRoutes(
     try {
       const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
+      
+      // Only OWNER and ADMIN can create automation configs
+      const canCreate = await checkRole(userId, orgId, ["OWNER", "ADMIN"]);
+      if (!canCreate) {
+        return res.status(403).json({ message: "Insufficient permissions to create automations" });
+      }
+      
       const { templateId, name, configJson, isActive } = req.body;
 
       const config = await storage.createAutomationConfig({
@@ -250,6 +265,13 @@ export async function registerRoutes(
     try {
       const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
+      
+      // OWNER, ADMIN, and OPERATOR can run automations (not VIEWER)
+      const canRun = await checkRole(userId, orgId, ["OWNER", "ADMIN", "OPERATOR"]);
+      if (!canRun) {
+        return res.status(403).json({ message: "Insufficient permissions to run automations" });
+      }
+      
       const configId = parseInt(req.params.id);
 
       const config = await storage.getAutomationConfig(configId);
@@ -416,6 +438,14 @@ export async function registerRoutes(
     try {
       const blueprintId = parseInt(req.params.id);
       const userId = req.user.id;
+      const orgId = await ensureOrgMember(userId);
+      
+      // OWNER, ADMIN, and OPERATOR can edit blueprints (not VIEWER)
+      const canEdit = await checkRole(userId, orgId, ["OWNER", "ADMIN", "OPERATOR"]);
+      if (!canEdit) {
+        return res.status(403).json({ message: "Insufficient permissions to edit blueprints" });
+      }
+      
       const { title, summary, processJson, bottlenecksJson, backlogJson } = req.body;
 
       const existingBlueprint = await storage.getBlueprint(blueprintId);

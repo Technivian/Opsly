@@ -4,6 +4,12 @@
 Ops Copilot is a production-ready MVP SaaS application that helps SMBs document processes, identify bottlenecks, and generate automation blueprints using LLM analysis. Built with Vite + React + Express.
 
 ## Recent Changes
+- January 29, 2026: Final hardening release for first Dutch SME customer
+- January 29, 2026: Created CHANGELOG and internal onboarding checklist
+- January 29, 2026: Added server-side RBAC for automation configs and runs (403 for unauthorized)
+- January 29, 2026: Fixed intake status transitions (SUBMITTED → PROCESSING → COMPLETED/FAILED)
+- January 29, 2026: Seeded all 6 automation templates in database
+- January 29, 2026: Added i18n to pricing, security, and docs pages with EUR pricing
 - January 29, 2026: Added server-side RBAC enforcement for invite endpoint (OWNER/ADMIN only)
 - January 29, 2026: Completed i18n translations for runs.tsx and roi.tsx pages
 - January 29, 2026: Added locale-aware day labels in ROI 7-day trend chart

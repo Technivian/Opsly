@@ -9,6 +9,10 @@ const openai = new OpenAI({
 
 export async function generateBlueprint(intake: Intake, orgId: number): Promise<void> {
   try {
+    // Update status to PROCESSING
+    await storage.updateIntake(intake.id, { status: "PROCESSING" });
+    console.log(`Processing intake ${intake.id} for org ${orgId}`);
+    
     const prompt = buildPrompt(intake);
     
     const response = await openai.chat.completions.create({
@@ -51,16 +55,17 @@ Always respond with valid JSON matching the requested schema.`,
       backlogJson: validateBacklog(result.backlog || []),
     });
 
-    // Update intake status
-    await storage.updateIntake(intake.id, { status: "PROCESSED" });
+    // Update intake status to COMPLETED
+    await storage.updateIntake(intake.id, { status: "COMPLETED" });
     
     console.log(`Blueprint generated for intake ${intake.id}`);
   } catch (error) {
     console.error("Error generating blueprint:", error);
-    // Still mark as processed even if generation fails
-    await storage.updateIntake(intake.id, { status: "PROCESSED" });
     
-    // Create a default blueprint
+    // Mark as FAILED with error, but still create a fallback blueprint
+    await storage.updateIntake(intake.id, { status: "FAILED" });
+    
+    // Create a default blueprint as fallback
     await storage.createBlueprint({
       orgId,
       intakeId: intake.id,

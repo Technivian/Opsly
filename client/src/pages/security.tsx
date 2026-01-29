@@ -4,50 +4,67 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Layers, ArrowLeft, Shield, Lock, Server, Globe, FileCheck, Clock } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { SecuritySEO } from "@/components/seo";
-
-const securityFeatures = [
-  {
-    icon: Lock,
-    title: "Data Encryption",
-    description: "All data is encrypted at rest using AES-256 and in transit using TLS 1.3. Your sensitive information never leaves our secure environment unprotected.",
-  },
-  {
-    icon: Shield,
-    title: "SOC 2 Compliance",
-    description: "We follow SOC 2 Type II standards for security, availability, and confidentiality. Regular third-party audits ensure continuous compliance.",
-    badge: "In Progress",
-  },
-  {
-    icon: Server,
-    title: "Data Isolation",
-    description: "Each organization's data is logically isolated in our multi-tenant architecture. Strict access controls ensure no cross-tenant data leakage.",
-  },
-  {
-    icon: Globe,
-    title: "EU Data Residency",
-    description: "For European customers, we offer data residency options ensuring your data never leaves EU jurisdiction, fully compliant with GDPR requirements.",
-  },
-  {
-    icon: FileCheck,
-    title: "GDPR Compliance",
-    description: "Full compliance with General Data Protection Regulation. Right to access, portability, and deletion of your data. Data Processing Agreements available.",
-  },
-  {
-    icon: Clock,
-    title: "Data Retention",
-    description: "Configurable data retention policies. By default, we retain active data for your subscription period plus 30 days. Deleted data is purged within 90 days.",
-  },
-];
-
-const certifications = [
-  { name: "GDPR", status: "Compliant" },
-  { name: "SOC 2", status: "In Progress" },
-  { name: "ISO 27001", status: "Planned" },
-  { name: "HIPAA", status: "Planned" },
-];
+import { useTranslation } from "react-i18next";
 
 export default function Security() {
+  const { t, i18n } = useTranslation();
+  const isNL = i18n.language === "nl";
+
+  const securityFeatures = [
+    {
+      icon: Lock,
+      title: isNL ? "Gegevensversleuteling" : "Data Encryption",
+      description: isNL 
+        ? "Alle gegevens worden in rust versleuteld met AES-256 en tijdens transport met TLS 1.3. Uw gevoelige informatie verlaat nooit onze beveiligde omgeving onbeschermd."
+        : "All data is encrypted at rest using AES-256 and in transit using TLS 1.3. Your sensitive information never leaves our secure environment unprotected.",
+    },
+    {
+      icon: Shield,
+      title: isNL ? "SOC 2 Naleving" : "SOC 2 Compliance",
+      description: isNL
+        ? "Wij volgen SOC 2 Type II standaarden voor beveiliging, beschikbaarheid en vertrouwelijkheid. Regelmatige externe audits zorgen voor continue naleving."
+        : "We follow SOC 2 Type II standards for security, availability, and confidentiality. Regular third-party audits ensure continuous compliance.",
+      badge: isNL ? "In Uitvoering" : "In Progress",
+    },
+    {
+      icon: Server,
+      title: t("security.dataIsolation"),
+      description: isNL
+        ? "De gegevens van elke organisatie zijn logisch geïsoleerd in onze multi-tenant architectuur. Strikte toegangscontroles voorkomen gegevenslekken tussen tenants."
+        : "Each organization's data is logically isolated in our multi-tenant architecture. Strict access controls ensure no cross-tenant data leakage.",
+    },
+    {
+      icon: Globe,
+      title: isNL ? "EU Datalocatie" : "EU Data Residency",
+      description: isNL
+        ? "Voor Europese klanten bieden wij datalocatie-opties die ervoor zorgen dat uw gegevens nooit de EU verlaten, volledig in overeenstemming met de AVG-vereisten."
+        : "For European customers, we offer data residency options ensuring your data never leaves EU jurisdiction, fully compliant with GDPR requirements.",
+    },
+    {
+      icon: FileCheck,
+      title: t("security.gdpr"),
+      description: isNL
+        ? "Volledige naleving van de Algemene Verordening Gegevensbescherming. Recht op toegang, overdraagbaarheid en verwijdering van uw gegevens. Verwerkersovereenkomsten beschikbaar."
+        : "Full compliance with General Data Protection Regulation. Right to access, portability, and deletion of your data. Data Processing Agreements available.",
+    },
+    {
+      icon: Clock,
+      title: t("security.retention"),
+      description: isNL
+        ? "Configureerbaar databeleid. Standaard bewaren we actieve gegevens voor uw abonnementsperiode plus 30 dagen. Verwijderde gegevens worden binnen 90 dagen gewist."
+        : "Configurable data retention policies. By default, we retain active data for your subscription period plus 30 days. Deleted data is purged within 90 days.",
+    },
+  ];
+
+  const certifications = [
+    { name: isNL ? "AVG" : "GDPR", status: isNL ? "Conform" : "Compliant" },
+    { name: "SOC 2", status: isNL ? "In Uitvoering" : "In Progress" },
+    { name: "ISO 27001", status: isNL ? "Gepland" : "Planned" },
+    { name: "HIPAA", status: isNL ? "Gepland" : "Planned" },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <SecuritySEO />
@@ -63,16 +80,17 @@ export default function Security() {
           </Link>
           <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center gap-6">
-              <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground">Pricing</Link>
-              <Link href="/security" className="text-sm font-medium">Security</Link>
-              <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground">Docs</Link>
+              <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground">{t("nav.pricing")}</Link>
+              <Link href="/security" className="text-sm font-medium">{t("nav.security")}</Link>
+              <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground">{t("nav.docs")}</Link>
             </nav>
+            <LanguageSwitcher />
             <ThemeToggle />
             <Link href="/auth/signin">
-              <Button variant="ghost" size="sm" data-testid="button-signin">Sign in</Button>
+              <Button variant="ghost" size="sm" data-testid="button-signin">{t("common.signIn")}</Button>
             </Link>
             <Link href="/auth/signup">
-              <Button size="sm" data-testid="button-signup">Get Started</Button>
+              <Button size="sm" data-testid="button-signup">{t("common.getStarted")}</Button>
             </Link>
           </div>
         </div>
@@ -83,9 +101,11 @@ export default function Security() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
             <Shield className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight mb-4">Security First</h1>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">{t("security.title")}</h1>
           <p className="text-lg text-muted-foreground">
-            Your data security is our top priority. We implement industry-leading security measures to protect your information.
+            {isNL 
+              ? "De beveiliging van uw gegevens is onze hoogste prioriteit. Wij implementeren toonaangevende beveiligingsmaatregelen om uw informatie te beschermen."
+              : "Your data security is our top priority. We implement industry-leading security measures to protect your information."}
           </p>
         </div>
 
@@ -115,14 +135,14 @@ export default function Security() {
         <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>Compliance & Certifications</CardTitle>
+              <CardTitle>{isNL ? "Naleving & Certificeringen" : "Compliance & Certifications"}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {certifications.map((cert) => (
                   <div key={cert.name} className="text-center p-4 rounded-lg bg-muted/50">
                     <p className="font-medium">{cert.name}</p>
-                    <Badge variant={cert.status === "Compliant" ? "default" : "secondary"} className="mt-2">
+                    <Badge variant={cert.status === "Compliant" || cert.status === "Conform" ? "default" : "secondary"} className="mt-2">
                       {cert.status}
                     </Badge>
                   </div>
@@ -134,10 +154,14 @@ export default function Security() {
 
         <div className="text-center mt-12">
           <p className="text-muted-foreground mb-4">
-            Have security questions or need a security assessment?
+            {isNL 
+              ? "Heeft u beveiligingsvragen of een beveiligingsbeoordeling nodig?"
+              : "Have security questions or need a security assessment?"}
           </p>
           <Button variant="outline" asChild>
-            <a href="mailto:security@opscopilot.com">Contact Security Team</a>
+            <a href="mailto:security@opscopilot.com">
+              {isNL ? "Contact Beveiligingsteam" : "Contact Security Team"}
+            </a>
           </Button>
         </div>
 
@@ -145,7 +169,7 @@ export default function Security() {
           <Link href="/">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to home
+              {t("common.back")}
             </Button>
           </Link>
         </div>

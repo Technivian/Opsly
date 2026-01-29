@@ -12,23 +12,43 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, ClipboardList, ArrowRight, FileText } from "lucide-react";
+import { Plus, ClipboardList, ArrowRight, FileText, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Intake } from "@shared/schema";
 
 export default function Intakes() {
+  const { t, i18n } = useTranslation();
+  
   const { data: intakes, isLoading } = useQuery<Intake[]>({
     queryKey: ["/api/intakes"],
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (data?.some((i) => i.status === "SUBMITTED" || i.status === "PROCESSING")) {
+        return 2000;
+      }
+      return false;
+    },
   });
 
   const getStatusVariant = (status: string) => {
     switch (status) {
+      case "COMPLETED":
       case "PROCESSED":
         return "default";
+      case "PROCESSING":
+        return "secondary";
       case "SUBMITTED":
         return "secondary";
+      case "FAILED":
+        return "destructive";
       default:
         return "outline";
     }
+  };
+
+  const getStatusLabel = (status: string) => {
+    const statusKey = status.toLowerCase();
+    return t(`intakes.status.${statusKey}`, status);
   };
 
   const getPainAreaLabel = (area: string | null) => {
@@ -93,15 +113,18 @@ export default function Intakes() {
                     </TableCell>
                     <TableCell>{getPainAreaLabel(intake.painArea)}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(intake.status)}>
-                        {intake.status}
+                      <Badge variant={getStatusVariant(intake.status)} className="gap-1">
+                        {(intake.status === "SUBMITTED" || intake.status === "PROCESSING") && (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        )}
+                        {getStatusLabel(intake.status)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {new Date(intake.createdAt).toLocaleDateString()}
+                      {new Date(intake.createdAt).toLocaleDateString(i18n.language === "nl" ? "nl-NL" : "en-US")}
                     </TableCell>
                     <TableCell className="text-right">
-                      {intake.status === "PROCESSED" && (
+                      {(intake.status === "COMPLETED" || intake.status === "PROCESSED" || intake.status === "FAILED") && (
                         <Link href={`/app/blueprints?intakeId=${intake.id}`}>
                           <Button variant="ghost" size="sm" data-testid={`button-view-blueprint-${intake.id}`}>
                             View Blueprint <ArrowRight className="w-4 h-4 ml-1" />

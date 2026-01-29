@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Layers, ArrowLeft, BookOpen, Zap, HelpCircle, FileText, ArrowRight, ExternalLink, Plug, Mail, MessageSquare, Building } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { DocsSEO } from "@/components/seo";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SiSlack, SiHubspot, SiSalesforce, SiGoogle } from "react-icons/si";
+import { useTranslation } from "react-i18next";
 
 const quickStartSteps = [
   {
@@ -149,6 +151,8 @@ const docSections = [
 ];
 
 export default function Docs() {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-background">
       <DocsSEO />
@@ -164,16 +168,17 @@ export default function Docs() {
           </Link>
           <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center gap-6">
-              <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground">Pricing</Link>
-              <Link href="/security" className="text-sm text-muted-foreground hover:text-foreground">Security</Link>
-              <Link href="/docs" className="text-sm font-medium">Docs</Link>
+              <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground">{t("nav.pricing")}</Link>
+              <Link href="/security" className="text-sm text-muted-foreground hover:text-foreground">{t("nav.security")}</Link>
+              <Link href="/docs" className="text-sm font-medium">{t("nav.docs")}</Link>
             </nav>
+            <LanguageSwitcher />
             <ThemeToggle />
             <Link href="/auth/signin">
-              <Button variant="ghost" size="sm" data-testid="button-signin">Sign in</Button>
+              <Button variant="ghost" size="sm" data-testid="button-signin">{t("common.signIn")}</Button>
             </Link>
             <Link href="/auth/signup">
-              <Button size="sm" data-testid="button-signup">Get Started</Button>
+              <Button size="sm" data-testid="button-signup">{t("common.getStarted")}</Button>
             </Link>
           </div>
         </div>
