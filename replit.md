@@ -4,6 +4,9 @@
 Ops Copilot is a production-ready MVP SaaS application that helps SMBs document processes, identify bottlenecks, and generate automation blueprints using LLM analysis. Built with Vite + React + Express.
 
 ## Recent Changes
+- January 29, 2026: Added PDF export option for blueprints (alongside Markdown)
+- January 29, 2026: Added integration setup guides to documentation page
+- January 29, 2026: Added locale-aware date/number formatting utilities
 - January 29, 2026: Enhanced intake wizard with localStorage autosave and inline validation
 - January 29, 2026: Added i18n framework with English/Dutch locales and language switcher
 - January 29, 2026: Created OAuth connections page for Gmail, Outlook, Slack, HubSpot, Salesforce
