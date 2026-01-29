@@ -7,7 +7,7 @@ import { z } from "zod";
 export * from "./models/auth";
 
 // Enums
-export const orgRoleEnum = pgEnum("org_role", ["OWNER", "ADMIN", "MEMBER"]);
+export const orgRoleEnum = pgEnum("org_role", ["OWNER", "ADMIN", "OPERATOR", "VIEWER", "MEMBER"]);
 export const intakeStatusEnum = pgEnum("intake_status", ["DRAFT", "SUBMITTED", "PROCESSED"]);
 export const painAreaEnum = pgEnum("pain_area", ["SALES", "SUPPORT", "FINANCE", "OPS"]);
 export const runStatusEnum = pgEnum("run_status", ["QUEUED", "RUNNING", "SUCCESS", "FAILED"]);

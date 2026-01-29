@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
+import { formatNumber } from "@/lib/format";
 import type { Run, AutomationConfig, AutomationTemplate } from "@shared/schema";
 
 interface ROIData {
@@ -33,12 +35,16 @@ interface ROIData {
 }
 
 export default function ROIDashboard() {
+  const { t } = useTranslation();
+
   const { data: roiData, isLoading: roiLoading } = useQuery<ROIData>({
     queryKey: ["/api/roi"],
+    refetchInterval: 5000,
   });
 
   const { data: runs, isLoading: runsLoading } = useQuery<Run[]>({
     queryKey: ["/api/runs"],
+    refetchInterval: 5000,
   });
 
   const { data: configs } = useQuery<AutomationConfig[]>({

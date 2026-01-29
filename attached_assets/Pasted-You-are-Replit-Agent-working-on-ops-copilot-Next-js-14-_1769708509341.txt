@@ -1,0 +1,148 @@
+You are Replit Agent working on `ops-copilot` (Next.js 14 App Router + Tailwind + Prisma + Postgres + NextAuth). Your goal is to FIX the remaining gaps and inconsistencies so the product is genuinely “ready to share with Dutch SMEs”.
+
+Do NOT add new big features. Focus on correctness, consistency, and surfacing what already exists.
+
+## A. RELEASE BLOCKER: Run status + ROI metrics not updating
+Problem: runs show completion in logs but stay stuck in RUNNING; ROI dashboard doesn’t increment reliably.
+
+Tasks:
+1) Find the source of truth for run state (DB row). Ensure the worker/job updates:
+   - `status` transitions: QUEUED → RUNNING → SUCCESS/FAILED
+   - `startedAt`, `finishedAt`, `durationMs`, `itemsProcessed`, `itemsSucceeded`, `itemsFailed`
+   - `errorSummary` on failure
+2) Ensure the API routes that the UI uses read the latest DB state and do not cache stale results.
+3) Make UI updates immediate:
+   - In Runs list and Run detail modal: poll every 2–3 seconds while RUNNING, stop polling when finished.
+   - Alternatively implement SSE/websocket, but polling is fine for MVP.
+4) ROI dashboard aggregation:
+   - Aggregate from completed runs only (SUCCESS + FAILED with partial stats).
+   - Ensure a new completed run updates the dashboard without refresh (refetch interval or invalidation).
+5) Add a regression test: create a run, simulate steps, ensure status changes and ROI totals increment.
+
+Acceptance criteria:
+- A run that finishes must show SUCCESS/FAILED within 5 seconds.
+- ROI dashboard run count and totals update within 5 seconds after completion.
+
+## B. i18n is incomplete / mixed-language pages
+Problem: language switcher exists but only nav/buttons translate; marketing/docs/pricing remain partially English.
+
+Tasks:
+1) Make locale persistent:
+   - Store chosen locale in cookie + user profile (if logged in).
+   - Apply locale across marketing site AND /app routes.
+2) Replace hardcoded strings on:
+   - Home/marketing pages
+   - Pricing page
+   - Docs landing + key docs pages
+   - Security page
+   - App navigation + Settings + Connections + Blueprint pages
+3) Ensure `format.ts` is used everywhere for:
+   - dates
+   - numbers
+   - currency
+   - relative time
+4) Currency localization:
+   - Add EUR display option for Netherlands (default EUR when locale=nl-NL).
+   - If pricing is “USD only for now”, still format with locale and show an explicit “USD” label.
+5) Add a simple i18n coverage check:
+   - a script or test that fails if certain key pages contain raw English strings when nl selected (at least for headings/buttons).
+
+Acceptance criteria:
+- Switching to Dutch makes all main headings/buttons on marketing/pricing/docs/security Dutch.
+- Dates/numbers/currency change format when locale changes.
+
+## C. Templates mismatch: “6 templates” exist but only 2 show in UI
+Problem: UI shows only 2 templates (Email-to-Task, Lead Follow-up). The other templates may exist in seed data but are not surfaced.
+
+Tasks:
+1) Audit DB seed and template registry:
+   - Confirm 6 templates exist in code/DB with unique IDs, names, categories, config schema, and default config.
+2) Fix the Automations page query so it returns ALL templates, not just a subset.
+   - Verify filters, tenant scoping, and “enabled” flags.
+3) Ensure each template has:
+   - configuration screen
+   - save config
+   - run test button
+   - run logs
+4) Add UI grouping by category (Sales, Support, Finance) but keep it simple.
+5) Add a “Template Gallery” count and ensure the page renders 6 templates for every new org.
+
+Acceptance criteria:
+- Automations page shows 6 templates for a new org.
+- Each template can be configured and “Run Test” creates a run and logs.
+
+## D. Connections page inconsistency (global /connections vs Settings > Connections)
+Problem: /app/connections shows real connectors incl. Exact/AFAS, while Settings > Connections still shows “Coming soon”.
+
+Tasks:
+1) Replace Settings > Connections content with the same component/data source used on /app/connections.
+2) Ensure connected/disconnected state is consistent across both locations.
+3) Remove “Coming soon” placeholders unless the connector is truly unavailable.
+4) Add “Docs” links from each connector card to its setup guide.
+
+Acceptance criteria:
+- Settings > Connections and /app/connections show identical connector lists and states.
+
+## E. Blueprint editing depth (currently only title/description)
+Problem: “Blueprint editing/versioning” exists but users can’t edit steps/owners/times, which SMEs expect.
+
+Tasks (MVP-level, no fancy UI):
+1) Allow inline editing for process steps:
+   - step name/title
+   - owner (text or select from members)
+   - tool
+   - estimated time / cycle time (number)
+2) Allow editing for bottlenecks:
+   - title + description + severity
+3) Allow editing for backlog items:
+   - title + priority + effort + notes
+4) Persist edits as a new blueprint version:
+   - store versions with diff or snapshot JSON
+   - add “Version history” drawer showing timestamps + author + restore option
+5) Ensure share link uses the latest published version.
+
+Acceptance criteria:
+- User can edit at least one step owner/time and see it reflected immediately.
+- Version history shows a new entry after saving.
+- Share link renders the latest version read-only.
+
+## F. Roles / permissions
+Problem: only Member and Admin available. Need at least Read-only + Operator.
+
+Tasks:
+1) Extend role model to: OWNER, ADMIN, OPERATOR, VIEWER (read-only).
+2) Apply RBAC rules:
+   - VIEWER: can view everything but cannot create/edit/run.
+   - OPERATOR: can run automations and view logs, cannot change org settings/roles.
+   - ADMIN: can configure automations, edit blueprints, manage connections.
+   - OWNER: everything.
+3) Update invite dropdown to include OPERATOR and VIEWER.
+4) Ensure UI hides/disables restricted actions with clear messaging.
+
+Acceptance criteria:
+- Viewer cannot click “Save config”, “Run test”, “Edit blueprint”.
+- Operator can run tests but cannot change org settings or roles.
+
+## G. Final smoke test script
+Add a `scripts/smoke.ts` (or Playwright smoke test) that:
+1) Signs up
+2) Creates intake → waits for blueprint generation
+3) Edits a step → saves → sees version created
+4) Configures one of the NEW templates → runs test → run finishes SUCCESS
+5) Confirms Runs list and ROI update without refresh
+6) Switches locale to Dutch → checks key headings are Dutch
+7) Confirms connectors list same in both pages
+
+## Constraints
+- Keep architecture unchanged.
+- Avoid adding new external services unless already used.
+- Prefer polling over websockets for run updates.
+- Keep UI changes minimal but complete.
+
+Deliverables
+- Code changes + migrations
+- Updated seed data/templates registry
+- Updated translations
+- Updated README with “What’s fixed” and smoke test instructions
+
+Proceed now. Make the changes, then summarize what was changed and how to test it end-to-end.

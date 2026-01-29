@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,7 @@ import {
   AlertTriangle,
   Info,
 } from "lucide-react";
+import { formatDateTime } from "@/lib/format";
 import type { Run, RunLog, AutomationConfig } from "@shared/schema";
 
 interface RunWithConfig extends Run {
@@ -37,15 +39,24 @@ interface RunWithConfig extends Run {
 }
 
 export default function Runs() {
+  const { t } = useTranslation();
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
 
   const { data: runs, isLoading: runsLoading } = useQuery<RunWithConfig[]>({
     queryKey: ["/api/runs"],
+    refetchInterval: (query) => {
+      const data = query.state.data as RunWithConfig[] | undefined;
+      const hasRunning = data?.some(r => r.status === "RUNNING" || r.status === "QUEUED");
+      return hasRunning ? 2000 : false;
+    },
   });
+
+  const selectedRun = useMemo(() => runs?.find((r) => r.id === selectedRunId), [runs, selectedRunId]);
 
   const { data: runLogs, isLoading: logsLoading } = useQuery<RunLog[]>({
     queryKey: ["/api/runs", selectedRunId, "logs"],
     enabled: !!selectedRunId,
+    refetchInterval: selectedRun?.status === "RUNNING" || selectedRun?.status === "QUEUED" ? 1000 : false,
   });
 
   const getStatusIcon = (status: string) => {
@@ -84,8 +95,6 @@ export default function Runs() {
         return <Info className="w-3.5 h-3.5 text-chart-2" />;
     }
   };
-
-  const selectedRun = runs?.find((r) => r.id === selectedRunId);
 
   return (
     <div className="p-6 space-y-6">

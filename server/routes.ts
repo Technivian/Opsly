@@ -553,6 +553,20 @@ async function seedAutomationTemplates() {
         { name: "escalationEmail", label: "Escalation Email", type: "text", required: false },
       ],
     });
+
+    await storage.createAutomationTemplate({
+      key: "data_entry_automation",
+      name: "Data Entry Automation",
+      description: "Automate repetitive data entry between systems with AI-assisted field mapping and validation.",
+      configSchema: [
+        { name: "sourceSystem", label: "Source System", type: "select", options: ["Excel Upload", "Google Sheets", "CSV Import", "API"], required: true },
+        { name: "targetSystem", label: "Target System", type: "select", options: ["CRM", "ERP", "Database", "Spreadsheet"], required: true },
+        { name: "mappingTemplate", label: "Field Mapping Template", type: "text", defaultValue: "auto" },
+        { name: "validateData", label: "Validate before import", type: "checkbox", defaultValue: true },
+        { name: "duplicateHandling", label: "Duplicate Handling", type: "select", options: ["Skip", "Update", "Create New"], defaultValue: "Skip" },
+        { name: "notifyOnComplete", label: "Notify on completion", type: "checkbox", defaultValue: true },
+      ],
+    });
   }
 }
 
