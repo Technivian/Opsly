@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
@@ -24,6 +25,8 @@ import {
   X,
   Loader2,
   Info,
+  Save,
+  AlertCircle,
 } from "lucide-react";
 
 const PAIN_AREAS = [
@@ -81,6 +84,8 @@ const initialData: WizardData = {
   files: [],
 };
 
+const STORAGE_KEY = "ops-copilot-intake-draft";
+
 export default function IntakeWizard() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<WizardData>(initialData);
@@ -88,10 +93,62 @@ export default function IntakeWizard() {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [showSaveIndicator, setShowSaveIndicator] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const isDemo = user?.isDemo === true;
   const totalSteps = 6;
   const progress = (step / totalSteps) * 100;
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setData({ ...initialData, ...parsed, files: [] });
+        if (parsed.step) setStep(parsed.step);
+      } catch (e) {}
+    }
+  }, []);
+
+  const saveToLocalStorage = useCallback(() => {
+    const toSave = { ...data, step, files: [] };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    setLastSaved(new Date());
+    setShowSaveIndicator(true);
+    setTimeout(() => setShowSaveIndicator(false), 2000);
+  }, [data, step]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (data.painArea || data.problemDescription || data.currentTools.length > 0) {
+        saveToLocalStorage();
+      }
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [data, saveToLocalStorage]);
+
+  const validateStep = (currentStep: number) => {
+    const errors: Record<string, string> = {};
+    switch (currentStep) {
+      case 1:
+        if (!data.painArea) errors.painArea = "Please select a pain area";
+        break;
+      case 2:
+        if (data.problemDescription.length < 20) {
+          errors.problemDescription = `Description must be at least 20 characters (${data.problemDescription.length}/20)`;
+        }
+        break;
+      case 3:
+        if (data.currentTools.length === 0 && data.otherTools.length === 0) {
+          errors.tools = "Please select at least one tool or add other tools";
+        }
+        break;
+    }
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const createIntakeMutation = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -108,6 +165,7 @@ export default function IntakeWizard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/intakes"] });
+      localStorage.removeItem(STORAGE_KEY);
       toast({
         title: "Intake Submitted",
         description: "Your intake is being processed. A blueprint will be generated shortly.",
@@ -127,7 +185,8 @@ export default function IntakeWizard() {
   });
 
   const handleNext = () => {
-    if (step < totalSteps) {
+    if (validateStep(step) && step < totalSteps) {
+      setValidationErrors({});
       setStep(step + 1);
     }
   };
@@ -214,9 +273,22 @@ export default function IntakeWizard() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-bold">New Intake</h1>
-          <span className="text-sm text-muted-foreground">
-            Step {step} of {totalSteps}
-          </span>
+          <div className="flex items-center gap-3">
+            {showSaveIndicator && (
+              <Badge variant="outline" className="text-chart-3 border-chart-3/50">
+                <Save className="w-3 h-3 mr-1" />
+                Draft saved
+              </Badge>
+            )}
+            {lastSaved && !showSaveIndicator && (
+              <span className="text-xs text-muted-foreground">
+                Last saved {lastSaved.toLocaleTimeString()}
+              </span>
+            )}
+            <span className="text-sm text-muted-foreground">
+              Step {step} of {totalSteps}
+            </span>
+          </div>
         </div>
         <Progress value={progress} className="h-2" />
       </div>
@@ -242,29 +314,42 @@ export default function IntakeWizard() {
         </CardHeader>
         <CardContent className="space-y-6">
           {step === 1 && (
-            <div className="grid sm:grid-cols-2 gap-4">
-              {PAIN_AREAS.map((area) => (
-                <button
-                  key={area.value}
-                  onClick={() => setData({ ...data, painArea: area.value })}
-                  className={`p-4 rounded-lg border-2 text-left hover-elevate transition-colors ${
-                    data.painArea === area.value
-                      ? "border-primary bg-primary/5"
-                      : "border-border"
-                  }`}
-                  data-testid={`button-pain-area-${area.value.toLowerCase()}`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      data.painArea === area.value ? "bg-primary text-primary-foreground" : "bg-muted"
-                    }`}>
-                      <area.icon className="w-5 h-5" />
+            <div className="space-y-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                {PAIN_AREAS.map((area) => (
+                  <button
+                    key={area.value}
+                    onClick={() => {
+                      setData({ ...data, painArea: area.value });
+                      setValidationErrors({});
+                    }}
+                    className={`p-4 rounded-lg border-2 text-left hover-elevate transition-colors ${
+                      data.painArea === area.value
+                        ? "border-primary bg-primary/5"
+                        : validationErrors.painArea
+                        ? "border-destructive/50"
+                        : "border-border"
+                    }`}
+                    data-testid={`button-pain-area-${area.value.toLowerCase()}`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        data.painArea === area.value ? "bg-primary text-primary-foreground" : "bg-muted"
+                      }`}>
+                        <area.icon className="w-5 h-5" />
+                      </div>
+                      <span className="font-medium">{area.label}</span>
                     </div>
-                    <span className="font-medium">{area.label}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{area.description}</p>
-                </button>
-              ))}
+                    <p className="text-sm text-muted-foreground">{area.description}</p>
+                  </button>
+                ))}
+              </div>
+              {validationErrors.painArea && (
+                <div className="flex items-center gap-2 text-sm text-destructive">
+                  <AlertCircle className="w-4 h-4" />
+                  {validationErrors.painArea}
+                </div>
+              )}
             </div>
           )}
 
@@ -287,12 +372,30 @@ export default function IntakeWizard() {
                   placeholder="Describe the challenges you're facing in detail. What's causing delays? What tasks are repetitive? What frustrates your team?"
                   rows={6}
                   value={data.problemDescription}
-                  onChange={(e) => setData({ ...data, problemDescription: e.target.value })}
+                  onChange={(e) => {
+                    setData({ ...data, problemDescription: e.target.value });
+                    if (e.target.value.length >= 20) setValidationErrors({});
+                  }}
+                  className={validationErrors.problemDescription ? "border-destructive" : ""}
                   data-testid="input-problem-description"
                 />
-                <p className="text-xs text-muted-foreground">
-                  {data.problemDescription.length}/20 characters minimum
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className={`text-xs ${data.problemDescription.length >= 20 ? "text-chart-3" : "text-muted-foreground"}`}>
+                    {data.problemDescription.length >= 20 ? (
+                      <span className="flex items-center gap-1">
+                        <Check className="w-3 h-3" /> {data.problemDescription.length} characters
+                      </span>
+                    ) : (
+                      `${data.problemDescription.length}/20 characters minimum`
+                    )}
+                  </p>
+                  {validationErrors.problemDescription && (
+                    <span className="text-xs text-destructive flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {validationErrors.problemDescription}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -326,10 +429,19 @@ export default function IntakeWizard() {
                   id="otherTools"
                   placeholder="Enter any other tools separated by commas"
                   value={data.otherTools}
-                  onChange={(e) => setData({ ...data, otherTools: e.target.value })}
+                  onChange={(e) => {
+                    setData({ ...data, otherTools: e.target.value });
+                    if (e.target.value.length > 0) setValidationErrors({});
+                  }}
                   data-testid="input-other-tools"
                 />
               </div>
+              {validationErrors.tools && (
+                <div className="flex items-center gap-2 text-sm text-destructive">
+                  <AlertCircle className="w-4 h-4" />
+                  {validationErrors.tools}
+                </div>
+              )}
             </div>
           )}
 
