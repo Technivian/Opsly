@@ -1,18 +1,15 @@
-services:
-  # PostgreSQL Database
-  - type: pserv
-    name: opsly-db
-    env: docker
+databases:
+  - name: opsly-db
+    databaseName: opsly
+    user: opsly
     plan: free
     region: frankfurt
-    databaseName: opsly
-    databaseUser: opsly
     ipAllowList: []
 
-  # Web Application
+services:
   - type: web
     name: opsly-app
-    env: node
+    runtime: node
     region: frankfurt
     plan: free
     branch: main
