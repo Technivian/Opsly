@@ -62,20 +62,8 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(httpServer, app);
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // Setup WebSocket server for real-time run logs
-  await setupWebSocketServer(httpServer);
-
-  // Auto-run schema push on startup (needed for free Render tier without Shell access)
+  // Auto-run schema push on startup FIRST (needed for free Render tier without Shell access)
+  // This MUST happen before registerRoutes which tries to seed tables
   if (process.env.NODE_ENV === "production") {
     try {
       log("Pushing database schema...");
@@ -99,6 +87,19 @@ app.use((req, res, next) => {
       // Continue anyway - schema might already be in sync
     }
   }
+
+  const server = await registerRoutes(httpServer, app);
+
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    res.status(status).json({ message });
+    throw err;
+  });
+
+  // Setup WebSocket server for real-time run logs
+  await setupWebSocketServer(httpServer);
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
