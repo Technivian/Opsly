@@ -8,10 +8,12 @@ const openai = new OpenAI({
 });
 
 export async function generateBlueprint(intake: Intake, orgId: number): Promise<void> {
+  console.log(`[Blueprint] Starting generation for intake ${intake.id}, org ${orgId}`);
+  
   try {
     // Update status to PROCESSING
     await storage.updateIntake(intake.id, { status: "PROCESSING" });
-    console.log(`Processing intake ${intake.id} for org ${orgId}`);
+    console.log(`[Blueprint] Intake ${intake.id} status set to PROCESSING`);
     
     const prompt = buildPrompt(intake);
     
@@ -58,23 +60,30 @@ Always respond with valid JSON matching the requested schema.`,
     // Update intake status to COMPLETED
     await storage.updateIntake(intake.id, { status: "COMPLETED" });
     
-    console.log(`Blueprint generated for intake ${intake.id}`);
+    console.log(`[Blueprint] Successfully generated blueprint for intake ${intake.id}`);
   } catch (error) {
-    console.error("Error generating blueprint:", error);
+    console.error("[Blueprint] Error generating blueprint:", error);
     
-    // Mark as FAILED with error, but still create a fallback blueprint
-    await storage.updateIntake(intake.id, { status: "FAILED" });
-    
-    // Create a default blueprint as fallback
-    await storage.createBlueprint({
-      orgId,
-      intakeId: intake.id,
-      title: `${intake.painArea} Process Blueprint`,
-      summary: "Analysis based on provided intake information.",
-      processJson: getDefaultProcessSteps(intake),
-      bottlenecksJson: getDefaultBottlenecks(intake),
-      backlogJson: getDefaultBacklog(intake),
-    });
+    try {
+      // Mark as FAILED with error, but still create a fallback blueprint
+      await storage.updateIntake(intake.id, { status: "FAILED" });
+      console.log(`[Blueprint] Creating fallback blueprint for intake ${intake.id}`);
+      
+      // Create a default blueprint as fallback
+      await storage.createBlueprint({
+        orgId,
+        intakeId: intake.id,
+        title: `${intake.painArea} Process Blueprint`,
+        summary: "Analysis based on provided intake information.",
+        processJson: getDefaultProcessSteps(intake),
+        bottlenecksJson: getDefaultBottlenecks(intake),
+        backlogJson: getDefaultBacklog(intake),
+      });
+      
+      console.log(`[Blueprint] Fallback blueprint created for intake ${intake.id}`);
+    } catch (fallbackError) {
+      console.error("[Blueprint] Failed to create fallback blueprint:", fallbackError);
+    }
   }
 }
 

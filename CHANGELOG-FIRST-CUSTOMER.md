@@ -1,6 +1,6 @@
 # Ops Copilot - Release Notes for First Dutch SME Customer
 
-**Release Date:** January 29, 2026
+**Release Date:** February 02, 2026 (Updated)
 
 ## Summary
 

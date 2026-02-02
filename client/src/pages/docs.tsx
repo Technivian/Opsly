@@ -120,6 +120,30 @@ const integrationGuides = [
       "Configure automations to create or update Salesforce records",
     ],
   },
+  {
+    name: "Exact Online",
+    icon: Building,
+    steps: [
+      "Navigate to Settings → Connections in Ops Copilot",
+      "Click 'Connect' next to Exact Online",
+      "Log in to your Exact Online account (use your existing credentials)",
+      "Select your administration (bedrijf) from the dropdown",
+      "Grant Ops Copilot access to read/write financial data",
+      "Your invoices and accounting data are now available for automation",
+    ],
+  },
+  {
+    name: "AFAS Software",
+    icon: Building,
+    steps: [
+      "Navigate to Settings → Connections in Ops Copilot",
+      "Click 'Connect' next to AFAS",
+      "Go to AFAS Online → Beheer → Connectoren to create an API token",
+      "Copy the token ID and paste it in Ops Copilot",
+      "Select which AFAS environment to connect (Production or Test)",
+      "Your HR and financial data from AFAS are now accessible",
+    ],
+  },
 ];
 
 const docSections = [

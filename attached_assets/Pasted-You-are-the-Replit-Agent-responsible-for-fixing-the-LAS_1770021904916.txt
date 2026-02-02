@@ -1,0 +1,156 @@
+You are the Replit Agent responsible for fixing the LAST blocking issues in Ops Copilot
+(https://next-pragmatic.replit.app).
+
+Goal: make the app genuinely hand-over-ready for the FIRST Dutch SME customer.
+No feature creep. No refactors for fun. Fix what is broken or missing.
+
+====================
+BLOCKER 1 — BLUEPRINT NOT CREATED FOR NEW USERS
+====================
+
+Observed behaviour:
+- New user completes intake.
+- Intake status becomes “Completed”.
+- Navigating to /app/blueprints shows “No blueprints yet”.
+- Blueprint is never created for fresh orgs.
+
+Tasks:
+1. Trace the intake → blueprint generation flow end-to-end.
+   - Confirm job/queue is triggered for ALL orgs, not just seeded/demo orgs.
+   - Check orgId, intakeId, and permission scoping.
+2. Verify background worker actually:
+   - Inserts blueprint row
+   - Links blueprint to intakeId + orgId
+3. Add explicit error handling:
+   - If generation fails, mark intake as FAILED with error message.
+4. Add logging so failures are visible in dev logs.
+5. Ensure /app/blueprints query returns blueprints for the active org.
+
+Acceptance criteria:
+- A brand-new user completes intake.
+- Within 60 seconds, a blueprint appears in /app/blueprints.
+- “View Blueprint” always opens a real blueprint.
+
+====================
+BLOCKER 2 — AUTOMATION TEMPLATES PROMISED BUT NOT VISIBLE
+====================
+
+Observed behaviour:
+- Automations page only shows 2 templates.
+- Product claims 6 templates.
+
+Tasks:
+1. Audit template registry and seed logic.
+2. Ensure ALL templates are:
+   - Seeded for EVERY new org
+   - Returned by Automations page API
+   - Visible in UI
+3. Required templates:
+   - Email → Task Triage
+   - Lead Follow-up
+   - Form → CRM Sync
+   - Slack Lead Assignment Notification
+   - Invoice Intake & Coding
+   - Generic Ops Automation
+4. Each template must:
+   - Have a config screen
+   - Allow saving config
+   - Allow “Run Test”
+   - Create a Run record + logs
+
+Acceptance criteria:
+- Automations page shows 6 templates for a new org.
+- Each template can be test-run successfully.
+
+====================
+BLOCKER 3 — NEW USER CANNOT RUN ANY AUTOMATION
+====================
+
+Observed behaviour:
+- New user has no blueprint.
+- Only 2 templates available.
+- No meaningful path to first successful run.
+- ROI remains 0.
+
+Tasks:
+1. Once blueprint exists:
+   - Allow user to navigate directly from blueprint → automations.
+2. Ensure at least ONE template can be run without external connections
+   (e.g. mock Email → Task or Generic Ops template).
+3. Confirm that:
+   - Run transitions to SUCCESS
+   - ROI dashboard updates
+
+Acceptance criteria:
+- New user can complete intake → see blueprint → run automation → see ROI update.
+
+====================
+BLOCKER 4 — LOCALISATION STILL PARTIAL
+====================
+
+Observed behaviour:
+- Menu labels Dutch, but content mostly English.
+- Pricing still USD.
+
+Tasks:
+1. Fully localise:
+   - Marketing pages
+   - Pricing page
+   - Docs headings
+   - Security page
+2. Persist locale (cookie + user profile).
+3. Currency:
+   - Default EUR for nl-NL.
+   - If pricing is provisional, label clearly (“Introductieprijs”).
+
+Acceptance criteria:
+- Switching to Dutch results in fully Dutch UI (no mixed language screens).
+- Pricing understandable for Dutch SMEs.
+
+====================
+BLOCKER 5 — MISSING DUTCH INTEGRATION DOCS
+====================
+
+Observed behaviour:
+- Docs exist for Gmail/Slack/etc.
+- No guides for Exact Online or AFAS.
+
+Tasks:
+- Add setup guides for:
+  - Exact Online
+  - AFAS
+- Link these guides from the Connections page.
+
+Acceptance criteria:
+- Every connector shown has a matching setup guide.
+
+====================
+FINAL VERIFICATION SCRIPT (MANDATORY)
+====================
+
+After fixes, manually verify:
+
+1. Create brand-new user
+2. Complete intake
+3. Blueprint appears automatically
+4. Edit blueprint (any field)
+5. Configure any automation template
+6. Run test → status becomes SUCCESS
+7. ROI dashboard updates
+8. Switch language to Dutch
+9. Pricing shows EUR
+10. Connections page matches Settings → Connections
+
+====================
+DELIVERABLES
+====================
+
+- Code fixes
+- Updated seed data
+- Updated translations
+- Short report:
+  - “What was broken”
+  - “What was fixed”
+  - “Ready for first customer: YES/NO”
+
+Proceed now and fix these issues completely.
