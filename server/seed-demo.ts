@@ -28,7 +28,7 @@ export async function seedDemoOrganization(): Promise<void> {
   });
 
   const templates = await storage.getAllAutomationTemplates();
-  const emailTriageTemplate = templates.find(t => t.key === "email_to_task_triage");
+  const emailTriageTemplate = templates.find(t => t.key === "email_task_triage");
   const leadFollowupTemplate = templates.find(t => t.key === "lead_followup");
 
   const intake1 = await storage.createIntake({

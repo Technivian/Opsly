@@ -6,6 +6,8 @@ import fs from "fs";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isDemoReadOnly, registerAuthRoutes } from "./auth";
 import { generateBlueprint } from "./blueprint";
+import { executeRun } from "./execution/executor";
+import { registerAllTemplates } from "./execution/templates";
 
 // Configure file upload
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -57,6 +59,9 @@ export async function registerRoutes(
 
   // Seed automation templates if not exist
   await seedAutomationTemplates();
+  
+  // Register template executors
+  registerAllTemplates();
 
   // Organization endpoints
   app.get("/api/org", isAuthenticated, async (req: any, res) => {
@@ -286,9 +291,9 @@ export async function registerRoutes(
         status: "QUEUED",
       });
 
-      // Simulate run execution asynchronously
-      simulateRun(run.id).catch((err) => {
-        console.error("Run execution error:", err);
+      // Execute run asynchronously (don't block response)
+      executeRun(run.id).catch((err) => {
+        console.error("[Routes] Run execution error:", err);
       });
 
       res.json(run);
@@ -373,7 +378,92 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to fetch connections" });
     }
   });
+  // Gmail OAuth flow
+  app.get("/api/connections/gmail/authorize", isAuthenticated, async (req: any, res) => {
+    try {
+      const { GmailConnector } = await import("./connectors/gmail");
+      
+      const config = {
+        clientId: process.env.GMAIL_CLIENT_ID || "",
+        clientSecret: process.env.GMAIL_CLIENT_SECRET || "",
+        redirectUri: process.env.GMAIL_REDIRECT_URI || `${process.env.BASE_URL || "http://localhost:5000"}/api/connections/gmail/callback`,
+      };
 
+      if (!config.clientId || !config.clientSecret) {
+        return res.status(500).json({ 
+          message: "Gmail OAuth not configured. Set GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET environment variables." 
+        });
+      }
+
+      const connector = new GmailConnector(config);
+      const userId = req.user.id;
+      const orgId = await ensureOrgMember(userId);
+      
+      // Include orgId in state for callback
+      const authUrl = connector.getAuthorizationUrl(JSON.stringify({ orgId, userId }));
+      
+      res.json({ authUrl });
+    } catch (error) {
+      console.error("Error starting Gmail OAuth:", error);
+      res.status(500).json({ message: "Failed to start Gmail authorization" });
+    }
+  });
+
+  app.get("/api/connections/gmail/callback", async (req: any, res) => {
+    try {
+      const { code, state } = req.query;
+      
+      if (!code) {
+        return res.status(400).send("Authorization code missing");
+      }
+
+      const { GmailConnector } = await import("./connectors/gmail");
+      
+      const config = {
+        clientId: process.env.GMAIL_CLIENT_ID || "",
+        clientSecret: process.env.GMAIL_CLIENT_SECRET || "",
+        redirectUri: process.env.GMAIL_REDIRECT_URI || `${process.env.BASE_URL || "http://localhost:5000"}/api/connections/gmail/callback`,
+      };
+
+      const connector = new GmailConnector(config);
+      const tokens = await connector.exchangeCodeForTokens(code as string);
+      
+      // Parse state to get orgId
+      const { orgId } = state ? JSON.parse(state as string) : {};
+      if (!orgId) {
+        return res.status(400).send("Invalid state parameter");
+      }
+
+      // Check if connection already exists
+      const existing = await storage.getConnectionByProvider(orgId, "gmail");
+      
+      if (existing) {
+        // Update existing connection
+        await storage.updateConnection(existing.id, {
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          expiresAt: tokens.expiresAt,
+          status: "ACTIVE",
+        });
+      } else {
+        // Create new connection
+        await storage.createConnection({
+          orgId,
+          provider: "gmail",
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          expiresAt: tokens.expiresAt,
+          status: "ACTIVE",
+        });
+      }
+
+      // Redirect to connections page
+      res.redirect("/app/connections?connected=gmail");
+    } catch (error) {
+      console.error("Error in Gmail OAuth callback:", error);
+      res.redirect("/app/connections?error=gmail_auth_failed");
+    }
+  });
   app.post("/api/connections", isAuthenticated, isDemoReadOnly, async (req: any, res) => {
     try {
       const userId = req.user.id;
@@ -529,7 +619,7 @@ async function seedAutomationTemplates() {
   if (templates.length === 0) {
     // Seed default templates
     await storage.createAutomationTemplate({
-      key: "email_to_task_triage",
+      key: "email_task_triage",
       name: "Email to Task Triage",
       description: "Automatically categorize incoming emails and create tasks in your project management tool.",
       configSchema: [
@@ -607,59 +697,4 @@ async function seedAutomationTemplates() {
   }
 }
 
-async function simulateRun(runId: number) {
-  // Simulate run execution
-  await storage.updateRun(runId, { status: "RUNNING", startedAt: new Date() });
-  
-  await storage.createRunLog({ runId, level: "INFO", message: "Starting automation run..." });
-  await delay(500);
-  
-  await storage.createRunLog({ runId, level: "INFO", message: "Connecting to data sources..." });
-  await delay(800);
-  
-  await storage.createRunLog({ runId, level: "INFO", message: "Processing items..." });
-  await delay(1000);
-
-  const itemsProcessed = Math.floor(Math.random() * 20) + 5;
-  const tasksCreated = Math.floor(itemsProcessed * 0.6);
-  const minutesSaved = itemsProcessed * 5;
-
-  for (let i = 1; i <= itemsProcessed; i++) {
-    await storage.createRunLog({ 
-      runId, 
-      level: "INFO", 
-      message: `Processed item ${i}/${itemsProcessed}`,
-      metaJson: { itemId: i }
-    });
-    await delay(100);
-  }
-
-  // Random chance of warning
-  if (Math.random() > 0.7) {
-    await storage.createRunLog({ 
-      runId, 
-      level: "WARN", 
-      message: "Some items required manual review" 
-    });
-  }
-
-  await storage.createRunLog({ runId, level: "INFO", message: `Created ${tasksCreated} tasks` });
-  await delay(300);
-  
-  await storage.createRunLog({ runId, level: "INFO", message: "Run completed successfully" });
-
-  await storage.updateRun(runId, { 
-    status: "SUCCESS", 
-    endedAt: new Date(),
-    statsJson: {
-      itemsProcessed,
-      tasksCreated,
-      estimatedMinutesSaved: minutesSaved,
-      exceptions: 0,
-    }
-  });
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// Note: simulateRun function removed - now using real executor in server/execution/

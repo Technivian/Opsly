@@ -101,6 +101,7 @@ export interface IStorage {
   
   // Connections
   getConnections(orgId: number): Promise<Connection[]>;
+  getConnectionByProvider(orgId: number, provider: string): Promise<Connection | undefined>;
   createConnection(connection: InsertConnection): Promise<Connection>;
   updateConnection(id: number, updates: Partial<InsertConnection>): Promise<Connection | undefined>;
 }
@@ -311,6 +312,15 @@ class DrizzleStorage implements IStorage {
   // Connections
   async getConnections(orgId: number): Promise<Connection[]> {
     return db.select().from(connections).where(eq(connections.orgId, orgId));
+  }
+
+  async getConnectionByProvider(orgId: number, provider: string): Promise<Connection | undefined> {
+    const result = await db
+      .select()
+      .from(connections)
+      .where(and(eq(connections.orgId, orgId), eq(connections.provider, provider)))
+      .limit(1);
+    return result[0];
   }
 
   async createConnection(connection: InsertConnection): Promise<Connection> {

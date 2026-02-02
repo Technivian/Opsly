@@ -2,10 +2,10 @@ import OpenAI from "openai";
 import { storage } from "./storage";
 import type { Intake, ProcessStep, Bottleneck, BacklogItem } from "@shared/schema";
 
-const openai = new OpenAI({
+const openai = process.env.AI_INTEGRATIONS_OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+}) : null;
 
 export async function generateBlueprint(intake: Intake, orgId: number): Promise<void> {
   console.log(`[Blueprint] Starting generation for intake ${intake.id}, org ${orgId}`);
@@ -16,6 +16,12 @@ export async function generateBlueprint(intake: Intake, orgId: number): Promise<
     console.log(`[Blueprint] Intake ${intake.id} status set to PROCESSING`);
     
     const prompt = buildPrompt(intake);
+    
+    if (!openai) {
+      console.warn('[Blueprint] OpenAI not configured, using fallback blueprint');
+      await createFallbackBlueprint(intake, orgId);
+      return;
+    }
     
     const response = await openai.chat.completions.create({
       model: "gpt-4.1",
