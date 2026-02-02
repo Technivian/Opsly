@@ -51,6 +51,17 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Health check endpoint (no auth required)
+  app.get("/api/health", async (_req, res) => {
+    try {
+      // Verify database connection
+      await storage.getAllAutomationTemplates();
+      res.json({ status: "ok", database: "connected", timestamp: new Date().toISOString() });
+    } catch (error) {
+      res.status(503).json({ status: "error", database: "disconnected", message: error instanceof Error ? error.message : String(error) });
+    }
+  });
+
   // Setup authentication (passport, sessions) first
   await setupAuth(app);
   
