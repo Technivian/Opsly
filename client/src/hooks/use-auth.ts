@@ -1,9 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { User } from "@shared/models/auth";
 
-interface AuthUser extends User {
-  isDemo?: boolean;
-}
+// AuthUser matches the User type from schema
+type AuthUser = User;
 
 async function fetchUser(): Promise<AuthUser | null> {
   const response = await fetch("/api/auth/user", {

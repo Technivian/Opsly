@@ -18,8 +18,24 @@ export async function generateBlueprint(intake: Intake, orgId: number): Promise<
     const prompt = buildPrompt(intake);
     
     if (!openai) {
-      console.warn('[Blueprint] OpenAI not configured, using fallback blueprint');
-      await createFallbackBlueprint(intake, orgId);
+      console.warn('[Blueprint] OpenAI not configured, creating fallback blueprint');
+      // Create fallback blueprint inline
+      try {
+        await storage.createBlueprint({
+          orgId,
+          intakeId: intake.id,
+          title: `${intake.painArea} Process Blueprint`,
+          summary: "Analysis based on provided intake information.",
+          processJson: getDefaultProcessSteps(intake),
+          bottlenecksJson: getDefaultBottlenecks(intake),
+          backlogJson: getDefaultBacklog(intake),
+        });
+        await storage.updateIntake(intake.id, { status: "COMPLETED" });
+        console.log(`[Blueprint] Fallback blueprint created for intake ${intake.id}`);
+      } catch (fallbackError) {
+        console.error("[Blueprint] Failed to create fallback blueprint:", fallbackError);
+        await storage.updateIntake(intake.id, { status: "FAILED" });
+      }
       return;
     }
     

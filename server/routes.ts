@@ -495,7 +495,7 @@ export async function registerRoutes(
           accessToken: tokens.accessToken,
           refreshToken: tokens.refreshToken,
           expiresAt: tokens.expiresAt,
-          status: "ACTIVE",
+          status: "connected",
         });
       } else {
         // Create new connection
@@ -505,7 +505,7 @@ export async function registerRoutes(
           accessToken: tokens.accessToken,
           refreshToken: tokens.refreshToken,
           expiresAt: tokens.expiresAt,
-          status: "ACTIVE",
+          status: "connected",
         });
       }
 
