@@ -327,42 +327,94 @@ export async function registerRoutes(
     }
   });
 
-  // ROI endpoint
+  // ROI endpoint - Real, explainable metrics
   app.get("/api/roi", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const orgId = await ensureOrgMember(userId);
-      const runs = await storage.getRunsByOrg(orgId);
       
-      const successfulRuns = runs.filter((r) => r.status === "SUCCESS");
-      let totalMinutesSaved = 0;
-      let totalItemsProcessed = 0;
-      let totalTasksCreated = 0;
-
-      for (const run of successfulRuns) {
-        if (run.statsJson) {
-          totalMinutesSaved += run.statsJson.estimatedMinutesSaved || 0;
-          totalItemsProcessed += run.statsJson.itemsProcessed || 0;
-          totalTasksCreated += run.statsJson.tasksCreated || 0;
-        }
-      }
-
-      const hoursSaved = Math.round(totalMinutesSaved / 60);
-      const cycleTimeReduction = successfulRuns.length > 0 ? Math.min(50, Math.round(successfulRuns.length * 5)) : 0;
-      const confidenceScore = Math.min(100, Math.round((successfulRuns.length / Math.max(1, runs.length)) * 100));
-
+      // Import ROI calculator
+      const { calculateAutomationROI, calculateOrgROI, filterRunsToWindow } = await import("./roi-calculator");
+      
+      // Get all runs for the org
+      const allRuns = await storage.getRunsByOrg(orgId);
+      
+      // Filter to last 30 days
+      const runsInWindow = filterRunsToWindow(allRuns, 30);
+      
+      // Get all automation configs to build per-automation metrics
+      const configs = await storage.getAutomationConfigsByOrg(orgId);
+      
+      // Calculate ROI for each automation
+      const automationROIs = await Promise.all(
+        configs.map(async (config) => {
+          const configRuns = runsInWindow.filter(r => r.automationConfigId === config.id);
+          return calculateAutomationROI(configRuns, config.id, config.name);
+        })
+      );
+      
+      // Calculate org-level ROI
+      const orgROI = calculateOrgROI(runsInWindow, automationROIs, configs.length);
+      
+      // Return comprehensive metrics
       res.json({
-        hoursSaved,
-        cycleTimeReduction,
-        confidenceScore,
-        totalRuns: runs.length,
-        successfulRuns: successfulRuns.length,
-        totalItemsProcessed,
-        totalTasksCreated,
+        // Org-level summary (top-level for backward compatibility)
+        hoursSaved: orgROI.totalHoursSaved,
+        totalRuns: orgROI.totalRuns,
+        successfulRuns: orgROI.successfulRuns,
+        failedRuns: orgROI.failedRuns,
+        overallSuccessRate: orgROI.overallSuccessRate,
+        overallConfidence: orgROI.overallConfidence,
+        totalItemsProcessed: orgROI.totalItemsProcessed,
+        totalTasksCreated: orgROI.totalTasksCreated,
+        
+        // Detailed org metrics
+        org: orgROI,
+        
+        // Per-automation breakdowns
+        automations: automationROIs.filter(a => a.totalRuns > 0), // Only show automations with activity
       });
     } catch (error) {
       console.error("Error fetching ROI:", error);
       res.status(500).json({ message: "Failed to fetch ROI data" });
+    }
+  });
+
+  // Per-automation ROI endpoint
+  app.get("/api/automations/:id/roi", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const orgId = await ensureOrgMember(userId);
+      const automationId = parseInt(req.params.id);
+      
+      if (isNaN(automationId)) {
+        return res.status(400).json({ message: "Invalid automation ID" });
+      }
+      
+      // Verify automation belongs to user's org
+      const automation = await storage.getAutomationConfig(automationId);
+      if (!automation || automation.orgId !== orgId) {
+        return res.status(404).json({ message: "Automation not found" });
+      }
+      
+      // Import ROI calculator
+      const { calculateAutomationROI, filterRunsToWindow } = await import("./roi-calculator");
+      
+      // Get all runs for this automation
+      const allRuns = await storage.getRunsByOrg(orgId);
+      const automationRuns = allRuns.filter(r => r.automationConfigId === automationId);
+      
+      // Filter to last 30 days (or custom window from query param)
+      const days = parseInt(req.query.days as string) || 30;
+      const runsInWindow = filterRunsToWindow(automationRuns, days);
+      
+      // Calculate ROI
+      const roi = calculateAutomationROI(runsInWindow, automationId, automation.name);
+      
+      res.json(roi);
+    } catch (error) {
+      console.error("Error fetching automation ROI:", error);
+      res.status(500).json({ message: "Failed to fetch automation ROI" });
     }
   });
 
@@ -611,6 +663,112 @@ export async function registerRoutes(
     }
   });
 
+  // ========== ACCOUNT & DATA MANAGEMENT ==========
+
+  // Export account data as CSV (GDPR compliance)
+  app.post("/api/account/data-export", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const orgId = await ensureOrgMember(userId);
+
+      // Fetch all org data
+      const intakes = await storage.getIntakesByOrg(orgId);
+      const blueprints = await storage.getBlueprintsByOrg(orgId);
+      const configs = await storage.getAutomationConfigsByOrg(orgId);
+      const runs = await storage.getRunsByOrg(orgId);
+      const members = await storage.getOrgMembers(orgId);
+
+      // Build CSV content
+      let csv = "OpsLy Data Export\n";
+      csv += `Generated: ${new Date().toISOString()}\n`;
+      csv += `Organization: ${orgId}\n\n`;
+
+      // Intakes
+      csv += "=== INTAKES ===\n";
+      csv += "ID,Title,PainArea,Status,CreatedAt\n";
+      intakes.forEach((intake) => {
+        csv += `${intake.id},"${intake.title}",${intake.painArea},${intake.status},${intake.createdAt}\n`;
+      });
+
+      // Blueprints
+      csv += "\n=== BLUEPRINTS ===\n";
+      csv += "ID,IntakeID,Title,ProcessJson,BottlenecksJson,BacklogJson,CreatedAt\n";
+      blueprints.forEach((bp) => {
+        const processJson = JSON.stringify(bp.processJson || {}).replace(/"/g, '""');
+        const bottlenecksJson = JSON.stringify(bp.bottlenecksJson || {}).replace(/"/g, '""');
+        const backlogJson = JSON.stringify(bp.backlogJson || {}).replace(/"/g, '""');
+        csv += `${bp.id},${bp.intakeId},"${bp.title}","${processJson}","${bottlenecksJson}","${backlogJson}",${bp.createdAt}\n`;
+      });
+
+      // Automation Configs
+      csv += "\n=== AUTOMATION CONFIGS ===\n";
+      csv += "ID,TemplateID,Name,IsActive,CreatedAt\n";
+      configs.forEach((cfg) => {
+        csv += `${cfg.id},${cfg.templateId},"${cfg.name}",${cfg.isActive},${cfg.createdAt}\n`;
+      });
+
+      // Runs
+      csv += "\n=== AUTOMATION RUNS ===\n";
+      csv += "ID,ConfigID,Status,StartedAt,EndedAt\n";
+      runs.forEach((run) => {
+        csv += `${run.id},${run.automationConfigId},${run.status},${run.startedAt},${run.endedAt}\n`;
+      });
+
+      // Team Members
+      csv += "\n=== TEAM MEMBERS ===\n";
+      csv += "Email,Role,JoinedAt\n";
+      members.forEach((member) => {
+        csv += `${member.id},${member.role},${member.createdAt}\n`;
+      });
+
+      // Send as download
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", `attachment; filename="opsly-export-${new Date().toISOString().split("T")[0]}.csv"`);
+      res.send(csv);
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      res.status(500).json({ message: "Failed to export data" });
+    }
+  });
+
+  // Delete account & all org data (GDPR right to erasure)
+  app.post("/api/account/delete", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { confirmation } = req.body;
+
+      if (confirmation !== "DELETE_ALL_DATA") {
+        return res.status(400).json({ message: "Invalid confirmation string" });
+      }
+
+      // Get org
+      const orgId = await ensureOrgMember(userId);
+      const org = await storage.getOrg(orgId);
+
+      if (!org) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      // Delete org (cascade deletes all org data: intakes, blueprints, automations, runs, etc.)
+      await storage.deleteOrg(orgId);
+
+      // Invalidate session
+      req.logout((err: any) => {
+        if (err) {
+          console.error("Logout error during account deletion:", err);
+        }
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Account and all data deleted successfully. Backups will be purged within 90 days per our privacy policy." 
+      });
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
   return httpServer;
 }
 
@@ -622,6 +780,7 @@ async function seedAutomationTemplates() {
       key: "email_task_triage",
       name: "Email to Task Triage",
       description: "Automatically categorize incoming emails and create tasks in your project management tool.",
+      status: "demo", // ⚠️ Currently simulated - no real task creation
       configSchema: [
         { name: "emailFolder", label: "Email Folder", type: "text", required: true, defaultValue: "Inbox" },
         { name: "projectTool", label: "Project Tool", type: "select", options: ["Asana", "Jira", "Trello", "Monday"], required: true },
@@ -634,6 +793,7 @@ async function seedAutomationTemplates() {
       key: "lead_followup",
       name: "Lead Follow-up",
       description: "Generate and queue personalized follow-up messages for new leads in your CRM.",
+      status: "demo", // ⚠️ Currently simulated - no real CRM integration
       configSchema: [
         { name: "crm", label: "CRM System", type: "select", options: ["Salesforce", "HubSpot", "Pipedrive"], required: true },
         { name: "followUpDelay", label: "Follow-up delay (days)", type: "number", defaultValue: 2 },
@@ -646,6 +806,7 @@ async function seedAutomationTemplates() {
       key: "form_crm_sync",
       name: "Form to CRM Sync",
       description: "Automatically sync form submissions from Google Forms or Typeform to your CRM.",
+      status: "demo", // ⚠️ Currently simulated - no real webhook listener
       configSchema: [
         { name: "formSource", label: "Form Source", type: "select", options: ["Google Forms", "Typeform", "JotForm"], required: true },
         { name: "targetCrm", label: "Target CRM", type: "select", options: ["HubSpot", "Salesforce", "Exact Online"], required: true },
@@ -659,6 +820,7 @@ async function seedAutomationTemplates() {
       key: "lead_slack_notify",
       name: "Lead Assignment Slack Notification",
       description: "Send a Slack message to the assigned salesperson when a lead reaches a certain score.",
+      status: "demo", // ⚠️ Currently simulated - no real Slack API integration
       configSchema: [
         { name: "crm", label: "CRM System", type: "select", options: ["HubSpot", "Salesforce", "Pipedrive"], required: true },
         { name: "scoreThreshold", label: "Score Threshold", type: "number", defaultValue: 50 },
@@ -672,6 +834,7 @@ async function seedAutomationTemplates() {
       key: "invoice_intake",
       name: "Invoice Intake and Coding",
       description: "Capture invoice PDFs/emails, extract data using AI, and push to Exact Online or AFAS.",
+      status: "placeholder", // 🚫 Not yet implemented - coming soon
       configSchema: [
         { name: "source", label: "Invoice Source", type: "select", options: ["Email", "Upload folder", "API"], required: true },
         { name: "targetSystem", label: "Accounting System", type: "select", options: ["Exact Online", "AFAS", "Manual Review"], required: true },
@@ -685,6 +848,7 @@ async function seedAutomationTemplates() {
       key: "data_entry_automation",
       name: "Data Entry Automation",
       description: "Automate repetitive data entry between systems with AI-assisted field mapping and validation.",
+      status: "placeholder", // 🚫 Not yet implemented - coming soon
       configSchema: [
         { name: "sourceSystem", label: "Source System", type: "select", options: ["Excel Upload", "Google Sheets", "CSV Import", "API"], required: true },
         { name: "targetSystem", label: "Target System", type: "select", options: ["CRM", "ERP", "Database", "Spreadsheet"], required: true },

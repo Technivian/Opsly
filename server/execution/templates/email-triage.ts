@@ -45,7 +45,7 @@ export async function executeEmailTriage(ctx: ExecutionContext): Promise<Executi
           emailCount = messages.length;
           await log(runId, "INFO", `Fetched ${emailCount} emails from Gmail API`);
         } else {
-          await log(runId, "WARN", "Gmail not connected - using simulated data");
+          await log(runId, "WARN", "[DEMO] Gmail not connected - using simulated data");
           emailCount = Math.floor(Math.random() * 15) + 5;
         }
       } catch (gmailError: any) {
@@ -72,9 +72,12 @@ export async function executeEmailTriage(ctx: ExecutionContext): Promise<Executi
 
     await log(runId, "INFO", `Found ${emailCount} emails to process`);
 
+    const startTime = Date.now();
     let itemsProcessed = 0;
     let tasksCreated = 0;
     let exceptions = 0;
+    let totalActions = 0;
+    let successfulActions = 0;
 
     // Process each email
     for (let i = 0; i < emailCount; i++) {
@@ -131,6 +134,8 @@ export async function executeEmailTriage(ctx: ExecutionContext): Promise<Executi
         }
 
         itemsProcessed++;
+        totalActions++;
+        successfulActions++;
 
         // Simulate occasional warnings
         if (Math.random() > 0.9) {
@@ -140,6 +145,7 @@ export async function executeEmailTriage(ctx: ExecutionContext): Promise<Executi
         }
       } catch (emailError: any) {
         exceptions++;
+        totalActions++;
         await log(runId, "ERROR", `Failed to process email ${i + 1}: ${emailError.message}`, {
           emailIndex: i + 1,
           error: emailError.message,
@@ -147,17 +153,21 @@ export async function executeEmailTriage(ctx: ExecutionContext): Promise<Executi
       }
     }
 
-    // Calculate time saved (assume 5 minutes per email manually)
+    // Calculate time saved: 5 minutes per email if done manually
     const estimatedMinutesSaved = itemsProcessed * 5;
+    const actualProcessingTimeMs = Date.now() - startTime;
 
-    await log(runId, "INFO", `Email triage completed. Processed ${itemsProcessed} emails, created ${tasksCreated} tasks.`);
+    await log(runId, "INFO", `Email triage completed. Processed ${itemsProcessed} emails, created ${tasksCreated} tasks in ${actualProcessingTimeMs}ms.`);
 
     return {
       success: true,
       itemsProcessed,
       tasksCreated,
       estimatedMinutesSaved,
+      actualProcessingTimeMs,
       exceptions,
+      totalActions,
+      successfulActions,
     };
   } catch (error: any) {
     await log(runId, "ERROR", `Email triage failed: ${error.message}`);

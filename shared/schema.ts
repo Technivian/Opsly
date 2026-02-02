@@ -10,7 +10,7 @@ export * from "./models/auth";
 export const orgRoleEnum = pgEnum("org_role", ["OWNER", "ADMIN", "OPERATOR", "VIEWER", "MEMBER"]);
 export const intakeStatusEnum = pgEnum("intake_status", ["DRAFT", "SUBMITTED", "PROCESSING", "COMPLETED", "FAILED", "PROCESSED"]);
 export const painAreaEnum = pgEnum("pain_area", ["SALES", "SUPPORT", "FINANCE", "OPS"]);
-export const runStatusEnum = pgEnum("run_status", ["QUEUED", "RUNNING", "SUCCESS", "FAILED"]);
+export const runStatusEnum = pgEnum("run_status", ["QUEUED", "RUNNING", "RETRYING", "SUCCESS", "FAILED"]);
 export const logLevelEnum = pgEnum("log_level", ["INFO", "WARN", "ERROR"]);
 export const backlogTypeEnum = pgEnum("backlog_type", ["AUTOMATION", "SOP", "DATA_FIX"]);
 export const effortEnum = pgEnum("effort", ["S", "M", "L"]);
@@ -125,11 +125,14 @@ export type InsertBlueprint = z.infer<typeof insertBlueprintSchema>;
 export type Blueprint = typeof blueprints.$inferSelect;
 
 // Automation Templates
+export const templateStatusEnum = pgEnum("template_status", ["active", "demo", "placeholder"]);
+
 export const automationTemplates = pgTable("automation_templates", {
   id: serial("id").primaryKey(),
   key: text("key").notNull().unique(),
   name: text("name").notNull(),
   description: text("description").notNull(),
+  status: templateStatusEnum("status").notNull().default("active"), // active = production-ready, demo = simulated, placeholder = not implemented
   configSchema: jsonb("config_schema").$type<ConfigSchemaField[]>(),
 });
 
@@ -169,14 +172,37 @@ export const runs = pgTable("runs", {
   status: runStatusEnum("status").notNull().default("QUEUED"),
   startedAt: timestamp("started_at"),
   endedAt: timestamp("ended_at"),
+  attemptCount: integer("attempt_count").notNull().default(0),
+  lastError: text("last_error"),
   statsJson: jsonb("stats_json").$type<RunStats>(),
 });
 
+/**
+ * Raw metrics collected during automation execution.
+ * Every field is explainable: "We track X because it shows Y impact."
+ * 
+ * Stored as JSONB to preserve full audit trail for ROI calculations.
+ */
 export interface RunStats {
-  tasksCreated?: number;
-  itemsProcessed?: number;
-  estimatedMinutesSaved?: number;
-  exceptions?: number;
+  // Core output metrics
+  tasksCreated?: number;          // Number of tasks/tickets/records created
+  itemsProcessed?: number;        // Number of emails/forms/leads handled
+  
+  // Time tracking (in minutes)
+  estimatedMinutesSaved?: number; // Time saved = itemsProcessed × templateTimePerItem
+  actualProcessingTimeMs?: number; // Wall-clock time the automation took to run
+  
+  // Quality & reliability metrics (for confidence scoring)
+  exceptions?: number;            // Number of errors encountered during execution
+  manualOverrides?: number;       // Times human intervention was needed
+  successfulActions?: number;     // Actions completed without error
+  totalActions?: number;          // Total actions attempted (for success rate)
+  
+  // Template-specific metrics (optional, varies by template type)
+  emailsSent?: number;
+  slackMessagesSent?: number;
+  crmRecordsCreated?: number;
+  crmRecordsUpdated?: number;
 }
 
 export const insertRunSchema = createInsertSchema(runs).omit({ id: true });

@@ -72,10 +72,12 @@ It is a business tool for people who want clarity and results.
 
 ## Tech Stack
 
-- **Frontend:** Next.js (App Router), React, Tailwind CSS
-- **Backend:** Node.js, Next.js API routes
-- **Database:** PostgreSQL with Prisma ORM
-- **Authentication:** NextAuth
+- **Frontend:** Vite + React + TypeScript, Tailwind CSS, shadcn/ui components
+- **Backend:** Express.js + Node.js
+- **Database:** PostgreSQL with Drizzle ORM
+- **Authentication:** Passport.js (local strategy)
+- **AI:** OpenAI GPT-4.1 for blueprint generation
+- **Testing:** Vitest + Supertest for automated API tests
 - **Infrastructure:** Replit (development), GitHub (source control)
 
 ---
@@ -89,21 +91,48 @@ It is a business tool for people who want clarity and results.
 ### Install dependencies
 ```bash
 npm install
+```
 
-Environment variables
+### Environment variables
 
-Create a .env file based on .env.example and configure:
+Create a `.env` file based on `.env.example` and configure:
 
-Database connection
+- Database connection (PostgreSQL)
+- Session secret
+- OpenAI API key (optional - blueprint generation has fallback)
+- OAuth credentials (optional for local testing)
 
-Auth secrets
-
-OAuth credentials (optional for local testing)
-
-Run locally
+### Run development server
+```bash
 npm run dev
+```
 
-Roles & Permissions
+Server runs on http://localhost:3000
+
+### Run tests
+
+```bash
+# Setup test database (one-time)
+chmod +x scripts/setup-test-db.sh
+./scripts/setup-test-db.sh
+
+# Run automated tests
+TEST_DATABASE_URL=postgresql://haroonwahed@localhost:5432/opscopilot_test npm test
+
+# Watch mode
+TEST_DATABASE_URL=postgresql://haroonwahed@localhost:5432/opscopilot_test npm run test:watch
+```
+
+See [docs/TESTING.md](docs/TESTING.md) for comprehensive testing guide.
+
+### Database migrations
+
+```bash
+# Push schema changes to database
+npm run db:push
+```
+
+---Roles & Permissions
 
 Opsly uses role-based access control:
 

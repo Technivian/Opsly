@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
+const devHost = process.env.HOST || "127.0.0.1";
+const devPort = Number(process.env.PORT || 5000);
+
 export default defineConfig({
   plugins: [
     react(),
@@ -32,6 +35,14 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    host: devHost,
+    port: devPort,
+    hmr: {
+      host: devHost,
+      port: devPort,
+      clientPort: devPort,
+      protocol: "ws",
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],

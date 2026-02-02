@@ -6,9 +6,23 @@ import { registerWebSocketClient, unregisterWebSocketClient } from "./execution/
  * Setup WebSocket server for real-time run log streaming
  */
 export async function setupWebSocketServer(httpServer: HttpServer): Promise<void> {
-  const wss = new WebSocketServer({ 
-    server: httpServer,
+  const wss = new WebSocketServer({
+    noServer: true,
     path: "/ws/runs",
+  });
+
+  httpServer.on("upgrade", (req, socket, head) => {
+    const url = new URL(req.url || "", "http://localhost");
+    if (url.pathname !== "/ws/runs") {
+      if (process.env.NODE_ENV === "production") {
+        socket.destroy();
+      }
+      return;
+    }
+
+    wss.handleUpgrade(req, socket, head, (ws) => {
+      wss.emit("connection", ws, req);
+    });
   });
 
   wss.on("connection", (ws, req) => {

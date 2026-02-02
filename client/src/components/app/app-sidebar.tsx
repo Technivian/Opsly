@@ -31,6 +31,8 @@ import {
   LogOut,
   Layers,
   Plug,
+  Shield,
+  FileText,
 } from "lucide-react";
 
 const navItems = [
@@ -214,6 +216,19 @@ export function AppSidebar() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem asChild>
+              <a href="/privacy">
+                <Shield className="w-4 h-4 mr-2" />
+                Privacy Policy
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href="/terms">
+                <FileText className="w-4 h-4 mr-2" />
+                Terms of Service
+              </a>
+            </DropdownMenuItem>
+            <div className="my-1 h-px bg-border" />
             <DropdownMenuItem onClick={() => logout()} data-testid="button-logout">
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out

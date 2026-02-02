@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Layers, Loader2, UserPlus, AlertCircle, Check } from "lucide-react";
 
 export default function SignUp() {
@@ -18,6 +19,7 @@ export default function SignUp() {
     firstName: "",
     lastName: "",
   });
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +32,11 @@ export default function SignUp() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!termsAccepted) {
+      setError("You must accept the Terms of Service and Privacy Policy");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
@@ -167,10 +174,30 @@ export default function SignUp() {
                 />
               </div>
 
+              <div className="flex items-start gap-3 py-2">
+                <Checkbox
+                  id="terms"
+                  checked={termsAccepted}
+                  onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                  className="mt-1"
+                  data-testid="checkbox-terms"
+                />
+                <Label htmlFor="terms" className="text-sm font-normal cursor-pointer">
+                  I accept the{" "}
+                  <Link href="/terms" className="text-primary hover:underline" target="_blank">
+                    Terms of Service
+                  </Link>
+                  {" "}and{" "}
+                  <Link href="/privacy" className="text-primary hover:underline" target="_blank">
+                    Privacy Policy
+                  </Link>
+                </Label>
+              </div>
+
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isSigningUp}
+                disabled={isSigningUp || !termsAccepted}
                 data-testid="button-signup"
               >
                 {isSigningUp ? (

@@ -51,6 +51,7 @@ export interface IStorage {
   getOrg(id: number): Promise<Org | undefined>;
   getOrgByUserId(userId: string): Promise<Org | undefined>;
   createOrg(org: InsertOrg): Promise<Org>;
+  deleteOrg(orgId: number): Promise<void>;
   
   // Org Members
   getOrgMember(orgId: number, userId: string): Promise<OrgMember | undefined>;
@@ -126,6 +127,12 @@ class DrizzleStorage implements IStorage {
   async createOrg(org: InsertOrg): Promise<Org> {
     const [newOrg] = await db.insert(orgs).values(org).returning();
     return newOrg;
+  }
+
+  async deleteOrg(orgId: number): Promise<void> {
+    // Cascade delete via foreign key constraint
+    // This deletes: org -> orgMembers, intakes, blueprints, automationConfigs, runs, runLogs, etc.
+    await db.delete(orgs).where(eq(orgs.id, orgId));
   }
 
   // Org Members

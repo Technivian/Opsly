@@ -197,6 +197,9 @@ export default function Settings() {
           <TabsTrigger value="connections" data-testid="tab-connections">
             <Link2 className="w-4 h-4 mr-2" /> Connections
           </TabsTrigger>
+          <TabsTrigger value="legal" data-testid="tab-legal">
+            <Shield className="w-4 h-4 mr-2" /> Legal
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="organization">
@@ -441,6 +444,127 @@ export default function Settings() {
                     </div>
                   );
                 })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="legal">
+          <Card>
+            <CardHeader>
+              <CardTitle>Legal & Compliance</CardTitle>
+              <CardDescription>
+                View our legal documents and manage your data
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h3 className="font-medium">Legal Documents</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Review our policies and terms of service.
+                  </p>
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.location.href = "/privacy"}
+                    >
+                      Privacy Policy
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.location.href = "/terms"}
+                    >
+                      Terms of Service
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4 space-y-2">
+                <h3 className="font-medium">Data Management</h3>
+                <p className="text-sm text-muted-foreground">
+                  Export or delete your account and all associated data.
+                </p>
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch("/api/account/data-export", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                        });
+                        if (response.ok) {
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `opsly-export-${new Date().toISOString().split("T")[0]}.csv`;
+                          a.click();
+                          toast({
+                            title: "Success",
+                            description: "Your data has been exported as CSV",
+                          });
+                        } else {
+                          toast({
+                            title: "Error",
+                            description: "Failed to export data",
+                            variant: "destructive",
+                          });
+                        }
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: "Failed to export data",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                  >
+                    Export My Data
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => {
+                      const confirmed = window.confirm(
+                        "This will permanently delete your account and all data. Type 'DELETE_ALL_DATA' to confirm."
+                      );
+                      if (confirmed) {
+                        const input = window.prompt(
+                          "Type DELETE_ALL_DATA to confirm account deletion:"
+                        );
+                        if (input === "DELETE_ALL_DATA") {
+                          fetch("/api/account/delete", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ confirmation: "DELETE_ALL_DATA" }),
+                          }).then((response) => {
+                            if (response.ok) {
+                              toast({
+                                title: "Account Deleted",
+                                description: "Your account has been permanently deleted",
+                              });
+                              window.location.href = "/";
+                            } else {
+                              toast({
+                                title: "Error",
+                                description: "Failed to delete account",
+                                variant: "destructive",
+                              });
+                            }
+                          });
+                        }
+                      }
+                    }}
+                  >
+                    Delete My Account
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

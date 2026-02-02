@@ -15,6 +15,17 @@ export interface ExecutionResult {
   estimatedMinutesSaved: number;
   exceptions: number;
   error?: string;
+  
+  // Enhanced metrics for ROI confidence scoring
+  actualProcessingTimeMs?: number;  // Wall-clock execution time
+  totalActions?: number;             // Total actions attempted
+  successfulActions?: number;        // Actions completed without error
+  
+  // Template-specific metrics (optional, varies by template)
+  emailsSent?: number;
+  slackMessagesSent?: number;
+  crmRecordsCreated?: number;
+  crmRecordsUpdated?: number;
 }
 
 type TemplateExecutor = (ctx: ExecutionContext) => Promise<ExecutionResult>;
@@ -31,51 +42,66 @@ interface QueuedRun {
 
 const runQueue: QueuedRun[] = [];
 const activeRuns = new Set<number>();
-const MAX_CONCURRENT_RUNS = 5; // Configurable concurrency limit
 
-/**
- * Retry configuration
- */
-interface RetryConfig {
-  maxAttempts: number;
-  initialDelayMs: number;
-  maxDelayMs: number;
-  backoffMultiplier: number;
-}
-
-const DEFAULT_RETRY_CONFIG: RetryConfig = {
-  maxAttempts: 3,
-  initialDelayMs: 1000,
-  maxDelayMs: 30000,
-  backoffMultiplier: 2,
-};
+// Execution configuration constants
+export const MAX_CONCURRENT_RUNS = 5; // Max concurrent runs
+export const MAX_RETRY_ATTEMPTS = 3; // Max retries (4 total attempts)
+export const INITIAL_RETRY_DELAY_MS = 1000; // 1 second
+export const RETRY_BACKOFF_MULTIPLIER = 2; // Doubles each retry
 
 /**
  * Retry wrapper with exponential backoff
+ * Tracks attempts in database and logs all transitions
  */
 async function withRetry<T>(
   fn: () => Promise<T>,
-  runId: number,
-  config: RetryConfig = DEFAULT_RETRY_CONFIG
+  runId: number
 ): Promise<T> {
   let lastError: Error;
-  let delayMs = config.initialDelayMs;
+  let delayMs = INITIAL_RETRY_DELAY_MS;
 
-  for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
+  for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS + 1; attempt++) {
     try {
-      return await fn();
+      // Update attempt count in database
+      await storage.updateRun(runId, { attemptCount: attempt });
+      
+      if (attempt > 1) {
+        await log(runId, "INFO", `→ RETRYING (attempt ${attempt}/${MAX_RETRY_ATTEMPTS + 1})`);
+      }
+
+      const result = await fn();
+      
+      if (attempt > 1) {
+        await log(runId, "INFO", `✓ Retry successful on attempt ${attempt}`);
+      }
+      
+      return result;
     } catch (error: any) {
       lastError = error;
+      const errorMessage = error.message || String(error);
 
-      // Don't retry on certain errors (authentication, validation, etc.)
-      if (error.statusCode === 401 || error.statusCode === 403 || error.statusCode === 400) {
+      // Persist error to database
+      await storage.updateRun(runId, { lastError: errorMessage });
+
+      // Check if error is non-retryable (client errors)
+      const isClientError = error.statusCode >= 400 && error.statusCode < 500;
+      if (isClientError) {
+        await log(runId, "ERROR", `✗ Non-retryable error (${error.statusCode}): ${errorMessage}`);
         throw error;
       }
 
-      if (attempt < config.maxAttempts) {
-        await log(runId, "WARN", `Attempt ${attempt} failed: ${error.message}. Retrying in ${delayMs}ms...`);
+      // If we have retries left, transition to RETRYING status
+      if (attempt <= MAX_RETRY_ATTEMPTS) {
+        await storage.updateRun(runId, { status: "RETRYING" });
+        await log(runId, "WARN", `✗ Attempt ${attempt} failed: ${errorMessage}. Retrying in ${delayMs}ms...`);
         await delay(delayMs);
-        delayMs = Math.min(delayMs * config.backoffMultiplier, config.maxDelayMs);
+        
+        // Transition back to RUNNING before next attempt
+        await storage.updateRun(runId, { status: "RUNNING" });
+        
+        delayMs = delayMs * RETRY_BACKOFF_MULTIPLIER;
+      } else {
+        await log(runId, "ERROR", `✗ All ${MAX_RETRY_ATTEMPTS + 1} attempts exhausted. Marking as FAILED.`);
       }
     }
   }
@@ -142,12 +168,14 @@ async function executeRunInternal(runId: number): Promise<void> {
       throw new Error(`Run ${runId} not found`);
     }
 
-    // 2. Update status to RUNNING
+    // 2. Update status to RUNNING and initialize tracking fields
     await storage.updateRun(runId, { 
       status: "RUNNING", 
-      startedAt: new Date() 
+      startedAt: new Date(),
+      attemptCount: 0,
+      lastError: null
     });
-    await log(runId, "INFO", "Starting automation run...");
+    await log(runId, "INFO", "→ RUNNING: Starting automation run...");
 
     // 3. Get config and template
     const config = await storage.getAutomationConfig(run.automationConfigId);
@@ -158,6 +186,29 @@ async function executeRunInternal(runId: number): Promise<void> {
     const template = await storage.getAutomationTemplate(config.templateId);
     if (!template) {
       throw new Error(`Template ${config.templateId} not found`);
+    }
+
+    // GUARDRAIL: Prevent execution of placeholder templates
+    if (template.status === "placeholder") {
+      await log(runId, "ERROR", "🚫 This automation template is not yet implemented");
+      await log(runId, "ERROR", `Template "${template.name}" is under development and cannot be executed yet`);
+      await storage.updateRun(runId, {
+        status: "FAILED",
+        endedAt: new Date(),
+        lastError: `Template not available: ${template.name} is under development`,
+        statsJson: {
+          itemsProcessed: 0,
+          estimatedMinutesSaved: 0,
+          exceptions: 1,
+        },
+      });
+      return; // Exit early, don't attempt execution
+    }
+
+    // TRANSPARENCY: Warn users about demo mode execution
+    if (template.status === "demo") {
+      await log(runId, "WARN", "⚠️ DEMO MODE: This automation uses simulated data for demonstration purposes.");
+      await log(runId, "WARN", "⚠️ No real external actions will be performed (emails, CRM updates, Slack messages, etc.)");
     }
 
     await log(runId, "INFO", `Executing template: ${template.name}`);
@@ -183,7 +234,7 @@ async function executeRunInternal(runId: number): Promise<void> {
 
     // 6. Update run with results
     if (result.success) {
-      await log(runId, "INFO", `Run completed successfully. Processed ${result.itemsProcessed} items.`);
+      await log(runId, "INFO", `→ SUCCESS: Processed ${result.itemsProcessed} items`);
       await storage.updateRun(runId, {
         status: "SUCCESS",
         endedAt: new Date(),
@@ -198,13 +249,15 @@ async function executeRunInternal(runId: number): Promise<void> {
       throw new Error(result.error || "Execution failed");
     }
   } catch (error: any) {
+    const errorMessage = error.message || String(error);
     console.error(`[Executor] Run ${runId} failed:`, error);
-    await log(runId, "ERROR", `Run failed: ${error.message}`);
+    await log(runId, "ERROR", `→ FAILED: ${errorMessage}`);
     
     if (run) {
       await storage.updateRun(runId, {
         status: "FAILED",
         endedAt: new Date(),
+        lastError: errorMessage,
         statsJson: {
           itemsProcessed: 0,
           estimatedMinutesSaved: 0,

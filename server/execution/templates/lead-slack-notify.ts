@@ -13,7 +13,7 @@ import { log, delay } from "../executor";
  * TODO: Implement actual Slack Web API integration
  * For now, this simulates processing qualified leads
  */
-export async function executeLeadSlackNotify(ctx: ExecutionContext): ExecutionResult {
+export async function executeLeadSlackNotify(ctx: ExecutionContext): Promise<ExecutionResult> {
   const { runId, config } = ctx;
   
   try {
@@ -37,9 +37,12 @@ export async function executeLeadSlackNotify(ctx: ExecutionContext): ExecutionRe
     const qualifiedLeadCount = Math.floor(Math.random() * 8) + 2; // 2-10 leads
     await log(runId, "INFO", `Found ${qualifiedLeadCount} qualified leads above score ${scoreThreshold}`);
 
+    const startTime = Date.now();
     let itemsProcessed = 0;
     let notificationsSent = 0;
     let exceptions = 0;
+    let totalActions = 0;
+    let successfulActions = 0;
 
     for (let i = 1; i <= qualifiedLeadCount; i++) {
       try {
@@ -90,7 +93,7 @@ export async function executeLeadSlackNotify(ctx: ExecutionContext): ExecutionRe
 
         // TODO: Send to Slack Web API
         await delay(250);
-        await log(runId, "INFO", `Sent Slack notification for lead ${i} to ${slackChannel}`, {
+        await log(runId, "INFO", `[DEMO] Simulated Slack notification for lead ${i} to ${slackChannel}`, {
           leadIndex: i,
           channel: slackChannel,
           mentioned: mentionUser ? assignedTo : null,
@@ -99,11 +102,13 @@ export async function executeLeadSlackNotify(ctx: ExecutionContext): ExecutionRe
 
         // Update CRM with notification timestamp
         await delay(150);
-        await log(runId, "INFO", `Updated CRM: lead ${i} notification sent`, {
+        await log(runId, "INFO", `[DEMO] Simulated CRM update: lead ${i} notification timestamp`, {
           leadIndex: i,
         });
 
         itemsProcessed++;
+        totalActions++;
+        successfulActions++;
 
         // Simulate occasional delivery confirmations
         if (Math.random() > 0.7) {
@@ -114,6 +119,7 @@ export async function executeLeadSlackNotify(ctx: ExecutionContext): ExecutionRe
         }
       } catch (leadError: any) {
         exceptions++;
+        totalActions++;
         await log(runId, "ERROR", `Failed to notify for lead ${i}: ${leadError.message}`, {
           leadIndex: i,
         });
@@ -122,15 +128,20 @@ export async function executeLeadSlackNotify(ctx: ExecutionContext): ExecutionRe
 
     // Estimate 15 minutes saved per lead (manual Slack notification + CRM update)
     const estimatedMinutesSaved = itemsProcessed * 15;
+    const actualProcessingTimeMs = Date.now() - startTime;
 
-    await log(runId, "INFO", `Lead Slack notifications completed. Sent ${notificationsSent} notifications for ${itemsProcessed} leads.`);
+    await log(runId, "INFO", `Lead Slack notifications completed. Sent ${notificationsSent} notifications for ${itemsProcessed} leads in ${actualProcessingTimeMs}ms.`);
 
     return {
       success: true,
       itemsProcessed,
       tasksCreated: notificationsSent,
       estimatedMinutesSaved,
+      actualProcessingTimeMs,
       exceptions,
+      totalActions,
+      successfulActions,
+      slackMessagesSent: notificationsSent,
     };
   } catch (error: any) {
     await log(runId, "ERROR", `Lead Slack notification failed: ${error.message}`);

@@ -12,7 +12,7 @@ import { log, delay } from "../executor";
  * TODO: Implement actual CRM integration (HubSpot/Salesforce)
  * For now, this simulates the process
  */
-export async function executeLeadFollowup(ctx: ExecutionContext): ExecutionResult {
+export async function executeLeadFollowup(ctx: ExecutionContext): Promise<ExecutionResult> {
   const { runId, config } = ctx;
   
   try {
@@ -32,9 +32,12 @@ export async function executeLeadFollowup(ctx: ExecutionContext): ExecutionResul
     const leadCount = Math.floor(Math.random() * 10) + 3; // 3-12 leads
     await log(runId, "INFO", `Found ${leadCount} leads requiring follow-up`);
 
+    const startTime = Date.now();
     let itemsProcessed = 0;
     let emailsSent = 0;
     let exceptions = 0;
+    let totalActions = 0;
+    let successfulActions = 0;
 
     for (let i = 1; i <= leadCount; i++) {
       try {
@@ -44,7 +47,7 @@ export async function executeLeadFollowup(ctx: ExecutionContext): ExecutionResul
 
         // Simulate sending personalized email
         await delay(300);
-        await log(runId, "INFO", `Sent follow-up email to lead ${i}`, {
+        await log(runId, "INFO", `[DEMO] Simulated follow-up email to lead ${i}`, {
           leadIndex: i,
           leadId: `LEAD-${5000 + i}`,
         });
@@ -52,13 +55,16 @@ export async function executeLeadFollowup(ctx: ExecutionContext): ExecutionResul
 
         // Update CRM
         await delay(200);
-        await log(runId, "INFO", `Updated CRM activity for lead ${i}`, {
+        await log(runId, "INFO", `[DEMO] Simulated CRM activity update for lead ${i}`, {
           leadIndex: i,
         });
 
         itemsProcessed++;
+        totalActions++;
+        successfulActions++;
       } catch (leadError: any) {
         exceptions++;
+        totalActions++;
         await log(runId, "ERROR", `Failed to process lead ${i}: ${leadError.message}`, {
           leadIndex: i,
         });
@@ -67,15 +73,20 @@ export async function executeLeadFollowup(ctx: ExecutionContext): ExecutionResul
 
     // Estimate 10 minutes saved per lead follow-up
     const estimatedMinutesSaved = itemsProcessed * 10;
+    const actualProcessingTimeMs = Date.now() - startTime;
 
-    await log(runId, "INFO", `Lead follow-up completed. Processed ${itemsProcessed} leads, sent ${emailsSent} emails.`);
+    await log(runId, "INFO", `Lead follow-up completed. Processed ${itemsProcessed} leads, sent ${emailsSent} emails in ${actualProcessingTimeMs}ms.`);
 
     return {
       success: true,
       itemsProcessed,
       tasksCreated: emailsSent,
       estimatedMinutesSaved,
+      actualProcessingTimeMs,
       exceptions,
+      totalActions,
+      successfulActions,
+      emailsSent,
     };
   } catch (error: any) {
     await log(runId, "ERROR", `Lead follow-up failed: ${error.message}`);

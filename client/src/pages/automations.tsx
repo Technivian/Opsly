@@ -57,33 +57,65 @@ export default function Automations() {
                 const Icon = TEMPLATE_ICONS[template.key] || Zap;
                 const templateConfigs = getConfigsForTemplate(template.id);
                 const activeConfigs = templateConfigs.filter((c) => c.isActive);
+                const isDemo = template.status === "demo";
+                const isPlaceholder = template.status === "placeholder";
 
                 return (
-                  <Card key={template.id} className="hover-elevate" data-testid={`card-template-${template.key}`}>
+                  <Card key={template.id} className={`hover-elevate ${isPlaceholder ? 'opacity-60' : ''}`} data-testid={`card-template-${template.key}`}>
                     <CardHeader>
                       <div className="flex items-start justify-between gap-4">
                         <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                           <Icon className="w-6 h-6 text-primary" />
                         </div>
-                        {activeConfigs.length > 0 && (
-                          <Badge variant="secondary" className="shrink-0">
-                            {activeConfigs.length} active
-                          </Badge>
-                        )}
+                        <div className="flex gap-2 shrink-0">
+                          {isDemo && (
+                            <Badge variant="secondary" className="bg-orange-500/10 text-orange-700 dark:text-orange-400">
+                              ⚠️ Demo Mode
+                            </Badge>
+                          )}
+                          {isPlaceholder && (
+                            <Badge variant="secondary" className="bg-gray-500/10 text-gray-700 dark:text-gray-400">
+                              🚫 Not Available
+                            </Badge>
+                          )}
+                          {!isPlaceholder && activeConfigs.length > 0 && (
+                            <Badge variant="secondary" className="shrink-0">
+                              {activeConfigs.length} active
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                       <CardTitle className="mt-3">{template.name}</CardTitle>
-                      <CardDescription>{template.description}</CardDescription>
+                      <CardDescription>
+                        {template.description}
+                        {isDemo && (
+                          <span className="block mt-2 text-sm text-orange-600 dark:text-orange-400">
+                            ⚠️ Currently runs in demo mode with simulated data. Real integrations coming soon.
+                          </span>
+                        )}
+                        {isPlaceholder && (
+                          <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400">
+                            🚫 This template is under development and not yet available for use.
+                          </span>
+                        )}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-muted-foreground">
                           {templateConfigs.length} configuration{templateConfigs.length !== 1 ? "s" : ""}
                         </div>
-                        <Link href={`/app/automations/${template.id}`}>
-                          <Button variant="outline" size="sm" data-testid={`button-configure-${template.key}`}>
-                            <Settings className="w-4 h-4 mr-2" /> Configure
+                        {isPlaceholder ? (
+                          <Button disabled variant="ghost" size="sm" data-testid={`button-configure-${template.key}`}>
+                            🚫 Not Available Yet
                           </Button>
-                        </Link>
+                        ) : (
+                          <Link href={`/app/automations/${template.id}`}>
+                            <Button variant="outline" size="sm" data-testid={`button-configure-${template.key}`}>
+                              <Settings className="w-4 h-4 mr-2" /> Configure
+                            </Button>
+                          </Link>
+                        )}
                       </div>
                     </CardContent>
                   </Card>

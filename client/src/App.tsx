@@ -11,6 +11,8 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import SignIn from "@/pages/auth/signin";
 import SignUp from "@/pages/auth/signup";
+import Privacy from "@/pages/privacy";
+import Terms from "@/pages/terms";
 import Dashboard from "@/pages/dashboard";
 import Intakes from "@/pages/intakes";
 import IntakeWizard from "@/pages/intake-wizard";
@@ -83,6 +85,8 @@ function Router() {
       <Route path="/auth/signup">
         <PublicRoute component={SignUp} />
       </Route>
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/security" component={Security} />
       <Route path="/docs" component={Docs} />
