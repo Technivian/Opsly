@@ -59,7 +59,10 @@ export default function Runs() {
     refetchInterval: selectedRun?.status === "RUNNING" || selectedRun?.status === "QUEUED" ? 1000 : false,
   });
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string, isDemoRun?: boolean) => {
+    if (isDemoRun && status === "SUCCESS") {
+      return <CheckCircle className="w-4 h-4 text-orange-500" />;
+    }
     switch (status) {
       case "SUCCESS":
         return <CheckCircle className="w-4 h-4 text-chart-3" />;
@@ -67,22 +70,38 @@ export default function Runs() {
         return <XCircle className="w-4 h-4 text-destructive" />;
       case "RUNNING":
         return <Loader2 className="w-4 h-4 text-chart-2 animate-spin" />;
+      case "RETRYING":
+        return <Loader2 className="w-4 h-4 text-chart-4 animate-spin" />;
       default:
         return <Clock className="w-4 h-4 text-chart-4" />;
     }
   };
 
-  const getStatusVariant = (status: string) => {
+  const getStatusVariant = (status: string, isDemoRun?: boolean) => {
+    if (isDemoRun && status === "SUCCESS") {
+      return "secondary" as const;
+    }
     switch (status) {
       case "SUCCESS":
-        return "default";
+        return "default" as const;
       case "FAILED":
-        return "destructive";
+        return "destructive" as const;
       case "RUNNING":
-        return "secondary";
+      case "RETRYING":
+        return "secondary" as const;
       default:
-        return "outline";
+        return "outline" as const;
     }
+  };
+
+  const getStatusLabel = (status: string, isDemoRun?: boolean) => {
+    if (isDemoRun && status === "SUCCESS") {
+      return "DEMO SUCCESS";
+    }
+    if (status === "RETRYING") {
+      return "RETRYING";
+    }
+    return status;
   };
 
   const getLogIcon = (level: string) => {
@@ -148,14 +167,24 @@ export default function Runs() {
                     >
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
-                          {getStatusIcon(run.status)}
+                          {getStatusIcon(run.status, run.isDemoRun)}
                           <span>#{run.id}</span>
+                          {run.isDemoRun && (
+                            <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200">
+                              DEMO
+                            </Badge>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getStatusVariant(run.status)}>
-                          {run.status}
+                        <Badge variant={getStatusVariant(run.status, run.isDemoRun)}>
+                          {getStatusLabel(run.status, run.isDemoRun)}
                         </Badge>
+                        {run.isDemoRun && run.status === "SUCCESS" && (
+                          <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                            Simulated only
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {run.startedAt

@@ -170,6 +170,7 @@ export const runs = pgTable("runs", {
   orgId: integer("org_id").notNull().references(() => orgs.id, { onDelete: "cascade" }),
   automationConfigId: integer("automation_config_id").notNull().references(() => automationConfigs.id),
   status: runStatusEnum("status").notNull().default("QUEUED"),
+  isDemoRun: boolean("is_demo_run").notNull().default(false),
   startedAt: timestamp("started_at"),
   endedAt: timestamp("ended_at"),
   attemptCount: integer("attempt_count").notNull().default(0),

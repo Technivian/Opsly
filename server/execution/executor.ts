@@ -159,7 +159,7 @@ async function processQueue(): Promise<void> {
  * Internal execution logic
  */
 async function executeRunInternal(runId: number): Promise<void> {
-  let run: Run | null = null;
+  let run: Run | null | undefined = null;
   
   try {
     // 1. Get run details
@@ -205,10 +205,17 @@ async function executeRunInternal(runId: number): Promise<void> {
       return; // Exit early, don't attempt execution
     }
 
-    // TRANSPARENCY: Warn users about demo mode execution
-    if (template.status === "demo") {
-      await log(runId, "WARN", "⚠️ DEMO MODE: This automation uses simulated data for demonstration purposes.");
-      await log(runId, "WARN", "⚠️ No real external actions will be performed (emails, CRM updates, Slack messages, etc.)");
+    // TRANSPARENCY: Mark and warn about demo mode execution
+    const isDemoRun = template.status === "demo";
+    if (isDemoRun) {
+      await storage.updateRun(runId, { isDemoRun: true });
+      await log(runId, "WARN", "╔══════════════════════════════════════════════╗");
+      await log(runId, "WARN", "║  ⚠️  DEMO MODE - SIMULATED EXECUTION  ⚠️   ║");
+      await log(runId, "WARN", "╚══════════════════════════════════════════════╝");
+      await log(runId, "WARN", "This automation will NOT perform real external actions.");
+      await log(runId, "WARN", "No emails sent, no CRM updates, no Slack messages.");
+      await log(runId, "WARN", "Results are simulated for demonstration purposes only.");
+      await log(runId, "WARN", "");
     }
 
     await log(runId, "INFO", `Executing template: ${template.name}`);
@@ -234,10 +241,34 @@ async function executeRunInternal(runId: number): Promise<void> {
 
     // 6. Update run with results
     if (result.success) {
-      await log(runId, "INFO", `→ SUCCESS: Processed ${result.itemsProcessed} items`);
+      const endTime = new Date();
+      const startTime = run.startedAt || new Date();
+      const durationSeconds = Math.round((endTime.getTime() - startTime.getTime()) / 1000);
+      
+      // Log execution summary
+      await log(runId, "INFO", "");
+      await log(runId, "INFO", "═══════════════════════════════════════");
+      await log(runId, "INFO", `✓ ${isDemoRun ? "DEMO " : ""}RUN COMPLETED SUCCESSFULLY`);
+      await log(runId, "INFO", "═══════════════════════════════════════");
+      await log(runId, "INFO", `Items Processed: ${result.itemsProcessed}`);
+      if (result.tasksCreated) {
+        await log(runId, "INFO", `Tasks Created: ${result.tasksCreated}`);
+      }
+      await log(runId, "INFO", `Estimated Time Saved: ${result.estimatedMinutesSaved} minutes`);
+      if (result.exceptions > 0) {
+        await log(runId, "WARN", `Exceptions Encountered: ${result.exceptions} (non-critical)`);
+      }
+      await log(runId, "INFO", `Execution Duration: ${durationSeconds} seconds`);
+      if (isDemoRun) {
+        await log(runId, "WARN", "");
+        await log(runId, "WARN", "⚠️ REMINDER: This was a DEMO run.");
+        await log(runId, "WARN", "⚠️ No actual external actions were performed.");
+      }
+      await log(runId, "INFO", "═══════════════════════════════════════");
+      
       await storage.updateRun(runId, {
         status: "SUCCESS",
-        endedAt: new Date(),
+        endedAt: endTime,
         statsJson: {
           itemsProcessed: result.itemsProcessed,
           tasksCreated: result.tasksCreated,

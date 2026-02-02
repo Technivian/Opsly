@@ -162,19 +162,28 @@ function calculateConfidenceScore(runs: Run[]): {
 }
 
 /**
- * Calculate ROI for a specific automation over the last 30 days.
+ * Calculate ROI for a single automation over the last 30 days.
  * 
- * @param runs - All runs for this automation (pre-filtered to 30-day window)
- * @param automationName - Display name of the automation
- * @returns Comprehensive ROI metrics
+ * CRITICAL: Demo runs (isDemoRun = true) are EXCLUDED from all calculations.
+ * Why? Demo runs simulate work that didn't actually happen.
+ * Including them would inflate ROI numbers with fake value.
+ * 
+ * @param runs - All runs for the automation (will be filtered to real runs only)
+ * @param automationConfigId - ID of the automation config
+ * @param automationName - Human-readable name
+ * @returns ROI metrics based on REAL executions only
  */
 export function calculateAutomationROI(
   runs: Run[],
   automationConfigId: number,
   automationName: string
 ): AutomationROI {
-  const successfulRuns = runs.filter((r) => r.status === "SUCCESS");
-  const failedRuns = runs.filter((r) => r.status === "FAILED");
+  // CRITICAL FILTER: Exclude demo runs from all ROI calculations
+  // Demo runs have isDemoRun = true and represent simulated data only
+  const realRuns = runs.filter((r) => !r.isDemoRun);
+  
+  const successfulRuns = realRuns.filter((r) => r.status === "SUCCESS");
+  const failedRuns = realRuns.filter((r) => r.status === "FAILED");
 
   // Time savings (sum across successful runs only)
   const totalMinutesSaved = successfulRuns.reduce(
@@ -194,17 +203,17 @@ export function calculateAutomationROI(
   );
 
   // Quality metrics
-  const totalExceptions = runs.reduce(
+  const totalExceptions = realRuns.reduce(
     (sum, run) => sum + (run.statsJson?.exceptions || 0),
     0
   );
 
   // Success rate calculation
   const successRate =
-    runs.length > 0 ? (successfulRuns.length / runs.length) * 100 : 0;
+    realRuns.length > 0 ? (successfulRuns.length / realRuns.length) * 100 : 0;
 
   // Confidence score
-  const confidence = calculateConfidenceScore(runs);
+  const confidence = calculateConfidenceScore(realRuns);
 
   // Time window (30 days back from today)
   const today = new Date();
@@ -216,7 +225,7 @@ export function calculateAutomationROI(
     automationName,
     totalMinutesSaved: Math.round(totalMinutesSaved),
     totalHoursSaved: Math.round(totalMinutesSaved / 60),
-    totalRuns: runs.length,
+    totalRuns: realRuns.length, // Only real runs counted
     successfulRuns: successfulRuns.length,
     failedRuns: failedRuns.length,
     successRate: Math.round(successRate * 10) / 10, // One decimal place
@@ -226,7 +235,7 @@ export function calculateAutomationROI(
     totalTasksCreated,
     totalExceptions,
     avgExceptionsPerRun:
-      runs.length > 0 ? Math.round((totalExceptions / runs.length) * 10) / 10 : 0,
+      realRuns.length > 0 ? Math.round((totalExceptions / realRuns.length) * 10) / 10 : 0,
     windowStartDate: thirtyDaysAgo.toISOString().split("T")[0],
     windowEndDate: today.toISOString().split("T")[0],
   };
