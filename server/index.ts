@@ -2,11 +2,15 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupWebSocketServer } from "./websocket";
 import { serveStatic } from "./static";
+import { configureHelmet } from "./security";
 import { createServer } from "http";
 import { spawn } from "child_process";
 
 const app = express();
 const httpServer = createServer(app);
+
+// Security headers must be applied before any route registration.
+configureHelmet(app);
 
 declare module "http" {
   interface IncomingMessage {

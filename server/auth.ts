@@ -9,6 +9,12 @@ import { users } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
 import { seedDemoOrganization } from "./seed-demo";
+import {
+  signinRateLimit,
+  signupRateLimit,
+  magicLinkRateLimit,
+  demoRateLimit,
+} from "./security";
 
 const SALT_ROUNDS = 10;
 
@@ -174,7 +180,7 @@ export const isDemoReadOnly: RequestHandler = (req, res, next) => {
 };
 
 export function registerAuthRoutes(app: Express) {
-  app.post("/api/auth/signup", async (req, res) => {
+  app.post("/api/auth/signup", signupRateLimit, async (req, res) => {
     try {
       const { email, password, firstName, lastName } = req.body;
       
@@ -208,7 +214,7 @@ export function registerAuthRoutes(app: Express) {
     }
   });
 
-  app.post("/api/auth/signin", (req, res, next) => {
+  app.post("/api/auth/signin", signinRateLimit, (req, res, next) => {
     passport.authenticate("local", (err: any, user: any, info: any) => {
       if (err) {
         return res.status(500).json({ message: "Authentication error" });
@@ -228,7 +234,7 @@ export function registerAuthRoutes(app: Express) {
     })(req, res, next);
   });
 
-  app.post("/api/auth/magic-link", async (req, res) => {
+  app.post("/api/auth/magic-link", magicLinkRateLimit, async (req, res) => {
     try {
       const { email } = req.body;
       if (!email) {
@@ -267,7 +273,7 @@ export function registerAuthRoutes(app: Express) {
     }
   });
 
-  app.post("/api/auth/demo", async (req, res) => {
+  app.post("/api/auth/demo", demoRateLimit, async (req, res) => {
     try {
       const demoUser = await createDemoUser();
       req.login(demoUser, (err) => {
