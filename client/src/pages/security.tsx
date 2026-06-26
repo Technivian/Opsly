@@ -6,6 +6,7 @@ import { Layers, ArrowLeft, Shield, Lock, Server, Globe, FileCheck, Clock } from
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { SecuritySEO } from "@/components/seo";
+import { site } from "@/config/site";
 import { useTranslation } from "react-i18next";
 
 export default function Security() {
@@ -75,7 +76,7 @@ export default function Security() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
                 <Layers className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold tracking-tight">Ops Copilot</span>
+              <span className="text-lg font-semibold tracking-tight">Opsly</span>
             </div>
           </Link>
           <div className="flex items-center gap-4">
@@ -159,7 +160,7 @@ export default function Security() {
               : "Have security questions or need a security assessment?"}
           </p>
           <Button variant="outline" asChild>
-            <a href="mailto:security@opscopilot.com">
+            <a href={`mailto:${site.emails.security}`}>
               {isNL ? "Contact Beveiligingsteam" : "Contact Security Team"}
             </a>
           </Button>

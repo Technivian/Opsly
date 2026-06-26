@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Ops Copilot",
+    "appName": "Opsly",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -231,7 +231,6 @@
     "tasksCreated": "Tasks Created",
     "impactByAutomation": "Impact by Automation",
     "impactByAutomationDesc": "Breakdown by configuration",
-    "successRate": "Success Rate",
     "automation": "Automation",
     "template": "Template",
     "minutesSaved": "Minutes Saved",
@@ -288,28 +287,472 @@
     "cookieConsent": "Cookie Consent"
   },
   "pricing": {
-    "title": "Pricing",
-    "subtitle": "Simple, transparent pricing for teams of all sizes.",
-    "free": {
-      "name": "Free",
-      "price": "€0",
-      "period": "/month",
-      "description": "Perfect for getting started",
-      "features": ["1 user", "3 intakes per month", "2 automation runs per day", "Email support"]
+    "title": "Opsly — pilots and commercial options",
+    "subtitle": "Opsly is available through pilots and early-access arrangements.",
+    "intro": "Opsly is in its pilot and early-production phase. We work with a limited number of organisations to demonstrate real-world impact before introducing standard plans.",
+    "pilot": {
+      "title": "Start with a pilot",
+      "description": "A pilot is a focused engagement in which we map one or a few processes, produce an improvement proposal and, where appropriate, set up a first automation — with measurable outcomes as the starting point.",
+      "points": [
+        "Guided intake and process analysis",
+        "A concrete improvement and automation proposal",
+        "Measurable baselines and follow-up"
+      ]
     },
-    "pro": {
-      "name": "Pro",
-      "price": "€49",
-      "period": "/month",
-      "description": "For growing teams",
-      "features": ["5 users", "Unlimited intakes", "Unlimited runs", "Priority support", "All integrations"]
+    "commercial": {
+      "title": "Commercial arrangements",
+      "description": "Commercial terms depend on scope, the integrations you need, support and deployment requirements. We agree these clearly before an engagement starts."
     },
-    "enterprise": {
-      "name": "Enterprise",
-      "price": "Custom",
-      "period": "",
-      "description": "For large organizations",
-      "features": ["Unlimited users", "Custom integrations", "Dedicated support", "SLA guarantee", "On-premise option"]
+    "future": {
+      "title": "Future plans",
+      "description": "Standard plans may be introduced later. We will only communicate prices and terms once they are final."
+    },
+    "cta": "Book an introduction"
+  },
+  "corp": {
+    "nav": {
+      "home": "Home",
+      "services": "Services",
+      "products": "Products",
+      "approach": "Approach",
+      "experience": "Experience",
+      "about": "About",
+      "contact": "Contact",
+      "cta": "Book an introduction",
+      "openApp": "Open Opsly",
+      "signIn": "Sign in",
+      "menu": "Menu",
+      "skipToContent": "Skip to content"
+    },
+    "footer": {
+      "tagline": "Aurivian helps organisations improve operations through quality engineering, intelligent automation and responsible AI.",
+      "company": "Company",
+      "services": "Services",
+      "product": "Product",
+      "legal": "Legal",
+      "contact": "Contact",
+      "rights": "All rights reserved.",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "security": "Security"
+    },
+    "home": {
+      "seoTitle": "Aurivian — quality engineering, automation and responsible AI",
+      "seoDescription": "Aurivian helps organisations improve operations through quality engineering, intelligent automation and responsible AI. Strategic guidance, hands-on implementation and our own products.",
+      "hero": {
+        "eyebrow": "Technology and consultancy company",
+        "title": "Aurivian helps organisations improve operations through quality engineering, intelligent automation and responsible AI.",
+        "subtitle": "We combine strategic guidance, hands-on implementation and product development. We help organisations create clearer processes, improve software quality and adopt AI in a controlled, measurable way.",
+        "ctaPrimary": "Book an introduction",
+        "ctaSecondary": "Explore our services"
+      },
+      "trust": {
+        "title": "Practical improvement, technical quality and control",
+        "intro": "We work with organisations facing complex operational or quality challenges — from SMEs to the public sector and larger organisations.",
+        "sectorsTitle": "Experience across sectors",
+        "sectors": [
+          "Government and public sector",
+          "Financial services",
+          "Energy",
+          "Healthcare",
+          "SMEs and operational teams"
+        ],
+        "focusTitle": "What we focus on",
+        "focus": [
+          "Quality and reliability",
+          "Control and governance",
+          "Security and privacy",
+          "Measurable outcomes"
+        ]
+      },
+      "services": {
+        "title": "Our services",
+        "intro": "From quality strategy to working automation and our own products — matched to what the organisation actually needs.",
+        "items": [
+          {
+            "title": "Quality Engineering",
+            "description": "Quality strategy, governance and risk-based testing, embedded in Agile and DevOps teams."
+          },
+          {
+            "title": "Test Management & Automation",
+            "description": "Test strategy, coordination and maintainable automation with Robot Framework, Playwright, Tosca and CI/CD."
+          },
+          {
+            "title": "Process Improvement & Automation",
+            "description": "Process analysis, blueprints and automation with measurable ROI and operational control."
+          },
+          {
+            "title": "Responsible AI Adoption",
+            "description": "AI readiness, safe adoption, human oversight and governance on privacy and security."
+          },
+          {
+            "title": "Custom Digital Products",
+            "description": "Discovery, design, implementation and testing of secure, maintainable products and platforms."
+          }
+        ],
+        "cta": "Explore all services"
+      },
+      "process": {
+        "title": "How Aurivian works",
+        "intro": "We never introduce technology for novelty. Every recommendation is connected to business value, quality, control or measurable improvement.",
+        "steps": [
+          {
+            "title": "Understand",
+            "description": "We understand the organisation, the process and the problem."
+          },
+          {
+            "title": "Design",
+            "description": "We design a practical, achievable solution."
+          },
+          {
+            "title": "Implement",
+            "description": "We build, validate and deliver working software."
+          },
+          {
+            "title": "Embed and improve",
+            "description": "We transfer knowledge and drive measurable outcomes."
+          }
+        ]
+      },
+      "product": {
+        "eyebrow": "Featured product",
+        "title": "Opsly by Aurivian",
+        "description": "Opsly is Aurivian's operations platform for SMEs. It turns operational pain points into process blueprints, automations and measurable ROI.",
+        "points": [
+          "Guided intake and automatic process blueprint",
+          "Configurable automations and test runs",
+          "Measurement of time saved, cycle time and ROI"
+        ],
+        "cta": "Discover Opsly"
+      },
+      "ventures": {
+        "title": "Products and ventures",
+        "intro": "Opsly is our first product. We grow our product portfolio step by step and only publish what is ready to share."
+      },
+      "closing": {
+        "title": "Discuss your challenge",
+        "description": "Do you have a challenge around quality, automation, process or AI? We'd be glad to think it through with you.",
+        "cta": "Book an introduction"
+      }
+    },
+    "services": {
+      "seoTitle": "Services — Aurivian",
+      "seoDescription": "Quality engineering, test management and automation, process improvement, responsible AI adoption and custom digital products.",
+      "title": "Services",
+      "subtitle": "Strategic guidance, hands-on implementation and product development.",
+      "intro": "We help organisations create clearer processes, improve software quality, automate repetitive work and adopt AI in a controlled and measurable way.",
+      "items": [
+        {
+          "id": "quality-engineering",
+          "title": "Quality Engineering",
+          "intro": "Quality as a design principle, embedded in teams and release processes.",
+          "points": [
+            "Quality strategy and quality governance",
+            "Risk-based testing",
+            "Release quality",
+            "Quality within Agile and DevOps teams",
+            "Testability and Definition of Done",
+            "Quality reporting and improvement"
+          ]
+        },
+        {
+          "id": "test-automation",
+          "title": "Test Management & Automation",
+          "intro": "Maintainable, scalable test automation and clear test coordination.",
+          "points": [
+            "Test strategy and test planning",
+            "Test coordination",
+            "Regression automation",
+            "API, integration and end-to-end testing",
+            "CI/CD integration",
+            "Robot Framework, Playwright, Tosca and related tooling",
+            "Maintainability and scalable test architecture"
+          ]
+        },
+        {
+          "id": "process-automation",
+          "title": "Process Improvement & Automation",
+          "intro": "From process analysis to working automation with measurable ROI.",
+          "points": [
+            "Process discovery",
+            "Operational pain-point analysis",
+            "Process blueprints",
+            "Workflow optimisation",
+            "Automation opportunities",
+            "Integrations",
+            "Measurable ROI",
+            "Governance and operational control"
+          ]
+        },
+        {
+          "id": "responsible-ai",
+          "title": "Responsible AI Adoption",
+          "intro": "Adopting AI safely, in a controlled way and with human oversight.",
+          "points": [
+            "AI readiness",
+            "Safe and controlled AI adoption",
+            "AI-supported workflows",
+            "LLM use cases",
+            "Human review and output validation",
+            "Governance, privacy and security",
+            "Team adoption and practical implementation"
+          ]
+        },
+        {
+          "id": "digital-products",
+          "title": "Custom Digital Products",
+          "intro": "Secure, maintainable products and platforms, from idea to pilot.",
+          "points": [
+            "Discovery and validation",
+            "Product design",
+            "Implementation",
+            "Integrations",
+            "Testing and quality assurance",
+            "Pilot delivery",
+            "Secure and maintainable architecture"
+          ]
+        }
+      ],
+      "cta": "Book an introduction"
+    },
+    "products": {
+      "seoTitle": "Products — Aurivian",
+      "seoDescription": "Opsly is Aurivian's operations platform for SMEs. Explore our products and ventures.",
+      "title": "Products",
+      "subtitle": "Our own products, built on the same principles as our services.",
+      "intro": "Alongside consultancy, Aurivian develops its own products. Opsly is our first.",
+      "opsly": {
+        "name": "Opsly by Aurivian",
+        "description": "Opsly helps SMEs turn manual and fragmented work into clear processes, practical automation and measurable operational improvement.",
+        "cta": "View Opsly"
+      },
+      "more": {
+        "title": "More products to come",
+        "description": "We grow our product portfolio step by step. We do not publish confidential or unfinished products."
+      }
+    },
+    "opsly": {
+      "seoTitle": "Opsly by Aurivian — operations platform for SMEs",
+      "seoDescription": "Opsly turns operational pain points into process blueprints, automations and measurable ROI. Available through pilots and early access.",
+      "title": "Opsly by Aurivian",
+      "subtitle": "Opsly helps SMEs turn manual and fragmented work into clear processes, practical automation and measurable operational improvement.",
+      "statusLabel": "Status",
+      "intro": "Opsly is in its pilot and early-production phase. Below you can see what the platform does and which integrations are available or planned.",
+      "sections": {
+        "understand": {
+          "title": "Understand",
+          "description": "Map processes and pain points clearly.",
+          "points": [
+            "Guided intake",
+            "Operational pain-point capture",
+            "Automatic process blueprint",
+            "Bottleneck identification",
+            "Improvement opportunities"
+          ]
+        },
+        "improve": {
+          "title": "Improve and automate",
+          "description": "Set up practical automations, including for non-technical users.",
+          "points": [
+            "Automation templates",
+            "Configurable workflows",
+            "Test runs and logs",
+            "Integrations with common business tools",
+            "No-code or low-complexity setup for business users"
+          ]
+        },
+        "measure": {
+          "title": "Measure",
+          "description": "Make outcomes visible and drive improvement.",
+          "points": [
+            "Time saved",
+            "Cycle-time reduction",
+            "Confidence scores",
+            "ROI per automation",
+            "Trend reporting"
+          ]
+        }
+      },
+      "integrations": {
+        "title": "Integrations",
+        "intro": "Opsly supports or plans integrations with common business tools. The status per integration is shown below and reflects the real state of each one.",
+        "note": "We only present an integration as 'available' once its working implementation has been verified.",
+        "status": {
+          "available": "Available",
+          "pilot": "Pilot",
+          "planned": "Planned"
+        }
+      },
+      "cta": {
+        "title": "Get started with Opsly",
+        "description": "Opsly is available through pilots and early-access arrangements. Talk to us about a pilot for your organisation.",
+        "primary": "Book an introduction",
+        "pricing": "Pilots and commercial options"
+      }
+    },
+    "approach": {
+      "seoTitle": "Approach — Aurivian",
+      "seoDescription": "Aurivian's delivery model: understand, risks and opportunities, design, implement, knowledge transfer and measurement.",
+      "title": "Our approach",
+      "subtitle": "A practical delivery model that connects technology to business value.",
+      "intro": "Aurivian does not introduce technology for novelty. Every recommendation is connected to business value, quality, control or measurable improvement.",
+      "steps": [
+        {
+          "title": "Understand the organisation and problem",
+          "description": "We dig into the context, the people and the challenge."
+        },
+        {
+          "title": "Identify risks, friction and opportunities",
+          "description": "We map what stands in the way of improvement and where the gains are."
+        },
+        {
+          "title": "Design a practical solution",
+          "description": "We choose achievable solutions that fit the organisation."
+        },
+        {
+          "title": "Implement and validate",
+          "description": "We build, test and deliver working software."
+        },
+        {
+          "title": "Transfer knowledge and embed ownership",
+          "description": "We make sure the team can carry it forward."
+        },
+        {
+          "title": "Measure outcomes and improve",
+          "description": "We make impact visible and keep refining."
+        }
+      ]
+    },
+    "experience": {
+      "seoTitle": "Experience — Aurivian",
+      "seoDescription": "Industry-level experience: government, financial services, energy, healthcare and SMEs.",
+      "title": "Experience",
+      "subtitle": "Industry-level experience, without confidential details.",
+      "intro": "We work across sectors with complex operational and quality challenges. Below we describe our experience at industry level.",
+      "disclaimer": "We do not publish client names, metrics or confidential project details unless explicitly approved.",
+      "sectors": [
+        {
+          "title": "Government and public sector",
+          "description": "Quality, control and governance in complex, regulated environments."
+        },
+        {
+          "title": "Financial services",
+          "description": "Reliability, security and release quality for critical systems."
+        },
+        {
+          "title": "Energy",
+          "description": "Process improvement and quality in operationally intensive environments."
+        },
+        {
+          "title": "Healthcare",
+          "description": "Careful, safe and privacy-aware process improvement."
+        },
+        {
+          "title": "SMEs and operational teams",
+          "description": "Practical automation and measurable improvement for smaller teams."
+        }
+      ],
+      "templateTitle": "How we describe a case",
+      "template": [
+        {
+          "label": "Context",
+          "description": "The situation and environment."
+        },
+        {
+          "label": "Challenge",
+          "description": "The problem that needed solving."
+        },
+        {
+          "label": "Approach",
+          "description": "How we approached it."
+        },
+        {
+          "label": "Contribution",
+          "description": "Our concrete contribution."
+        },
+        {
+          "label": "Technology or methods",
+          "description": "Technology and methods used."
+        },
+        {
+          "label": "Outcome",
+          "description": "The outcome achieved."
+        }
+      ]
+    },
+    "about": {
+      "seoTitle": "About — Aurivian",
+      "seoDescription": "Aurivian combines consultancy and product development around practical improvement, technical quality and responsible innovation.",
+      "title": "About Aurivian",
+      "subtitle": "Practical improvement, technical quality and responsible innovation.",
+      "paragraphs": [
+        "Aurivian is built around practical improvement, technical quality and responsible innovation.",
+        "We combine consultancy with product development. That means we understand not only the advice, but also what it takes to make it work.",
+        "We work closely with our clients rather than delivering slide decks from a distance. Clarity, quality, ownership and measurable outcomes are central."
+      ],
+      "principlesTitle": "Our principles",
+      "principles": [
+        {
+          "title": "Clarity over hype",
+          "description": "Plain language and realistic expectations."
+        },
+        {
+          "title": "Quality by design",
+          "description": "Quality as a starting point, not an afterthought."
+        },
+        {
+          "title": "Automation with purpose",
+          "description": "Automating where it adds value."
+        },
+        {
+          "title": "AI with human oversight",
+          "description": "Applying AI in a controlled way, with human review."
+        },
+        {
+          "title": "Measurable improvement",
+          "description": "Outcomes you can demonstrate."
+        },
+        {
+          "title": "Sustainable ownership",
+          "description": "Solutions the team can run itself."
+        }
+      ]
+    },
+    "contact": {
+      "seoTitle": "Contact — Aurivian",
+      "seoDescription": "Discuss a challenge, pilot or collaboration with Aurivian around quality, automation, process or AI.",
+      "title": "Get in touch",
+      "subtitle": "Discuss a challenge, pilot or collaboration.",
+      "intro": "Do you have a challenge around quality, automation, process or AI? Let us know — we'd be glad to think it through with you.",
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "Your name",
+        "organisation": "Organisation",
+        "organisationPlaceholder": "Your organisation",
+        "email": "Email address",
+        "emailPlaceholder": "you@organisation.com",
+        "message": "Message",
+        "messagePlaceholder": "Briefly describe your challenge or pilot idea",
+        "submit": "Open email to send",
+        "mailtoNote": "When you submit, your own email application will open with a pre-filled message. The message is only sent once you send it yourself.",
+        "subject": "Contact request via aurivian.nl",
+        "validation": {
+          "nameRequired": "Please enter your name.",
+          "organisationRequired": "Please enter your organisation.",
+          "emailRequired": "Please enter your email address.",
+          "emailInvalid": "Please enter a valid email address.",
+          "messageRequired": "Please enter a message."
+        }
+      },
+      "channels": {
+        "title": "Direct contact",
+        "general": "General enquiries",
+        "support": "Support",
+        "security": "Security",
+        "privacy": "Privacy and data protection",
+        "legal": "Legal"
+      },
+      "linkedinLabel": "LinkedIn"
     }
   }
 }

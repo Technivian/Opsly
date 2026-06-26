@@ -307,7 +307,7 @@ export async function seedDemoOrganization(): Promise<void> {
       configJson: {
         crm: "HubSpot",
         followUpDelay: 1,
-        messageTemplate: "Hi {firstName}, thanks for your interest in Ops Copilot...",
+        messageTemplate: "Hi {firstName}, thanks for your interest in Opsly...",
         autoSend: false,
       },
       isActive: true,

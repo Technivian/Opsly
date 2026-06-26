@@ -345,7 +345,7 @@ describe("Template Guardrails", () => {
 
 ### Conversion Funnel
 
-1. **Discovery**: "Ops Copilot has email automation"
+1. **Discovery**: "Opsly has email automation"
 2. **Evaluation**: "Currently in demo mode - I can test the logic"
 3. **Decision**: "I'll configure it to see how it works"
 4. **Trial**: "The demo showed exactly what I need"

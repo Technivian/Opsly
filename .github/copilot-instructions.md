@@ -1,4 +1,4 @@
-# Ops Copilot - AI Agent Instructions
+# Opsly - AI Agent Instructions
 
 ## Architecture Overview
 

@@ -44,7 +44,7 @@ export default function SignIn() {
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
             <Layers className="w-6 h-6 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-semibold tracking-tight">Ops Copilot</span>
+          <span className="text-2xl font-semibold tracking-tight">Opsly</span>
         </div>
 
         <Card>

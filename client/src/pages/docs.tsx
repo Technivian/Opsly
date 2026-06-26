@@ -5,6 +5,7 @@ import { Layers, ArrowLeft, BookOpen, Zap, HelpCircle, FileText, ArrowRight, Ext
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { DocsSEO } from "@/components/seo";
+import { site } from "@/config/site";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SiSlack, SiHubspot, SiSalesforce, SiGoogle } from "react-icons/si";
 import { useTranslation } from "react-i18next";
@@ -39,8 +40,8 @@ const quickStartSteps = [
 
 const faqs = [
   {
-    question: "What types of processes can Ops Copilot automate?",
-    answer: "Ops Copilot is designed for operational processes like email triage, lead follow-up, data entry, document processing, and workflow approvals. We focus on repetitive, rule-based tasks that consume significant time.",
+    question: "What types of processes can Opsly automate?",
+    answer: "Opsly is designed for operational processes like email triage, lead follow-up, data entry, document processing, and workflow approvals. We focus on repetitive, rule-based tasks that consume significant time.",
   },
   {
     question: "How does the AI blueprint generation work?",
@@ -48,7 +49,7 @@ const faqs = [
   },
   {
     question: "Can I integrate with my existing tools?",
-    answer: "Yes! Ops Copilot integrates with popular tools like Gmail, Slack, Salesforce, HubSpot, Asana, Jira, and more. We're constantly adding new integrations based on customer needs.",
+    answer: "Yes! Opsly integrates with popular tools like Gmail, Slack, Salesforce, HubSpot, Asana, Jira, and more. We're constantly adding new integrations based on customer needs.",
   },
   {
     question: "Is my data secure?",
@@ -69,9 +70,9 @@ const integrationGuides = [
     name: "Gmail / Google Workspace",
     icon: SiGoogle,
     steps: [
-      "Go to Settings → Connections in your Ops Copilot dashboard",
+      "Go to Settings → Connections in your Opsly dashboard",
       "Click 'Connect' next to Gmail/Google Workspace",
-      "Sign in with your Google account and authorize Ops Copilot",
+      "Sign in with your Google account and authorize Opsly",
       "Select the scopes you want to grant (read emails, send emails, etc.)",
       "Once connected, you can use Gmail triggers in your automations",
     ],
@@ -93,7 +94,7 @@ const integrationGuides = [
     steps: [
       "Go to Settings → Connections and find Slack",
       "Click 'Connect' to start the OAuth flow",
-      "Select your Slack workspace and authorize Ops Copilot",
+      "Select your Slack workspace and authorize Opsly",
       "Choose which channels the bot can access",
       "You can now send notifications and read messages in automations",
     ],
@@ -105,7 +106,7 @@ const integrationGuides = [
       "Navigate to Settings → Connections",
       "Click 'Connect' next to HubSpot",
       "Sign in to your HubSpot account",
-      "Authorize Ops Copilot to access contacts, deals, and tickets",
+      "Authorize Opsly to access contacts, deals, and tickets",
       "Use HubSpot data in your automation templates",
     ],
   },
@@ -116,7 +117,7 @@ const integrationGuides = [
       "Go to Settings → Connections and find Salesforce",
       "Click 'Connect' and log in to Salesforce",
       "Grant access to your Salesforce org",
-      "Ops Copilot will sync with leads, contacts, and opportunities",
+      "Opsly will sync with leads, contacts, and opportunities",
       "Configure automations to create or update Salesforce records",
     ],
   },
@@ -124,11 +125,11 @@ const integrationGuides = [
     name: "Exact Online",
     icon: Building,
     steps: [
-      "Navigate to Settings → Connections in Ops Copilot",
+      "Navigate to Settings → Connections in Opsly",
       "Click 'Connect' next to Exact Online",
       "Log in to your Exact Online account (use your existing credentials)",
       "Select your administration (bedrijf) from the dropdown",
-      "Grant Ops Copilot access to read/write financial data",
+      "Grant Opsly access to read/write financial data",
       "Your invoices and accounting data are now available for automation",
     ],
   },
@@ -136,10 +137,10 @@ const integrationGuides = [
     name: "AFAS Software",
     icon: Building,
     steps: [
-      "Navigate to Settings → Connections in Ops Copilot",
+      "Navigate to Settings → Connections in Opsly",
       "Click 'Connect' next to AFAS",
       "Go to AFAS Online → Beheer → Connectoren to create an API token",
-      "Copy the token ID and paste it in Ops Copilot",
+      "Copy the token ID and paste it in Opsly",
       "Select which AFAS environment to connect (Production or Test)",
       "Your HR and financial data from AFAS are now accessible",
     ],
@@ -187,7 +188,7 @@ export default function Docs() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
                 <Layers className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold tracking-tight">Ops Copilot</span>
+              <span className="text-lg font-semibold tracking-tight">Opsly</span>
             </div>
           </Link>
           <div className="flex items-center gap-4">
@@ -215,7 +216,7 @@ export default function Docs() {
           </div>
           <h1 className="text-4xl font-bold tracking-tight mb-4">Documentation</h1>
           <p className="text-lg text-muted-foreground">
-            Everything you need to get started with Ops Copilot and make the most of your automations.
+            Everything you need to get started with Opsly and make the most of your automations.
           </p>
         </div>
 
@@ -269,7 +270,7 @@ export default function Docs() {
         <div id="integrations" className="max-w-4xl mx-auto mb-16">
           <h2 className="text-2xl font-bold mb-6">Integration Setup Guides</h2>
           <p className="text-muted-foreground mb-8">
-            Connect your favorite tools to Ops Copilot and unlock powerful automations.
+            Connect your favorite tools to Opsly and unlock powerful automations.
           </p>
           <div className="grid md:grid-cols-2 gap-6">
             {integrationGuides.map((integration) => (
@@ -330,7 +331,7 @@ export default function Docs() {
             Can't find what you're looking for?
           </p>
           <Button variant="outline" asChild>
-            <a href="mailto:support@opscopilot.com">Contact Support</a>
+            <a href={`mailto:${site.emails.support}`}>Contact Support</a>
           </Button>
         </div>
 

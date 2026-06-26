@@ -1,6 +1,6 @@
 # Automation Execution Engine
 
-This directory contains the core automation execution infrastructure for Ops Copilot.
+This directory contains the core automation execution infrastructure for Opsly.
 
 ## Architecture
 

@@ -20,7 +20,7 @@ export default function Terms() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center">
                 <Layers className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold tracking-tight">Ops Copilot</span>
+              <span className="font-semibold tracking-tight">Opsly</span>
             </div>
           </Link>
           <div className="flex items-center gap-2">
@@ -318,9 +318,9 @@ export default function Terms() {
                 For questions about these Terms or the Service:
               </p>
               <div className="bg-background border border-primary/20 rounded-lg p-4 space-y-2">
-                <p><strong className="text-foreground">Email:</strong> <a href="mailto:support@opsly.io" className="text-primary hover:underline">support@opsly.io</a></p>
-                <p><strong className="text-foreground">Legal:</strong> <a href="mailto:legal@opsly.io" className="text-primary hover:underline">legal@opsly.io</a></p>
-                <p><strong className="text-foreground">Company:</strong> Opsly B.V., Netherlands</p>
+                <p><strong className="text-foreground">Email:</strong> <a href="mailto:support@aurivian.nl" className="text-primary hover:underline">support@aurivian.nl</a></p>
+                <p><strong className="text-foreground">Legal:</strong> <a href="mailto:legal@aurivian.nl" className="text-primary hover:underline">legal@aurivian.nl</a></p>
+                <p><strong className="text-foreground">Company:</strong> Aurivian B.V., Netherlands</p>
               </div>
             </CardContent>
           </Card>
@@ -328,7 +328,7 @@ export default function Terms() {
 
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-border/50 flex items-center justify-between text-sm text-muted-foreground">
-          <p>© 2026 Opsly B.V. All rights reserved.</p>
+          <p>© 2026 Aurivian B.V. All rights reserved. Opsly is a product of Aurivian B.V.</p>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>

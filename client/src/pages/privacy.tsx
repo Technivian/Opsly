@@ -19,7 +19,7 @@ export default function Privacy() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center">
                 <Layers className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold tracking-tight">Ops Copilot</span>
+              <span className="font-semibold tracking-tight">Opsly</span>
             </div>
           </Link>
           <div className="flex items-center gap-2">
@@ -83,7 +83,7 @@ export default function Privacy() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
-                <strong className="text-foreground">Opsly B.V.</strong> is the data controller responsible for your personal data. We are committed to GDPR compliance and respect your data rights.
+                <strong className="text-foreground">Aurivian B.V.</strong> is the data controller responsible for your personal data. We are committed to GDPR compliance and respect your data rights.
               </p>
               <p>
                 <strong className="text-foreground">Our Commitment:</strong> We process data only as necessary to provide the Service. We do not sell, rent, or lease your personal information to third parties.
@@ -231,7 +231,7 @@ export default function Privacy() {
               <div className="bg-background border border-primary/20 rounded-lg p-4 mt-4">
                 <p className="text-sm">
                   <strong className="text-foreground">To Exercise Your Rights:</strong> Use self-service options in your account settings, or email{" "}
-                  <a href="mailto:privacy@opsly.io" className="text-primary hover:underline">privacy@opsly.io</a>
+                  <a href="mailto:privacy@aurivian.nl" className="text-primary hover:underline">privacy@aurivian.nl</a>
                 </p>
               </div>
             </CardContent>
@@ -313,12 +313,12 @@ export default function Privacy() {
                 For privacy-related questions, data requests, or concerns:
               </p>
               <div className="bg-background border border-primary/20 rounded-lg p-4 space-y-2">
-                <p><strong className="text-foreground">Email:</strong> <a href="mailto:privacy@opsly.io" className="text-primary hover:underline">privacy@opsly.io</a></p>
-                <p><strong className="text-foreground">Data Protection Officer:</strong> <a href="mailto:dpo@opsly.io" className="text-primary hover:underline">dpo@opsly.io</a></p>
-                <p><strong className="text-foreground">Company:</strong> Opsly B.V., Netherlands</p>
+                <p><strong className="text-foreground">Email:</strong> <a href="mailto:privacy@aurivian.nl" className="text-primary hover:underline">privacy@aurivian.nl</a></p>
+                <p><strong className="text-foreground">Data Protection Officer:</strong> <a href="mailto:privacy@aurivian.nl" className="text-primary hover:underline">privacy@aurivian.nl</a></p>
+                <p><strong className="text-foreground">Company:</strong> Aurivian B.V., Netherlands</p>
               </div>
               <p className="text-sm mt-4">
-                For security vulnerabilities, email <a href="mailto:security@opsly.io" className="text-primary hover:underline">security@opsly.io</a>
+                For security vulnerabilities, email <a href="mailto:security@aurivian.nl" className="text-primary hover:underline">security@aurivian.nl</a>
               </p>
             </CardContent>
           </Card>
@@ -326,7 +326,7 @@ export default function Privacy() {
 
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-border/50 flex items-center justify-between text-sm text-muted-foreground">
-          <p>© 2026 Opsly B.V. All rights reserved.</p>
+          <p>© 2026 Aurivian B.V. All rights reserved. Opsly is a product of Aurivian B.V.</p>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>

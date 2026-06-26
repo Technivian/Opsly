@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Ops Copilot",
+    "appName": "Opsly",
     "loading": "Laden...",
     "save": "Opslaan",
     "cancel": "Annuleren",
@@ -222,7 +222,7 @@
     "trendDesc": "Run activiteit en verwerkte items deze week",
     "runs": "Runs",
     "items": "Items",
-    "successRate": "Succespercentage",
+    "successRate": "Slagingspercentage",
     "noData": "Nog geen automatiseringsgegevens",
     "noDataDesc": "Voer automatiseringen uit om ROI-statistieken te zien",
     "totalRuns": "Totaal Uitvoeringen",
@@ -231,7 +231,6 @@
     "tasksCreated": "Aangemaakte Taken",
     "impactByAutomation": "Impact per Automatisering",
     "impactByAutomationDesc": "Uitsplitsing per configuratie",
-    "successRate": "Slagingspercentage",
     "automation": "Automatisering",
     "template": "Template",
     "minutesSaved": "Minuten Bespaard",
@@ -288,28 +287,472 @@
     "cookieConsent": "Cookie Toestemming"
   },
   "pricing": {
-    "title": "Prijzen",
-    "subtitle": "Eenvoudige, transparante prijzen voor teams van alle groottes.",
-    "free": {
-      "name": "Gratis",
-      "price": "€0",
-      "period": "/maand",
-      "description": "Perfect om te starten",
-      "features": ["1 gebruiker", "3 intakes per maand", "2 automatiseringen per dag", "E-mail ondersteuning"]
+    "title": "Opsly — pilots en commerciële opties",
+    "subtitle": "Opsly is beschikbaar via pilots en early-accesstrajecten.",
+    "intro": "Opsly bevindt zich in de pilot- en vroege productiefase. We werken samen met een beperkt aantal organisaties om de impact in de praktijk aan te tonen voordat we standaardabonnementen introduceren.",
+    "pilot": {
+      "title": "Start met een pilot",
+      "description": "Een pilot is een afgebakend traject waarin we één of enkele processen in kaart brengen, een verbetervoorstel opstellen en waar mogelijk een eerste automatisering inrichten — met meetbare resultaten als uitgangspunt.",
+      "points": [
+        "Begeleide intake en procesanalyse",
+        "Een concreet verbeter- en automatiseringsvoorstel",
+        "Meetbare uitgangspunten en opvolging"
+      ]
     },
-    "pro": {
-      "name": "Pro",
-      "price": "€49",
-      "period": "/maand",
-      "description": "Voor groeiende teams",
-      "features": ["5 gebruikers", "Onbeperkte intakes", "Onbeperkte uitvoeringen", "Prioriteitsondersteuning", "Alle integraties"]
+    "commercial": {
+      "title": "Commerciële afspraken",
+      "description": "Commerciële voorwaarden hangen af van scope, gewenste integraties, ondersteuning en deploymentvereisten. We maken hierover heldere afspraken voordat een traject start."
     },
-    "enterprise": {
-      "name": "Enterprise",
-      "price": "Op maat",
-      "period": "",
-      "description": "Voor grote organisaties",
-      "features": ["Onbeperkte gebruikers", "Aangepaste integraties", "Dedicated ondersteuning", "SLA garantie", "On-premise optie"]
+    "future": {
+      "title": "Toekomstige abonnementen",
+      "description": "Standaardabonnementen kunnen later worden geïntroduceerd. We communiceren prijzen en voorwaarden pas wanneer deze definitief zijn."
+    },
+    "cta": "Plan een kennismaking"
+  },
+  "corp": {
+    "nav": {
+      "home": "Home",
+      "services": "Diensten",
+      "products": "Producten",
+      "approach": "Aanpak",
+      "experience": "Ervaring",
+      "about": "Over ons",
+      "contact": "Contact",
+      "cta": "Plan een kennismaking",
+      "openApp": "Open Opsly",
+      "signIn": "Inloggen",
+      "menu": "Menu",
+      "skipToContent": "Ga naar inhoud"
+    },
+    "footer": {
+      "tagline": "Aurivian helpt organisaties processen te verbeteren met quality engineering, slimme automatisering en verantwoord toegepaste AI.",
+      "company": "Bedrijf",
+      "services": "Diensten",
+      "product": "Product",
+      "legal": "Juridisch",
+      "contact": "Contact",
+      "rights": "Alle rechten voorbehouden.",
+      "privacy": "Privacy",
+      "terms": "Voorwaarden",
+      "security": "Beveiliging"
+    },
+    "home": {
+      "seoTitle": "Aurivian — quality engineering, automatisering en verantwoorde AI",
+      "seoDescription": "Aurivian helpt organisaties processen te verbeteren met quality engineering, slimme automatisering en verantwoord toegepaste AI. Strategisch advies, praktische uitvoering en eigen producten.",
+      "hero": {
+        "eyebrow": "Technologie- en consultancybedrijf",
+        "title": "Aurivian helpt organisaties processen te verbeteren met quality engineering, slimme automatisering en verantwoord toegepaste AI.",
+        "subtitle": "We combineren strategisch advies, hands-on uitvoering en productontwikkeling. Zo creëren organisaties heldere processen, betere softwarekwaliteit en gecontroleerde, meetbare verbetering.",
+        "ctaPrimary": "Plan een kennismaking",
+        "ctaSecondary": "Bekijk onze diensten"
+      },
+      "trust": {
+        "title": "Praktische verbetering, technische kwaliteit en controle",
+        "intro": "We werken met organisaties die te maken hebben met complexe operationele of kwaliteitsvraagstukken — van het mkb tot de publieke sector en grotere organisaties.",
+        "sectorsTitle": "Ervaring in uiteenlopende sectoren",
+        "sectors": [
+          "Overheid en publieke sector",
+          "Financiële dienstverlening",
+          "Energie",
+          "Zorg",
+          "Mkb en operationele teams"
+        ],
+        "focusTitle": "Waar we op sturen",
+        "focus": [
+          "Kwaliteit en betrouwbaarheid",
+          "Controle en beheersbaarheid",
+          "Beveiliging en privacy",
+          "Meetbare resultaten"
+        ]
+      },
+      "services": {
+        "title": "Onze diensten",
+        "intro": "Van kwaliteitsstrategie tot werkende automatisering en eigen producten — afgestemd op wat de organisatie echt nodig heeft.",
+        "items": [
+          {
+            "title": "Quality Engineering",
+            "description": "Kwaliteitsstrategie, governance en risicogestuurd testen, ingebed in Agile- en DevOps-teams."
+          },
+          {
+            "title": "Test Management & Automatisering",
+            "description": "Teststrategie, coördinatie en onderhoudbare automatisering met Robot Framework, Playwright, Tosca en CI/CD."
+          },
+          {
+            "title": "Procesverbetering & Automatisering",
+            "description": "Procesanalyse, blauwdrukken en automatisering met meetbare ROI en operationele controle."
+          },
+          {
+            "title": "Verantwoorde AI-adoptie",
+            "description": "AI-gereedheid, veilige toepassing, menselijke controle en governance op privacy en beveiliging."
+          },
+          {
+            "title": "Maatwerk digitale producten",
+            "description": "Discovery, ontwerp, implementatie en testen van veilige, onderhoudbare producten en platformen."
+          }
+        ],
+        "cta": "Alle diensten bekijken"
+      },
+      "process": {
+        "title": "Hoe Aurivian werkt",
+        "intro": "We introduceren technologie nooit om de technologie zelf. Elke aanbeveling is verbonden met bedrijfswaarde, kwaliteit, controle of meetbare verbetering.",
+        "steps": [
+          {
+            "title": "Begrijpen",
+            "description": "We doorgronden de organisatie, het proces en het probleem."
+          },
+          {
+            "title": "Ontwerpen",
+            "description": "We ontwerpen een praktische, haalbare oplossing."
+          },
+          {
+            "title": "Implementeren",
+            "description": "We bouwen, valideren en leveren werkend op."
+          },
+          {
+            "title": "Borgen en verbeteren",
+            "description": "We dragen kennis over en sturen op meetbare resultaten."
+          }
+        ]
+      },
+      "product": {
+        "eyebrow": "Uitgelicht product",
+        "title": "Opsly by Aurivian",
+        "description": "Opsly is het operationele platform van Aurivian voor het mkb. Het zet operationele knelpunten om in procesblauwdrukken, automatiseringen en meetbare ROI.",
+        "points": [
+          "Begeleide intake en automatische procesblauwdruk",
+          "Configureerbare automatiseringen en testruns",
+          "Meting van tijdwinst, doorlooptijd en ROI"
+        ],
+        "cta": "Ontdek Opsly"
+      },
+      "ventures": {
+        "title": "Producten en ventures",
+        "intro": "Opsly is ons eerste product. We ontwikkelen onze productportfolio stap voor stap en publiceren alleen wat klaar is om te delen."
+      },
+      "closing": {
+        "title": "Bespreek uw vraagstuk",
+        "description": "Heeft u een uitdaging rond kwaliteit, automatisering, processen of AI? We denken graag met u mee.",
+        "cta": "Plan een kennismaking"
+      }
+    },
+    "services": {
+      "seoTitle": "Diensten — Aurivian",
+      "seoDescription": "Quality engineering, test management en automatisering, procesverbetering, verantwoorde AI-adoptie en maatwerk digitale producten.",
+      "title": "Diensten",
+      "subtitle": "Strategisch advies, praktische uitvoering en productontwikkeling.",
+      "intro": "We helpen organisaties heldere processen te creëren, softwarekwaliteit te verbeteren, repetitief werk te automatiseren en AI gecontroleerd en meetbaar toe te passen.",
+      "items": [
+        {
+          "id": "quality-engineering",
+          "title": "Quality Engineering",
+          "intro": "Kwaliteit als ontwerpprincipe, ingebed in teams en releaseprocessen.",
+          "points": [
+            "Kwaliteitsstrategie en kwaliteitsgovernance",
+            "Risicogestuurd testen",
+            "Releasekwaliteit",
+            "Kwaliteit binnen Agile- en DevOps-teams",
+            "Testbaarheid en Definition of Done",
+            "Kwaliteitsrapportage en verbetering"
+          ]
+        },
+        {
+          "id": "test-automation",
+          "title": "Test Management & Automatisering",
+          "intro": "Onderhoudbare, schaalbare testautomatisering en duidelijke testcoördinatie.",
+          "points": [
+            "Teststrategie en testplanning",
+            "Testcoördinatie",
+            "Regressieautomatisering",
+            "API-, integratie- en end-to-end-testen",
+            "CI/CD-integratie",
+            "Robot Framework, Playwright, Tosca en verwante tooling",
+            "Onderhoudbaarheid en schaalbare testarchitectuur"
+          ]
+        },
+        {
+          "id": "process-automation",
+          "title": "Procesverbetering & Automatisering",
+          "intro": "Van procesanalyse naar werkende automatisering met meetbare ROI.",
+          "points": [
+            "Procesdiscovery",
+            "Analyse van operationele knelpunten",
+            "Procesblauwdrukken",
+            "Workflowoptimalisatie",
+            "Automatiseringskansen",
+            "Integraties",
+            "Meetbare ROI",
+            "Governance en operationele controle"
+          ]
+        },
+        {
+          "id": "responsible-ai",
+          "title": "Verantwoorde AI-adoptie",
+          "intro": "AI veilig, gecontroleerd en met menselijke controle in gebruik nemen.",
+          "points": [
+            "AI-gereedheid",
+            "Veilige en gecontroleerde AI-adoptie",
+            "AI-ondersteunde workflows",
+            "LLM-use cases",
+            "Menselijke controle en validatie van output",
+            "Governance, privacy en beveiliging",
+            "Adoptie binnen teams en praktische implementatie"
+          ]
+        },
+        {
+          "id": "digital-products",
+          "title": "Maatwerk digitale producten",
+          "intro": "Veilige, onderhoudbare producten en platformen, van idee tot pilot.",
+          "points": [
+            "Discovery en validatie",
+            "Productontwerp",
+            "Implementatie",
+            "Integraties",
+            "Testen en kwaliteitsborging",
+            "Pilotoplevering",
+            "Veilige en onderhoudbare architectuur"
+          ]
+        }
+      ],
+      "cta": "Plan een kennismaking"
+    },
+    "products": {
+      "seoTitle": "Producten — Aurivian",
+      "seoDescription": "Opsly is het operationele platform van Aurivian voor het mkb. Ontdek onze producten en ventures.",
+      "title": "Producten",
+      "subtitle": "Eigen producten, gebouwd op dezelfde principes als onze diensten.",
+      "intro": "Naast consultancy ontwikkelt Aurivian eigen producten. Opsly is ons eerste product.",
+      "opsly": {
+        "name": "Opsly by Aurivian",
+        "description": "Opsly helpt het mkb om handmatig en versnipperd werk om te zetten in heldere processen, praktische automatisering en meetbare operationele verbetering.",
+        "cta": "Bekijk Opsly"
+      },
+      "more": {
+        "title": "Meer producten volgen",
+        "description": "We breiden onze productportfolio stap voor stap uit. Vertrouwelijke of onafgeronde producten publiceren we niet."
+      }
+    },
+    "opsly": {
+      "seoTitle": "Opsly by Aurivian — operationeel platform voor het mkb",
+      "seoDescription": "Opsly zet operationele knelpunten om in procesblauwdrukken, automatiseringen en meetbare ROI. Beschikbaar via pilots en early access.",
+      "title": "Opsly by Aurivian",
+      "subtitle": "Opsly helpt het mkb om handmatig en versnipperd werk om te zetten in heldere processen, praktische automatisering en meetbare operationele verbetering.",
+      "statusLabel": "Status",
+      "intro": "Opsly bevindt zich in de pilot- en vroege productiefase. Hieronder leest u wat het platform doet en welke integraties beschikbaar of gepland zijn.",
+      "sections": {
+        "understand": {
+          "title": "Begrijpen",
+          "description": "Breng processen en knelpunten helder in kaart.",
+          "points": [
+            "Begeleide intake",
+            "Vastleggen van operationele knelpunten",
+            "Automatische procesblauwdruk",
+            "Identificatie van bottlenecks",
+            "Verbeterkansen"
+          ]
+        },
+        "improve": {
+          "title": "Verbeteren en automatiseren",
+          "description": "Richt praktische automatiseringen in, ook voor niet-technische gebruikers.",
+          "points": [
+            "Automatiseringssjablonen",
+            "Configureerbare workflows",
+            "Testruns en logs",
+            "Integraties met gangbare zakelijke tools",
+            "No-code of laagcomplexe inrichting voor business-gebruikers"
+          ]
+        },
+        "measure": {
+          "title": "Meten",
+          "description": "Maak resultaten zichtbaar en stuur op verbetering.",
+          "points": [
+            "Bespaarde tijd",
+            "Kortere doorlooptijd",
+            "Confidence scores",
+            "ROI per automatisering",
+            "Trendrapportage"
+          ]
+        }
+      },
+      "integrations": {
+        "title": "Integraties",
+        "intro": "Opsly ondersteunt of plant integraties met gangbare zakelijke tools. De status per integratie staat hieronder en weerspiegelt de werkelijke stand van zaken.",
+        "note": "We presenteren een integratie pas als 'beschikbaar' wanneer de werkende implementatie is geverifieerd.",
+        "status": {
+          "available": "Beschikbaar",
+          "pilot": "Pilot",
+          "planned": "Gepland"
+        }
+      },
+      "cta": {
+        "title": "Aan de slag met Opsly",
+        "description": "Opsly is beschikbaar via pilots en early-accesstrajecten. Bespreek met ons een pilot voor uw organisatie.",
+        "primary": "Plan een kennismaking",
+        "pricing": "Pilots en commerciële opties"
+      }
+    },
+    "approach": {
+      "seoTitle": "Aanpak — Aurivian",
+      "seoDescription": "Het leveringsmodel van Aurivian: begrijpen, risico's en kansen, ontwerp, implementatie, kennisoverdracht en meten.",
+      "title": "Onze aanpak",
+      "subtitle": "Een praktisch leveringsmodel dat technologie verbindt aan bedrijfswaarde.",
+      "intro": "Aurivian introduceert technologie niet om de nieuwigheid. Elke aanbeveling is verbonden met bedrijfswaarde, kwaliteit, controle of meetbare verbetering.",
+      "steps": [
+        {
+          "title": "Begrijp de organisatie en het probleem",
+          "description": "We verdiepen ons in de context, de mensen en het vraagstuk."
+        },
+        {
+          "title": "Identificeer risico's, frictie en kansen",
+          "description": "We brengen in kaart wat verbetering in de weg staat en waar winst zit."
+        },
+        {
+          "title": "Ontwerp een praktische oplossing",
+          "description": "We kiezen voor haalbare oplossingen die passen bij de organisatie."
+        },
+        {
+          "title": "Implementeer en valideer",
+          "description": "We bouwen, testen en leveren werkend op."
+        },
+        {
+          "title": "Draag kennis over en borg eigenaarschap",
+          "description": "We zorgen dat het team zelf verder kan."
+        },
+        {
+          "title": "Meet resultaten en verbeter",
+          "description": "We maken impact zichtbaar en blijven bijsturen."
+        }
+      ]
+    },
+    "experience": {
+      "seoTitle": "Ervaring — Aurivian",
+      "seoDescription": "Ervaring op sectorniveau: overheid, financiële dienstverlening, energie, zorg en het mkb.",
+      "title": "Ervaring",
+      "subtitle": "Ervaring op sectorniveau, zonder vertrouwelijke details.",
+      "intro": "We werken in uiteenlopende sectoren met complexe operationele en kwaliteitsvraagstukken. Hieronder beschrijven we onze ervaring op sectorniveau.",
+      "disclaimer": "We publiceren geen klantnamen, cijfers of vertrouwelijke projectdetails tenzij hier expliciet toestemming voor is.",
+      "sectors": [
+        {
+          "title": "Overheid en publieke sector",
+          "description": "Kwaliteit, controle en beheersbaarheid in complexe, gereguleerde omgevingen."
+        },
+        {
+          "title": "Financiële dienstverlening",
+          "description": "Betrouwbaarheid, beveiliging en releasekwaliteit voor kritieke systemen."
+        },
+        {
+          "title": "Energie",
+          "description": "Procesverbetering en kwaliteit in operationeel intensieve omgevingen."
+        },
+        {
+          "title": "Zorg",
+          "description": "Zorgvuldige, veilige en privacybewuste verbetering van processen."
+        },
+        {
+          "title": "Mkb en operationele teams",
+          "description": "Praktische automatisering en meetbare verbetering voor kleinere teams."
+        }
+      ],
+      "templateTitle": "Hoe we een case beschrijven",
+      "template": [
+        {
+          "label": "Context",
+          "description": "De situatie en omgeving."
+        },
+        {
+          "label": "Uitdaging",
+          "description": "Het probleem dat opgelost moest worden."
+        },
+        {
+          "label": "Aanpak",
+          "description": "Hoe we het hebben aangepakt."
+        },
+        {
+          "label": "Bijdrage",
+          "description": "Onze concrete bijdrage."
+        },
+        {
+          "label": "Technologie of methoden",
+          "description": "Ingezette technologie en werkwijzen."
+        },
+        {
+          "label": "Resultaat",
+          "description": "Het bereikte resultaat."
+        }
+      ]
+    },
+    "about": {
+      "seoTitle": "Over ons — Aurivian",
+      "seoDescription": "Aurivian combineert consultancy en productontwikkeling rond praktische verbetering, technische kwaliteit en verantwoorde innovatie.",
+      "title": "Over Aurivian",
+      "subtitle": "Praktische verbetering, technische kwaliteit en verantwoorde innovatie.",
+      "paragraphs": [
+        "Aurivian is gebouwd rond praktische verbetering, technische kwaliteit en verantwoorde innovatie.",
+        "We combineren consultancy met productontwikkeling. Daardoor begrijpen we niet alleen het advies, maar ook wat er nodig is om het werkend te maken.",
+        "We werken nauw samen met onze klanten in plaats van slides op afstand te leveren. Helderheid, kwaliteit, eigenaarschap en meetbare resultaten staan centraal."
+      ],
+      "principlesTitle": "Onze principes",
+      "principles": [
+        {
+          "title": "Helderheid boven hype",
+          "description": "Duidelijke taal en realistische verwachtingen."
+        },
+        {
+          "title": "Kwaliteit by design",
+          "description": "Kwaliteit als uitgangspunt, niet als sluitpost."
+        },
+        {
+          "title": "Automatisering met een doel",
+          "description": "Automatiseren waar het waarde toevoegt."
+        },
+        {
+          "title": "AI met menselijk toezicht",
+          "description": "AI gecontroleerd toepassen met menselijke controle."
+        },
+        {
+          "title": "Meetbare verbetering",
+          "description": "Resultaten die je kunt aantonen."
+        },
+        {
+          "title": "Duurzaam eigenaarschap",
+          "description": "Oplossingen die het team zelf kan beheren."
+        }
+      ]
+    },
+    "contact": {
+      "seoTitle": "Contact — Aurivian",
+      "seoDescription": "Bespreek een vraagstuk, pilot of samenwerking met Aurivian rond kwaliteit, automatisering, processen of AI.",
+      "title": "Neem contact op",
+      "subtitle": "Bespreek een vraagstuk, pilot of samenwerking.",
+      "intro": "Heeft u een uitdaging rond kwaliteit, automatisering, processen of AI? Laat het ons weten — we denken graag met u mee.",
+      "form": {
+        "name": "Naam",
+        "namePlaceholder": "Uw naam",
+        "organisation": "Organisatie",
+        "organisationPlaceholder": "Uw organisatie",
+        "email": "E-mailadres",
+        "emailPlaceholder": "u@organisatie.nl",
+        "message": "Bericht",
+        "messagePlaceholder": "Beschrijf kort uw vraagstuk of pilotidee",
+        "submit": "Open e-mail om te versturen",
+        "mailtoNote": "Bij verzenden opent uw eigen e-mailprogramma met een vooringevuld bericht. Het bericht wordt pas verstuurd nadat u het zelf verzendt.",
+        "subject": "Contactaanvraag via aurivian.nl",
+        "validation": {
+          "nameRequired": "Vul uw naam in.",
+          "organisationRequired": "Vul uw organisatie in.",
+          "emailRequired": "Vul uw e-mailadres in.",
+          "emailInvalid": "Vul een geldig e-mailadres in.",
+          "messageRequired": "Vul een bericht in."
+        }
+      },
+      "channels": {
+        "title": "Direct contact",
+        "general": "Algemene vragen",
+        "support": "Ondersteuning",
+        "security": "Beveiliging",
+        "privacy": "Privacy en gegevensbescherming",
+        "legal": "Juridisch"
+      },
+      "linkedinLabel": "LinkedIn"
     }
   }
 }

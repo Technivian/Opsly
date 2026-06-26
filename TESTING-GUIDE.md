@@ -1,4 +1,4 @@
-# Comprehensive Testing Guide - Ops Copilot
+# Comprehensive Testing Guide - Opsly
 
 ## Prerequisites
 
