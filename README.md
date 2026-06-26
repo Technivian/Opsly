@@ -154,19 +154,13 @@ npm run build   # bundles client + server into dist/
 npm start       # runs the production server
 ```
 
-Deployment uses `render.yaml` (single service, single domain). Database schema is pushed on production startup via `drizzle-kit push`. See [DEPLOY_TO_RENDER.md](DEPLOY_TO_RENDER.md) and [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md).
+Opsly is a Node/Express server (serves API + client, PostgreSQL, WebSocket). Supported hosts: **Northflank** (repo `Dockerfile`) or **Render** (`render.yaml`). Database schema is pushed on production startup via `drizzle-kit push`. **See [DEPLOYMENT.md](DEPLOYMENT.md)** for the full guide, plus [DEPLOY_TO_RENDER.md](DEPLOY_TO_RENDER.md) and [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md).
+
+> **Cloudflare is DNS/CDN only — not the application host.** A Node/Express server cannot run on Cloudflare Workers/Pages. Any Cloudflare Workers build connected to this repo will fail and should be disconnected (see [DEPLOYMENT.md](DEPLOYMENT.md)).
 
 ### Node version (required)
 
-This project uses **Vite 7** and **Vitest 4**, which require **Node 20+**. The pinned version is **Node 22.12.0** (`.nvmrc`), enforced via `package.json` `engines` (`node >=22.12.0`).
-
-**Cloudflare** (Pages/Workers builds for both **Production** and **Preview**) must set:
-
-```
-NODE_VERSION=22.12.0
-```
-
-An older Node (e.g. Node 18) will fail the build under Vite 7 / Vitest 4. Do **not** downgrade Vite or Vitest to accommodate an older Node — upgrade the build's Node version instead.
+This project uses **Vite 7** and **Vitest 4**, which require **Node 20+**. The pinned version is **Node 22.12.0** (`.nvmrc`), enforced via `package.json` `engines` (`node >=22.12.0`). On any host set `NODE_VERSION=22.12.0`. An older Node (e.g. Node 18) will fail the build under Vite 7 / Vitest 4 — upgrade the host's Node version rather than downgrading Vite/Vitest.
 
 ---
 
