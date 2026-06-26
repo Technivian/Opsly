@@ -1,0 +1,26 @@
+# Keep the build context small and reproducible.
+# node_modules is reinstalled with `npm ci` inside the image.
+node_modules
+dist
+
+# VCS / local tooling
+.git
+.github
+.DS_Store
+
+# Secrets and local env (never ship into the image)
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Tests / artifacts / uploads
+test-results
+playwright-report
+uploads
+
+# Local working documents
+*.docx
+
+# Logs
+*.log

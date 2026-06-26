@@ -99,6 +99,7 @@
     "zod-validation-error": "^3.5.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.50.0",
     "@tailwindcss/typography": "^0.5.15",
     "@tailwindcss/vite": "^4.1.18",
     "@types/connect-pg-simple": "^7.0.3",
@@ -121,15 +122,11 @@
     "tsx": "^4.20.5",
     "typescript": "5.6.3",
     "vite": "^7.3.0",
-    "vitest": "^4.0.18",
-    "@playwright/test": "^1.50.0"
+    "vitest": "^4.0.18"
   },
   "overrides": {
     "drizzle-kit": {
       "@esbuild-kit/esm-loader": "npm:tsx@^4.20.4"
     }
-  },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.8"
   }
 }
