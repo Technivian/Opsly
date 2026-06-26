@@ -1,6 +1,6 @@
 # ROI Calculation System - Technical Documentation
 
-**Author**: Ops Copilot Development Team  
+**Author**: Opsly Development Team  
 **Last Updated**: 2024  
 **Status**: Production-Ready
 

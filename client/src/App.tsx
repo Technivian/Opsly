@@ -8,7 +8,14 @@ import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
+import Home from "@/pages/marketing/home";
+import Services from "@/pages/marketing/services";
+import Products from "@/pages/marketing/products";
+import ProductOpsly from "@/pages/marketing/product-opsly";
+import Approach from "@/pages/marketing/approach";
+import Experience from "@/pages/marketing/experience";
+import About from "@/pages/marketing/about";
+import Contact from "@/pages/marketing/contact";
 import SignIn from "@/pages/auth/signin";
 import SignUp from "@/pages/auth/signup";
 import Privacy from "@/pages/privacy";
@@ -76,9 +83,17 @@ function PublicRoute({ component: Component }: { component: React.ComponentType 
 function Router() {
   return (
     <Switch>
-      <Route path="/">
-        <PublicRoute component={Landing} />
-      </Route>
+      {/* Aurivian corporate site — public, NOT wrapped in PublicRoute so
+          authenticated users can also browse these pages. */}
+      <Route path="/" component={Home} />
+      <Route path="/services" component={Services} />
+      <Route path="/products" component={Products} />
+      <Route path="/products/opsly" component={ProductOpsly} />
+      <Route path="/approach" component={Approach} />
+      <Route path="/experience" component={Experience} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
+      {/* Auth pages still redirect already-authenticated users to /app. */}
       <Route path="/auth/signin">
         <PublicRoute component={SignIn} />
       </Route>

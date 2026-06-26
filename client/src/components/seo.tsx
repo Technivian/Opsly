@@ -1,30 +1,41 @@
 import { Helmet } from "react-helmet-async";
+import { site } from "@/config/site";
 
 interface SEOProps {
   title?: string;
   description?: string;
   path?: string;
   type?: "website" | "article";
+  /** Optional brand suffix for the document title. Defaults to Aurivian. */
+  brand?: string;
+  /** Optional additional JSON-LD structured data nodes. */
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const defaultMeta = {
-  title: "Ops Copilot - AI-Powered Operations Automation",
-  description: "Document processes, identify bottlenecks, and generate automation blueprints using AI. Built for SMBs who want to move fast.",
-  url: "https://opscopilot.com",
+  title: "Aurivian — quality engineering, automation and responsible AI",
+  description:
+    "Aurivian helps organisations improve operations through quality engineering, intelligent automation and responsible AI.",
+  url: site.company.url,
   image: "/og-image.png",
 };
 
-export function SEO({ 
-  title, 
-  description = defaultMeta.description, 
+export function SEO({
+  title,
+  description = defaultMeta.description,
   path = "/",
-  type = "website"
+  type = "website",
+  brand = site.company.name,
+  structuredData,
 }: SEOProps) {
-  const pageTitle = title 
-    ? `${title} | Ops Copilot` 
-    : defaultMeta.title;
-  
+  const pageTitle = title ? `${title} | ${brand}` : defaultMeta.title;
+
   const canonicalUrl = `${defaultMeta.url}${path}`;
+  const nodes = structuredData
+    ? Array.isArray(structuredData)
+      ? structuredData
+      : [structuredData]
+    : [];
 
   return (
     <Helmet>
@@ -37,51 +48,56 @@ export function SEO({
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={`${defaultMeta.url}${defaultMeta.image}`} />
-      <meta property="og:site_name" content="Ops Copilot" />
+      <meta property="og:site_name" content={brand} />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={`${defaultMeta.url}${defaultMeta.image}`} />
 
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "Ops Copilot",
-          "applicationCategory": "BusinessApplication",
-          "operatingSystem": "Web",
-          "description": description,
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD",
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "ratingCount": "127",
-          },
-        })}
-      </script>
+      {nodes.map((node, i) => (
+        <script type="application/ld+json" key={i}>
+          {JSON.stringify(node)}
+        </script>
+      ))}
     </Helmet>
   );
 }
 
-export function LandingSEO() {
-  return (
-    <SEO 
-      description="Automate your operations with AI-powered blueprints. Document workflows, identify bottlenecks, and generate actionable automation plans. Free to start."
-      path="/"
-    />
-  );
-}
+/** Organisation structured data for Aurivian B.V. — facts only. */
+export const organisationStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: site.company.legalName,
+  alternateName: site.company.name,
+  url: site.company.url,
+  email: site.emails.general,
+  ...(site.social.linkedin ? { sameAs: [site.social.linkedin] } : {}),
+};
+
+/** Product structured data for Opsly — no invented price or rating. */
+export const opslyStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: site.product.name,
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  description:
+    "Opsly helps SMEs turn manual and fragmented work into clear processes, practical automation and measurable operational improvement.",
+  url: `${site.company.url}${site.product.path}`,
+  publisher: {
+    "@type": "Organization",
+    name: site.company.legalName,
+    url: site.company.url,
+  },
+};
 
 export function PricingSEO() {
   return (
-    <SEO 
-      title="Pricing"
-      description="Simple, transparent pricing for Ops Copilot. Start free and scale as your automation needs grow. No hidden fees."
+    <SEO
+      title="Pilots and commercial options"
+      brand="Opsly"
+      description="Opsly is available through pilots and early-access arrangements. Commercial terms depend on scope, integrations, support and deployment requirements."
       path="/pricing"
     />
   );
@@ -89,9 +105,10 @@ export function PricingSEO() {
 
 export function SecuritySEO() {
   return (
-    <SEO 
+    <SEO
       title="Security"
-      description="Enterprise-grade security for your operations data. SOC 2 compliant, GDPR ready, with EU data residency options."
+      brand="Opsly"
+      description="How Opsly protects your operations data: data isolation, encryption, GDPR alignment and EU data residency options."
       path="/security"
     />
   );
@@ -99,9 +116,10 @@ export function SecuritySEO() {
 
 export function DocsSEO() {
   return (
-    <SEO 
+    <SEO
       title="Documentation"
-      description="Learn how to use Ops Copilot. Quick start guide, FAQ, and comprehensive documentation for all features."
+      brand="Opsly"
+      description="Learn how to use Opsly. Quick start guide, FAQ and documentation for all features."
       path="/docs"
     />
   );
@@ -109,9 +127,10 @@ export function DocsSEO() {
 
 export function DashboardSEO() {
   return (
-    <SEO 
+    <SEO
       title="Dashboard"
-      description="Your operations command center. Track intakes, blueprints, automations, and ROI in one place."
+      brand="Opsly"
+      description="Your operations command center. Track intakes, blueprints, automations and ROI in one place."
       path="/app"
     />
   );

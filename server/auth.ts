@@ -65,7 +65,7 @@ export async function createUser(email: string, password: string, firstName?: st
 }
 
 export async function createDemoUser() {
-  const existing = await getUserByEmail("demo@opscopilot.com");
+  const existing = await getUserByEmail("demo@aurivian.nl");
   if (existing) {
     await seedDemoOrganization();
     return existing;
@@ -73,7 +73,7 @@ export async function createDemoUser() {
   
   const result = await db.insert(users).values({
     id: "demo-user-id",
-    email: "demo@opscopilot.com",
+    email: "demo@aurivian.nl",
     passwordHash: await hashPassword("demo123"),
     firstName: "Demo",
     lastName: "User",

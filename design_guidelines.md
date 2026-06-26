@@ -1,4 +1,4 @@
-# Ops Copilot Design Guidelines
+# Opsly Design Guidelines
 
 ## Design Approach
 **System:** Modern B2B SaaS aesthetic inspired by Linear and Notion - emphasizing clarity, sophistication, and trust. Muted, refined interface with subtle contrasts. Dark mode is the primary design target with light mode as an alternative. Professional, handcrafted feel avoiding template-driven patterns.

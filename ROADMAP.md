@@ -1,4 +1,4 @@
-# Ops Copilot - Product Roadmap
+# Opsly - Product Roadmap
 
 **Last Updated:** February 2, 2026  
 **Version:** 1.0
@@ -237,7 +237,7 @@ Transform operations automation for Dutch SMEs through AI-powered process discov
 - **Mobile App**: iOS/Android for on-the-go approvals and monitoring
 - **API-First Platform**: Public API for custom integrations
 - **Marketplace**: Community-contributed automation templates
-- **White-Label**: Ops Copilot as a service for consultancies
+- **White-Label**: Opsly as a service for consultancies
 - **Voice Interface**: "Hey Ops, run my invoice automation"
 - **Predictive Analytics**: "You'll receive 120 invoices next week, allocate resources accordingly"
 - **No-Code Connectors**: Let users build custom integrations via UI
@@ -302,6 +302,6 @@ Transform operations automation for Dutch SMEs through AI-powered process discov
 
 ## Feedback
 
-Have ideas or want to influence priorities? Contact: product@opscopilot.com
+Have ideas or want to influence priorities? Contact: hello@aurivian.nl
 
 Last reviewed: February 2, 2026

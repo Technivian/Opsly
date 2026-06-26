@@ -15,13 +15,17 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en',
+    // Dutch is the default for new visitors. A saved preference (localStorage)
+    // is respected first; authenticated users keep their server-stored locale,
+    // which is applied separately by usePreferences. We intentionally do not
+    // detect the browser language so that new visitors default to Dutch.
+    fallbackLng: 'nl',
     supportedLngs: ['en', 'nl'],
     interpolation: {
       escapeValue: false,
     },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],
       caches: ['localStorage'],
     },
   });

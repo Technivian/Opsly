@@ -80,13 +80,13 @@ export default function SignUp() {
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
             <Layers className="w-6 h-6 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-semibold tracking-tight">Ops Copilot</span>
+          <span className="text-2xl font-semibold tracking-tight">Opsly</span>
         </div>
 
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-xl">Create your account</CardTitle>
-            <CardDescription>Get started with Ops Copilot in minutes</CardDescription>
+            <CardDescription>Get started with Opsly in minutes</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

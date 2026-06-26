@@ -1,214 +1,202 @@
-# Opsly
+# Aurivian — corporate website & Opsly product
 
-**Opsly** is a practical operations platform for small and medium-sized businesses.  
-It helps teams turn messy, manual work into clear processes, automate where it makes sense, and track real operational ROI.
+This repository contains two things that share one deployment:
 
-Built with a **Dutch SME mindset**: clarity over hype, control over chaos.
+1. **The Aurivian corporate website** — the public marketing site for **Aurivian B.V.**, a consultancy and technology company.
+2. **Opsly** — Aurivian's flagship operations platform for SMEs, an authenticated product application.
 
----
+> **Aurivian B.V.** is the parent company.
+> **Opsly is a product of Aurivian B.V.** ("Opsly by Aurivian").
 
-## What Opsly Does
-
-Opsly guides organisations through three core steps:
-
-1. **Understand**
-   - Capture operational pain points through a guided intake
-   - Automatically generate a structured process blueprint
-   - Identify bottlenecks, manual work, and improvement opportunities
-
-2. **Improve & Automate**
-   - Use ready-made automation templates (sales, support, finance, operations)
-   - Configure and test automations without engineering knowledge
-   - Integrate with existing tools like email, CRM, Slack, and accounting software
-
-3. **Measure**
-   - Track time saved, cycle-time reduction, and confidence scores
-   - See ROI per automation and over time
-   - Make improvements measurable instead of “gut feel”
+See [BRAND_ARCHITECTURE.md](BRAND_ARCHITECTURE.md) for positioning, naming rules, tone of voice and legal attribution.
 
 ---
 
-## Key Features
+## Corporate website vs. product application
 
-- Guided intake → automatic process blueprint
-- Editable blueprints with version history
-- Automation templates with test runs and logs
-- ROI dashboard with trends and breakdowns
-- Role-based access (Owner, Admin, Operator, Viewer)
-- Dutch & English localisation
-- GDPR-aware by design
+| | Corporate website (Aurivian) | Product application (Opsly) |
+|---|---|---|
+| Audience | Prospects, public | Authenticated customers |
+| Routes | `/`, `/services`, `/products`, `/products/opsly`, `/approach`, `/experience`, `/about`, `/contact`, `/pricing` | `/app/*` |
+| Auth | None (public) | Required (`ProtectedRoute`) |
+| Design | Calm corporate identity | Existing Opsly product UI |
 
----
+The corporate routes are **not** wrapped in `PublicRoute`, so authenticated users can still browse them. Only `/auth/signin` and `/auth/signup` redirect an already-authenticated user to `/app`.
 
-## Supported Integrations
+### Routes
 
-Opsly integrates with commonly used tools, including:
+**Corporate (public)**
+- `/` — Aurivian home
+- `/services` — services overview (Quality Engineering, Test Management & Automation, Process Improvement & Automation, Responsible AI Adoption, Custom Digital Products)
+- `/products` — products overview
+- `/products/opsly` — Opsly product page
+- `/approach` — delivery model
+- `/experience` — industry-level experience
+- `/about` — about + principles
+- `/contact` — contact form (mailto) + contact channels
+- `/pricing` — Opsly pilots and commercial options
+- `/privacy`, `/terms`, `/security`, `/docs` — legal / product info
 
-- Gmail / Google Workspace
-- Microsoft Outlook / 365
-- Slack
-- HubSpot
-- Salesforce
-- **Exact Online**
-- **AFAS Software**
-
-Each integration includes setup documentation and secure OAuth-based authentication.
-
----
-
-## Target Audience
-
-Opsly is designed for:
-
-- Dutch SMEs
-- Operations managers
-- Founders and managing directors
-- Teams dealing with manual workflows, handovers, and operational friction
-
-It is **not** an automation playground for engineers.  
-It is a business tool for people who want clarity and results.
+**Product (authenticated, `/app/*`)**
+- `/app` (dashboard), `/app/intakes`, `/app/blueprints`, `/app/automations`, `/app/runs`, `/app/roi`, `/app/connections`, `/app/settings`
+- `/auth/signin`, `/auth/signup`
 
 ---
 
-## Tech Stack
+## Domains and URLs
 
-- **Frontend:** Vite + React + TypeScript, Tailwind CSS, shadcn/ui components
+For the initial launch the corporate website and the authenticated application share **one deployment and one domain**.
+
+- Corporate website: `https://aurivian.nl`
+- Opsly product page: `https://aurivian.nl/products/opsly`
+- Authenticated application: `https://aurivian.nl/app`
+
+**Reserved for later (documented only — not yet wired):**
+- Opsly product subdomain: `https://opsly.aurivian.nl`
+- Dedicated application subdomain: `https://app.opsly.aurivian.nl`
+
+A future domain split should not change authentication callbacks, cookies or routing without a dedicated migration.
+
+---
+
+## Configuration
+
+All public contact details and company identity live in one place:
+
+- [`client/src/config/site.ts`](client/src/config/site.ts) — company name, legal entity, domain, canonical URL, contact emails, optional LinkedIn, product attribution.
+- [`client/src/config/integrations.ts`](client/src/config/integrations.ts) — Opsly integration catalogue with explicit, evidence-based status (`available` / `pilot` / `planned`).
+
+Public contact addresses:
+
+| Purpose | Address |
+|---|---|
+| General | `hello@aurivian.nl` |
+| Support | `support@aurivian.nl` |
+| Security | `security@aurivian.nl` |
+| Privacy | `privacy@aurivian.nl` |
+| Legal | `legal@aurivian.nl` |
+
+The LinkedIn URL is optional (`site.social.linkedin`); no link is rendered unless a verified URL is set.
+
+---
+
+## Localisation
+
+The site uses **i18next** with Dutch (`nl`) and English (`en`).
+
+- **Dutch is the default** for new visitors.
+- A saved preference (localStorage) is respected first.
+- Authenticated users keep their server-stored locale (applied by `usePreferences`).
+- Corporate copy lives under the `corp` namespace in `client/src/i18n/locales/{nl,en}.json`; product copy keeps its existing keys.
+
+---
+
+## Tech stack
+
+- **Frontend:** Vite + React + TypeScript, Tailwind CSS, shadcn/ui, wouter (routing), react-helmet-async (metadata)
 - **Backend:** Express.js + Node.js
 - **Database:** PostgreSQL with Drizzle ORM
-- **Authentication:** Passport.js (local strategy)
-- **AI:** OpenAI GPT-4.1 for blueprint generation
-- **Testing:** Vitest + Supertest for automated API tests
-- **Infrastructure:** Replit (development), GitHub (source control)
+- **Auth:** Passport.js (local strategy)
+- **AI:** OpenAI (blueprint generation, with fallback)
+- **Testing:** Vitest + Supertest (API), Playwright (e2e)
 
 ---
 
-## Local Development
+## Local development
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL database
+- Node.js 18+ (see `.nvmrc`)
+- PostgreSQL
 
-### Install dependencies
+### Install
 ```bash
 npm install
 ```
 
 ### Environment variables
+Create `.env` from `.env.example` and configure:
+- `DATABASE_URL` — PostgreSQL connection
+- `SESSION_SECRET`
+- `AI_INTEGRATIONS_OPENAI_API_KEY` (optional — blueprint generation has a fallback)
+- Gmail OAuth credentials (optional)
+- `BASE_URL`
 
-Create a `.env` file based on `.env.example` and configure:
-
-- Database connection (PostgreSQL)
-- Session secret
-- OpenAI API key (optional - blueprint generation has fallback)
-- OAuth credentials (optional for local testing)
-
-### Run development server
+### Run
 ```bash
 npm run dev
 ```
 
-Server runs on http://localhost:3000
+---
 
-### Run tests
+## Testing
 
 ```bash
-# Setup test database (one-time)
+# One-time test DB setup
 chmod +x scripts/setup-test-db.sh
 ./scripts/setup-test-db.sh
 
-# Run automated tests
-TEST_DATABASE_URL=postgresql://haroonwahed@localhost:5432/opscopilot_test npm test
+# Unit + API tests (Vitest)
+npm test
 
-# Watch mode
-TEST_DATABASE_URL=postgresql://haroonwahed@localhost:5432/opscopilot_test npm run test:watch
+# End-to-end tests (Playwright) — includes corporate navigation smoke tests
+npm run test:e2e
 ```
 
-See [docs/TESTING.md](docs/TESTING.md) for comprehensive testing guide.
-
-### Database migrations
-
-```bash
-# Push schema changes to database
-npm run db:push
-```
-
----Roles & Permissions
-
-Opsly uses role-based access control:
-
-Owner – full access
-
-Admin – manage automations, blueprints, integrations
-
-Operator – run automations, view results
-
-Viewer – read-only access
-
-Permissions are enforced both in the UI and backend.
-
-Security & Privacy
-
-Opsly is built with EU businesses in mind:
-
-Tenant-level data isolation
-
-Encryption at rest and in transit
-
-GDPR-compliant cookie consent
-
-Configurable data retention
-
-No unnecessary data collection
-
-See /security in the app for details.
-
-Status
-
-Opsly is currently in early production / pilot phase.
-
-The focus is on:
-
-Stability
-
-Correctness
-
-Real-world SME use cases
-
-Roadmap (High Level)
-
-Additional automation templates
-
-Recurring automation scheduling
-
-Advanced reporting & exports
-
-International rollout beyond NL
-
-Contributing
-
-This repository is currently private/internal.
-External contributions are not yet open.
-
-License
-
-All rights reserved.
-© Technivian B.V.
-
-Contact
-
-For questions, pilots, or collaboration:
-
-Technivian
-https://github.com/Technivian
-
+- `npm run check` — TypeScript typecheck
+- `tests/e2e/marketing-nav.spec.ts` — corporate route rendering, navigation, CTA and contact-form validation.
 
 ---
 
-### Next optional steps
-If you want, I can now:
-- tighten this README for **open-source vs closed-source**
-- write a **CUSTOMER-FACING README** (non-technical)
-- create a **DEPLOYMENT.md** or **ONBOARDING.md**
-- tailor the wording to be *even more Dutch-business-native*
+## Build & deployment
 
-Just tell me.
+```bash
+npm run build   # bundles client + server into dist/
+npm start       # runs the production server
+```
+
+Deployment uses `render.yaml` (single service, single domain). Database schema is pushed on production startup via `drizzle-kit push`. See [DEPLOY_TO_RENDER.md](DEPLOY_TO_RENDER.md) and [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md).
+
+### Node version (required)
+
+This project uses **Vite 7** and **Vitest 4**, which require **Node 20+**. The pinned version is **Node 22.12.0** (`.nvmrc`), enforced via `package.json` `engines` (`node >=22.12.0`).
+
+**Cloudflare** (Pages/Workers builds for both **Production** and **Preview**) must set:
+
+```
+NODE_VERSION=22.12.0
+```
+
+An older Node (e.g. Node 18) will fail the build under Vite 7 / Vitest 4. Do **not** downgrade Vite or Vitest to accommodate an older Node — upgrade the build's Node version instead.
+
+---
+
+## Remaining manual actions (brand & legal)
+
+These are **not** performed automatically and require a human decision:
+
+- [ ] **GitHub organisation / repository migration** — the repo currently lives under `github.com/Technivian`. Migrating ownership or the org name to Aurivian is a manual follow-up; it is intentionally not done here.
+- [ ] **Verified LinkedIn URL** — set `site.social.linkedin` in `client/src/config/site.ts` once a verified company page exists.
+- [ ] **DNS / domains** — point `aurivian.nl` (and later the `opsly.aurivian.nl` / `app.opsly.aurivian.nl` subdomains) at the deployment.
+- [ ] **OG image** — replace `/og-image.png` with Aurivian-branded artwork.
+- [ ] **Legal text review** — entity and contact attribution have been updated to Aurivian B.V.; the substantive privacy/terms wording should be reviewed by counsel.
+- [ ] **Server-side contact form** — the contact form currently uses a `mailto:` transport. A future API endpoint should add server-side validation, rate limiting, spam protection, privacy handling, an email delivery provider, and delivery/error monitoring. The form component (`client/src/components/marketing/contact-form.tsx`) is structured so the transport can be swapped without rebuilding the UI.
+- [ ] **Integration statuses** — `client/src/config/integrations.ts` reflects verified status today (only Gmail is implemented). Update as new connectors ship; never mark an integration `available` until its working implementation is verified.
+
+---
+
+## Status
+
+Opsly is currently in **pilot / early-production** phase. The focus is on stability, correctness and real-world SME use cases.
+
+---
+
+## License
+
+All rights reserved.
+© Aurivian B.V.
+
+Opsly is a product of Aurivian B.V.
+
+## Contact
+
+For questions, pilots or collaboration: `hello@aurivian.nl`

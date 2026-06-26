@@ -91,7 +91,7 @@ export default function Dashboard() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to Ops Copilot. Here's your operational overview.</p>
+          <p className="text-muted-foreground">Welcome to Opsly. Here's your operational overview.</p>
         </div>
       </div>
 
