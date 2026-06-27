@@ -17,8 +17,7 @@ Opsly is a production-ready SaaS platform for operations automation intake, AI-p
 2. **Terms of Service** (`client/src/pages/terms.tsx`)
 
 Both documents are live on the application at:
-- Production URL (TBD): `https://opsly.com/privacy` and `https://opsly.com/terms`
-- Current staging: `http://127.0.0.1:5001/privacy` and `http://127.0.0.1:5001/terms`
+- Production URL: `https://aurivian.nl/privacy` and `https://aurivian.nl/terms`
 
 ---
 
