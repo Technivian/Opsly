@@ -6,7 +6,7 @@
 set -e
 
 DB_USER=${DB_USER:-"haroonwahed"}
-TEST_DB_NAME=${TEST_DB_NAME:-"opscopilot_test"}
+TEST_DB_NAME=${TEST_DB_NAME:-"opsly_test"}
 DATABASE_URL="postgresql://${DB_USER}@localhost:5432/${TEST_DB_NAME}"
 
 echo "🧪 Setting up test database: ${TEST_DB_NAME}"

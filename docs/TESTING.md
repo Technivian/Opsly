@@ -12,7 +12,7 @@ chmod +x scripts/setup-test-db.sh
 ./scripts/setup-test-db.sh
 ```
 
-This creates a separate PostgreSQL database `opscopilot_test` with the full schema.
+This creates a separate PostgreSQL database `opsly_test` with the full schema.
 
 ### 2. Run Tests
 
@@ -157,7 +157,7 @@ jobs:
         image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: opscopilot_test
+          POSTGRES_DB: opsly_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -177,13 +177,13 @@ jobs:
         
       - name: Setup test database
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/opscopilot_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/opsly_test
         run: |
           npm run db:push
           
       - name: Run tests
         env:
-          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/opscopilot_test
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/opsly_test
           NODE_ENV: test
         run: npm test
         
