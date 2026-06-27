@@ -29,7 +29,7 @@
 ### Technical Check (30 min before call)
 ```bash
 # Verify production is healthy
-curl https://opsly.com/api/health
+curl https://aurivian.nl/api/health
 # Should return 200 OK
 
 # Verify customer can log in
@@ -288,7 +288,7 @@ Thanks for joining! Here's what we covered:
 ✅ Support contact: email / Slack / [phone]
 
 YOUR ACTION ITEMS (by [DATE]):
-1. Submit your first intake (https://opsly.com/intakes)
+1. Submit your first intake (https://aurivian.nl/app/intakes)
 2. Review the generated blueprint
 3. Configure one automation
 4. Reply with feedback
@@ -299,7 +299,7 @@ MY ACTION ITEMS:
 3. Scheduled 1-week check-in call (see calendar)
 
 Support:
-- Email: support@opsly.com (4-hour response)
+- Email: support@aurivian.nl (4-hour response)
 - Slack: #[customer-name]-support (daily check)
 - Phone: [your number] (emergency only)
 

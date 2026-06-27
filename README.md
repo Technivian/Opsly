@@ -8,7 +8,7 @@ This repository contains two things that share one deployment:
 > **Aurivian B.V.** is the parent company.
 > **Opsly is a product of Aurivian B.V.** ("Opsly by Aurivian").
 
-See [BRAND_ARCHITECTURE.md](BRAND_ARCHITECTURE.md) for positioning, naming rules, tone of voice and legal attribution.
+See [docs/PRODUCT_CONTEXT.md](docs/PRODUCT_CONTEXT.md) for positioning, naming rules, tone of voice and legal attribution.
 
 ---
 
@@ -21,19 +21,19 @@ See [BRAND_ARCHITECTURE.md](BRAND_ARCHITECTURE.md) for positioning, naming rules
 | Auth | None (public) | Required (`ProtectedRoute`) |
 | Design | Calm corporate identity | Existing Opsly product UI |
 
-The corporate routes are **not** wrapped in `PublicRoute`, so authenticated users can still browse them. Only `/auth/signin` and `/auth/signup` redirect an already-authenticated user to `/app`.
+Corporate routes are not wrapped in `PublicRoute`, so authenticated users can browse them. Only `/auth/signin` and `/auth/signup` redirect an already-authenticated user to `/app`.
 
 ### Routes
 
 **Corporate (public)**
 - `/` — Aurivian home
-- `/services` — services overview (Quality Engineering, Test Management & Automation, Process Improvement & Automation, Responsible AI Adoption, Custom Digital Products)
+- `/services` — services overview
 - `/products` — products overview
 - `/products/opsly` — Opsly product page
 - `/approach` — delivery model
 - `/experience` — industry-level experience
 - `/about` — about + principles
-- `/contact` — contact form (mailto) + contact channels
+- `/contact` — contact form (`mailto:`) + contact channels
 - `/pricing` — Opsly pilots and commercial options
 - `/privacy`, `/terms`, `/security`, `/docs` — legal / product info
 
@@ -43,19 +43,31 @@ The corporate routes are **not** wrapped in `PublicRoute`, so authenticated user
 
 ---
 
-## Domains and URLs
+## Production
 
-For the initial launch the corporate website and the authenticated application share **one deployment and one domain**.
+| Item | Value |
+|---|---|
+| URL | `https://aurivian.nl` |
+| Host | Northflank (Docker container) |
+| DNS / CDN / TLS | Cloudflare |
+| Health check | `GET /api/health` → `200 {"status":"ok","database":"connected"}` |
+| WebSocket | `wss://aurivian.nl/ws/runs` |
 
-- Corporate website: `https://aurivian.nl`
-- Opsly product page: `https://aurivian.nl/products/opsly`
-- Authenticated application: `https://aurivian.nl/app`
+---
 
-**Reserved for later (documented only — not yet wired):**
-- Opsly product subdomain: `https://opsly.aurivian.nl`
-- Dedicated application subdomain: `https://app.opsly.aurivian.nl`
+## Tech stack
 
-A future domain split should not change authentication callbacks, cookies or routing without a dedicated migration.
+| Layer | Technology |
+|---|---|
+| Frontend | Vite, React 18, TypeScript, Tailwind CSS, shadcn/ui, wouter, i18next, react-helmet-async |
+| Backend | Express.js, Node.js 22.12.0 |
+| Database | PostgreSQL + Drizzle ORM |
+| Auth | Passport.js (local strategy), bcrypt, PostgreSQL sessions |
+| Realtime | WebSockets (`ws`) |
+| Security | Helmet v8, express-rate-limit v8, CSP, RFC 9110 RateLimit headers |
+| AI | OpenAI (blueprint generation, optional) |
+| Testing | Vitest + Supertest (unit/API), Playwright (e2e) |
+| Build | esbuild (server → `dist/index.cjs`), Vite (client → `dist/public/`) |
 
 ---
 
@@ -76,8 +88,6 @@ Public contact addresses:
 | Privacy | `privacy@aurivian.nl` |
 | Legal | `legal@aurivian.nl` |
 
-The LinkedIn URL is optional (`site.social.linkedin`); no link is rendered unless a verified URL is set.
-
 ---
 
 ## Localisation
@@ -87,25 +97,14 @@ The site uses **i18next** with Dutch (`nl`) and English (`en`).
 - **Dutch is the default** for new visitors.
 - A saved preference (localStorage) is respected first.
 - Authenticated users keep their server-stored locale (applied by `usePreferences`).
-- Corporate copy lives under the `corp` namespace in `client/src/i18n/locales/{nl,en}.json`; product copy keeps its existing keys.
-
----
-
-## Tech stack
-
-- **Frontend:** Vite + React + TypeScript, Tailwind CSS, shadcn/ui, wouter (routing), react-helmet-async (metadata)
-- **Backend:** Express.js + Node.js
-- **Database:** PostgreSQL with Drizzle ORM
-- **Auth:** Passport.js (local strategy)
-- **AI:** OpenAI (blueprint generation, with fallback)
-- **Testing:** Vitest + Supertest (API), Playwright (e2e)
+- Corporate copy lives under the `corp` namespace in `client/src/i18n/locales/{nl,en}.json`.
 
 ---
 
 ## Local development
 
 ### Prerequisites
-- Node.js 18+ (see `.nvmrc`)
+- Node.js 22.12.0 (see `.nvmrc`; enforced via `package.json` `engines >=22.12.0`)
 - PostgreSQL
 
 ### Install
@@ -114,36 +113,44 @@ npm install
 ```
 
 ### Environment variables
-Create `.env` from `.env.example` and configure:
-- `DATABASE_URL` — PostgreSQL connection
-- `SESSION_SECRET`
-- `AI_INTEGRATIONS_OPENAI_API_KEY` (optional — blueprint generation has a fallback)
-- Gmail OAuth credentials (optional)
-- `BASE_URL`
+Copy `.env.example` to `.env` and configure:
+
+| Variable | Required | Notes |
+|---|---|---|
+| `DATABASE_URL` | Yes | `postgresql://user:pass@host:5432/dbname` |
+| `SESSION_SECRET` | Yes | `openssl rand -base64 32` |
+| `BASE_URL` | Recommended | `http://localhost:5000` in dev |
+| `AI_INTEGRATIONS_OPENAI_API_KEY` | Optional | Blueprint generation (has fallback) |
+| `GMAIL_CLIENT_ID` / `_SECRET` / `GMAIL_REDIRECT_URI` | Optional | Gmail integration |
+
+Full variable reference: [docs/ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md).
 
 ### Run
 ```bash
 npm run dev
 ```
 
+The development server starts on `http://localhost:5000` with HMR and `ws://localhost:*` allowed in the CSP.
+
 ---
 
 ## Testing
 
 ```bash
-# One-time test DB setup
-chmod +x scripts/setup-test-db.sh
-./scripts/setup-test-db.sh
-
 # Unit + API tests (Vitest)
 npm test
 
-# End-to-end tests (Playwright) — includes corporate navigation smoke tests
+# With file watching
+npm run test:watch
+
+# End-to-end tests (Playwright)
 npm run test:e2e
+
+# TypeScript typecheck
+npm run check
 ```
 
-- `npm run check` — TypeScript typecheck
-- `tests/e2e/marketing-nav.spec.ts` — corporate route rendering, navigation, CTA and contact-form validation.
+Tests prove actual 429 rate-limit behaviour (no global skip in `NODE_ENV=test`). See [docs/SECURITY.md](docs/SECURITY.md) for the rate-limiter design.
 
 ---
 
@@ -151,30 +158,45 @@ npm run test:e2e
 
 ```bash
 npm run build   # bundles client + server into dist/
-npm start       # runs the production server
+npm run start   # starts the production server (NODE_ENV=production)
 ```
 
-Opsly is a Node/Express server (serves API + client, PostgreSQL, WebSocket). Supported hosts: **Northflank** (repo `Dockerfile`) or **Render** (`render.yaml`). Database schema is pushed on production startup via `drizzle-kit push`. **See [DEPLOYMENT.md](DEPLOYMENT.md)** for the full guide, plus [DEPLOY_TO_RENDER.md](DEPLOY_TO_RENDER.md) and [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md).
+The production server is a single Node/Express process that serves the API, the built client, and WebSocket connections on the same port. **Northflank** is the canonical host via the repo `Dockerfile`. See [docs/DEPLOYMENT_NORTHFLANK.md](docs/DEPLOYMENT_NORTHFLANK.md) for the full guide.
 
-> **Cloudflare is DNS/CDN only — not the application host.** A Node/Express server cannot run on Cloudflare Workers/Pages. Any Cloudflare Workers build connected to this repo will fail and should be disconnected (see [DEPLOYMENT.md](DEPLOYMENT.md)).
+> **Cloudflare is DNS/CDN only — not the application host.** A Node/Express server cannot run on Cloudflare Workers/Pages.
 
-### Node version (required)
+### Node version
 
-This project uses **Vite 7** and **Vitest 4**, which require **Node 20+**. The pinned version is **Node 22.12.0** (`.nvmrc`), enforced via `package.json` `engines` (`node >=22.12.0`). On any host set `NODE_VERSION=22.12.0`. An older Node (e.g. Node 18) will fail the build under Vite 7 / Vitest 4 — upgrade the host's Node version rather than downgrading Vite/Vitest.
+This project requires **Node 22.12.0** (pinned in `.nvmrc`, enforced via `engines` in `package.json`). Older versions will fail the Vite 7 / Vitest 4 build.
 
 ---
 
-## Remaining manual actions (brand & legal)
+## Documentation
 
-These are **not** performed automatically and require a human decision:
+| Document | Contents |
+|---|---|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture, request flow, build pipeline |
+| [docs/DEPLOYMENT_NORTHFLANK.md](docs/DEPLOYMENT_NORTHFLANK.md) | Northflank setup, environment, Cloudflare DNS |
+| [docs/ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) | All environment variables, required vs. optional |
+| [docs/SECURITY.md](docs/SECURITY.md) | Helmet CSP, rate limiting, auth security, trust proxy |
+| [docs/OPERATIONS_RUNBOOK.md](docs/OPERATIONS_RUNBOOK.md) | Smoke tests, health checks, rollback, incident response |
+| [docs/PRODUCT_CONTEXT.md](docs/PRODUCT_CONTEXT.md) | Brand architecture, naming rules, tone of voice, legal attribution |
+| [docs/EXECUTION-GUARANTEES.md](docs/EXECUTION-GUARANTEES.md) | Automation execution model and guarantees |
+| [docs/ROI-SYSTEM.md](docs/ROI-SYSTEM.md) | ROI calculation methodology |
 
-- [ ] **GitHub organisation / repository migration** — the repo currently lives under `github.com/Technivian`. Migrating ownership or the org name to Aurivian is a manual follow-up; it is intentionally not done here.
+---
+
+## Remaining manual actions
+
+These require a human decision and are not performed automatically:
+
+- [ ] **GitHub organisation migration** — the repo currently lives under `github.com/Technivian`. Migrating ownership to Aurivian is a manual follow-up.
 - [ ] **Verified LinkedIn URL** — set `site.social.linkedin` in `client/src/config/site.ts` once a verified company page exists.
-- [ ] **DNS / domains** — point `aurivian.nl` (and later the `opsly.aurivian.nl` / `app.opsly.aurivian.nl` subdomains) at the deployment.
+- [ ] **`www.aurivian.nl` redirect** — `www` currently returns HTTP 525 (SSL handshake error via Cloudflare). Add a Cloudflare Redirect Rule `www.aurivian.nl → https://aurivian.nl` (301).
 - [ ] **OG image** — replace `/og-image.png` with Aurivian-branded artwork.
 - [ ] **Legal text review** — entity and contact attribution have been updated to Aurivian B.V.; the substantive privacy/terms wording should be reviewed by counsel.
-- [ ] **Server-side contact form** — the contact form currently uses a `mailto:` transport. A future API endpoint should add server-side validation, rate limiting, spam protection, privacy handling, an email delivery provider, and delivery/error monitoring. The form component (`client/src/components/marketing/contact-form.tsx`) is structured so the transport can be swapped without rebuilding the UI.
-- [ ] **Integration statuses** — `client/src/config/integrations.ts` reflects verified status today (only Gmail is implemented). Update as new connectors ship; never mark an integration `available` until its working implementation is verified.
+- [ ] **Server-side contact form** — the contact form uses `mailto:` transport. A future API endpoint should add server-side validation, rate limiting, spam protection and a delivery provider.
+- [ ] **Integration statuses** — `client/src/config/integrations.ts` reflects verified status today (only Gmail is implemented). Never mark an integration `available` until its working implementation is verified.
 
 ---
 
@@ -193,4 +215,4 @@ Opsly is a product of Aurivian B.V.
 
 ## Contact
 
-For questions, pilots or collaboration: `hello@aurivian.nl`
+`hello@aurivian.nl`
