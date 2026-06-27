@@ -285,10 +285,10 @@ export default function ROIDashboard() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Automation</TableHead>
-                    <TableHead className="text-right">Runs</TableHead>
-                    <TableHead className="text-right">Items</TableHead>
-                    <TableHead className="text-right">Time Saved</TableHead>
+                    <TableHead>{t("automations.title")}</TableHead>
+                    <TableHead className="text-right">{t("roi.runs")}</TableHead>
+                    <TableHead className="text-right">{t("roi.items")}</TableHead>
+                    <TableHead className="text-right">{t("roi.hoursSaved")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -316,8 +316,8 @@ export default function ROIDashboard() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                <p>No automation data yet</p>
-                <p className="text-sm">Run some automations to see impact metrics</p>
+                <p>{t("roi.noData")}</p>
+                <p className="text-sm">{t("roi.noDataDesc")}</p>
               </div>
             )}
           </CardContent>

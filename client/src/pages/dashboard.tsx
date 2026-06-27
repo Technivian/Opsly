@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,32 @@ import {
 } from "lucide-react";
 import type { Intake, Blueprint, Run } from "@shared/schema";
 
+function getIntakeStatusLabel(status: string, t: (key: string) => string): string {
+  const key = `intakes.status.${status}`;
+  const translated = t(key);
+  return translated !== key ? translated : status;
+}
+
+function getRunStatusLabel(status: string, t: (key: string) => string): string {
+  const map: Record<string, string> = {
+    SUCCESS: t("runs.status.success"),
+    FAILED: t("runs.status.failed"),
+    RUNNING: t("runs.status.running"),
+    QUEUED: t("runs.status.queued"),
+  };
+  return map[status] ?? status;
+}
+
+function getPainAreaLabel(painArea: string, t: (key: string) => string): string {
+  const key = `intakes.wizard.painAreas.${painArea}.label`;
+  const translated = t(key);
+  return translated !== key ? translated : painArea;
+}
+
 export default function Dashboard() {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === "nl" ? "nl-NL" : "en-GB";
+
   const { data: intakes, isLoading: intakesLoading } = useQuery<Intake[]>({
     queryKey: ["/api/intakes"],
   });
@@ -46,9 +72,9 @@ export default function Dashboard() {
   const getNextAction = () => {
     if (!intakes?.length) {
       return {
-        title: "Create Your First Intake",
-        description: "Start by describing your operational challenges and let AI generate a process blueprint.",
-        action: "Start Intake Wizard",
+        title: t("dashboard.nextAction.firstIntake.title"),
+        description: t("dashboard.nextAction.firstIntake.desc"),
+        action: t("dashboard.nextAction.firstIntake.action"),
         href: "/app/intakes/new",
         icon: ClipboardList,
         color: "text-primary",
@@ -56,9 +82,9 @@ export default function Dashboard() {
     }
     if (pendingIntakes.length > 0) {
       return {
-        title: "Processing Your Intake",
-        description: `${pendingIntakes.length} intake(s) are being processed. Check back shortly for your blueprint.`,
-        action: "View Intakes",
+        title: t("dashboard.nextAction.processing.title"),
+        description: t("dashboard.nextAction.processing.desc", { count: pendingIntakes.length }),
+        action: t("dashboard.nextAction.processing.action"),
         href: "/app/intakes",
         icon: Clock,
         color: "text-chart-4",
@@ -66,18 +92,18 @@ export default function Dashboard() {
     }
     if (blueprints?.length && !runs?.length) {
       return {
-        title: "Configure Your First Automation",
-        description: "You have blueprints ready! Set up an automation template to start saving time.",
-        action: "View Automations",
+        title: t("dashboard.nextAction.configureAutomation.title"),
+        description: t("dashboard.nextAction.configureAutomation.desc"),
+        action: t("dashboard.nextAction.configureAutomation.action"),
         href: "/app/automations",
         icon: Sparkles,
         color: "text-chart-3",
       };
     }
     return {
-      title: "Create Another Intake",
-      description: "Document more processes to discover additional automation opportunities.",
-      action: "Start Intake",
+      title: t("dashboard.nextAction.anotherIntake.title"),
+      description: t("dashboard.nextAction.anotherIntake.desc"),
+      action: t("dashboard.nextAction.anotherIntake.action"),
       href: "/app/intakes/new",
       icon: ClipboardList,
       color: "text-primary",
@@ -90,8 +116,8 @@ export default function Dashboard() {
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to Opsly. Here's your operational overview.</p>
+          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+          <p className="text-muted-foreground">{t("dashboard.subtitle")}</p>
         </div>
       </div>
 
@@ -99,7 +125,7 @@ export default function Dashboard() {
         <CardContent className="p-5">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className={`w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0`}>
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <nextAction.icon className={`w-5 h-5 ${nextAction.color}`} />
               </div>
               <div>
@@ -119,7 +145,7 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Hours Saved</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.hoursSaved")}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -128,12 +154,12 @@ export default function Dashboard() {
             ) : (
               <div className="text-2xl font-bold">{roiData?.hoursSaved || 0}</div>
             )}
-            <p className="text-xs text-muted-foreground">Total time saved through automation</p>
+            <p className="text-xs text-muted-foreground">{t("dashboard.hoursSavedDesc")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cycle Time</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.cycleTime")}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -144,12 +170,12 @@ export default function Dashboard() {
                 {roiData?.cycleTimeReduction || 0}%
               </div>
             )}
-            <p className="text-xs text-muted-foreground">Reduction in process time</p>
+            <p className="text-xs text-muted-foreground">{t("dashboard.cycleTimeDesc")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Blueprints</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.blueprintsCount")}</CardTitle>
             <GitBranch className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -158,12 +184,12 @@ export default function Dashboard() {
             ) : (
               <div className="text-2xl font-bold">{blueprints?.length || 0}</div>
             )}
-            <p className="text-xs text-muted-foreground">Process blueprints generated</p>
+            <p className="text-xs text-muted-foreground">{t("dashboard.blueprintsDesc")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.successRate")}</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -174,7 +200,11 @@ export default function Dashboard() {
                 {totalRuns > 0 ? Math.round((successfulRuns / totalRuns) * 100) : 0}%
               </div>
             )}
-            <p className="text-xs text-muted-foreground">{successfulRuns} of {totalRuns} runs successful</p>
+            <p className="text-xs text-muted-foreground">
+              {totalRuns > 0
+                ? t("dashboard.successRateDesc", { success: successfulRuns, total: totalRuns })
+                : t("dashboard.successRateNone")}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -183,14 +213,14 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent Intakes</CardTitle>
+              <CardTitle>{t("dashboard.recentIntakes")}</CardTitle>
               <Link href="/app/intakes">
                 <Button variant="ghost" size="sm" data-testid="link-view-all-intakes">
-                  View All <ArrowRight className="w-4 h-4 ml-1" />
+                  {t("dashboard.viewAll")} <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             </div>
-            <CardDescription>Your latest process intake submissions</CardDescription>
+            <CardDescription>{t("dashboard.recentIntakesDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             {intakesLoading ? (
@@ -204,12 +234,12 @@ export default function Dashboard() {
                 {intakes.slice(0, 5).map((intake) => {
                   const blueprint = blueprints?.find(b => b.intakeId === intake.id);
                   const isClickable = intake.status === "PROCESSED" && blueprint;
-                  
+
                   const content = (
                     <div
                       className={`flex items-center justify-between p-3 rounded-lg ${
-                        isClickable 
-                          ? "bg-gradient-to-r from-primary/10 to-muted/50 border-l-2 border-l-primary/60 hover-elevate cursor-pointer" 
+                        isClickable
+                          ? "bg-gradient-to-r from-primary/10 to-muted/50 border-l-2 border-l-primary/60 hover-elevate cursor-pointer"
                           : "bg-muted/50"
                       }`}
                       data-testid={`intake-item-${intake.id}`}
@@ -217,7 +247,8 @@ export default function Dashboard() {
                       <div className="min-w-0">
                         <p className="font-medium truncate">{intake.title}</p>
                         <p className="text-sm text-muted-foreground">
-                          {intake.painArea} &middot; {new Date(intake.createdAt).toLocaleDateString()}
+                          {getPainAreaLabel(intake.painArea ?? "", t)} &middot;{" "}
+                          {new Date(intake.createdAt).toLocaleDateString(locale)}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -230,7 +261,7 @@ export default function Dashboard() {
                               : "outline"
                           }
                         >
-                          {intake.status}
+                          {getIntakeStatusLabel(intake.status, t)}
                         </Badge>
                         {isClickable && (
                           <ArrowRight className="w-4 h-4 text-primary" />
@@ -238,7 +269,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                   );
-                  
+
                   return isClickable ? (
                     <Link key={intake.id} href={`/app/blueprints/${blueprint.id}`}>
                       {content}
@@ -251,10 +282,10 @@ export default function Dashboard() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <ClipboardList className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                <p>No intakes yet</p>
+                <p>{t("dashboard.noIntakes")}</p>
                 <Link href="/app/intakes/new">
                   <Button variant="ghost" size="sm" data-testid="button-create-first-intake">
-                    Create your first intake
+                    {t("dashboard.createFirstIntake")}
                   </Button>
                 </Link>
               </div>
@@ -265,14 +296,14 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent Runs</CardTitle>
+              <CardTitle>{t("dashboard.recentRuns")}</CardTitle>
               <Link href="/app/runs">
                 <Button variant="ghost" size="sm" data-testid="link-view-all-runs">
-                  View All <ArrowRight className="w-4 h-4 ml-1" />
+                  {t("dashboard.viewAll")} <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             </div>
-            <CardDescription>Latest automation run results</CardDescription>
+            <CardDescription>{t("dashboard.recentRunsDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             {runsLoading ? (
@@ -287,7 +318,7 @@ export default function Dashboard() {
                   <Link key={run.id} href="/app/runs">
                     <div
                       className={`flex items-center justify-between p-3 rounded-lg hover-elevate cursor-pointer ${
-                        run.status === "SUCCESS" 
+                        run.status === "SUCCESS"
                           ? "bg-gradient-to-r from-chart-3/10 to-muted/50 border-l-2 border-l-chart-3/60"
                           : run.status === "FAILED"
                           ? "bg-gradient-to-r from-destructive/10 to-muted/50 border-l-2 border-l-destructive/60"
@@ -307,8 +338,8 @@ export default function Dashboard() {
                           <p className="font-medium truncate">Run #{run.id}</p>
                           <p className="text-sm text-muted-foreground">
                             {run.startedAt
-                              ? new Date(run.startedAt).toLocaleString()
-                              : "Queued"}
+                              ? new Date(run.startedAt).toLocaleString(locale)
+                              : t("runs.status.queued")}
                           </p>
                         </div>
                       </div>
@@ -322,7 +353,7 @@ export default function Dashboard() {
                               : "secondary"
                           }
                         >
-                          {run.status}
+                          {getRunStatusLabel(run.status, t)}
                         </Badge>
                         <ArrowRight className="w-4 h-4 text-muted-foreground" />
                       </div>
@@ -333,10 +364,10 @@ export default function Dashboard() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <Sparkles className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                <p>No runs yet</p>
+                <p>{t("dashboard.noRuns")}</p>
                 <Link href="/app/automations">
                   <Button variant="ghost" size="sm" data-testid="button-configure-automation">
-                    Configure an automation
+                    {t("dashboard.configureAutomation")}
                   </Button>
                 </Link>
               </div>

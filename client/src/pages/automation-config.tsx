@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRoute, useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Mail, UserPlus, Zap, Play, Loader2, CheckCircle, Settings } from "lucide-react";
+import { Mail, UserPlus, Zap, Play, Loader2, Info, Settings } from "lucide-react";
 import type { AutomationTemplate, AutomationConfig, ConfigSchemaField } from "@shared/schema";
 
 const TEMPLATE_ICONS: Record<string, typeof Mail> = {
@@ -25,22 +26,8 @@ const TEMPLATE_ICONS: Record<string, typeof Mail> = {
   lead_followup: UserPlus,
 };
 
-const TEMPLATE_SETUP_STEPS: Record<string, string[]> = {
-  email_to_task_triage: [
-    "Connect your email provider (Gmail/Outlook)",
-    "Configure category mappings",
-    "Set up task destination (Asana/Jira/etc)",
-    "Define escalation rules",
-  ],
-  lead_followup: [
-    "Connect your CRM (Salesforce/HubSpot)",
-    "Configure follow-up timing",
-    "Set up email templates",
-    "Define lead scoring thresholds",
-  ],
-};
-
 export default function AutomationConfigPage() {
+  const { t } = useTranslation();
   const [, params] = useRoute("/app/automations/:templateId");
   const [, navigate] = useLocation();
   const templateId = params?.templateId ? parseInt(params.templateId) : undefined;
@@ -69,14 +56,14 @@ export default function AutomationConfigPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/automations/configs"] });
       toast({
-        title: "Configuration Saved",
-        description: "Your automation configuration has been saved.",
+        title: t("common.success"),
+        description: t("automations.config.save"),
       });
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to save configuration.",
+        title: t("common.error"),
+        description: t("automations.config.failedSave"),
         variant: "destructive",
       });
     },
@@ -89,15 +76,15 @@ export default function AutomationConfigPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/runs"] });
       toast({
-        title: "Run Started",
-        description: "The automation run has been queued.",
+        title: t("common.success"),
+        description: t("runs.title"),
       });
       navigate("/app/runs");
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to start run.",
+        title: t("common.error"),
+        description: t("automations.config.failedRun"),
         variant: "destructive",
       });
     },
@@ -133,7 +120,7 @@ export default function AutomationConfigPage() {
             id={field.name}
             value={value as string}
             onChange={(e) => handleFieldChange(field.name, e.target.value)}
-            placeholder={`Enter ${field.label.toLowerCase()}`}
+            placeholder={field.label}
             data-testid={`input-config-${field.name}`}
           />
         );
@@ -144,7 +131,7 @@ export default function AutomationConfigPage() {
             type="number"
             value={value as number}
             onChange={(e) => handleFieldChange(field.name, parseInt(e.target.value))}
-            placeholder={`Enter ${field.label.toLowerCase()}`}
+            placeholder={field.label}
             data-testid={`input-config-${field.name}`}
           />
         );
@@ -155,7 +142,7 @@ export default function AutomationConfigPage() {
             onValueChange={(v) => handleFieldChange(field.name, v)}
           >
             <SelectTrigger data-testid={`select-config-${field.name}`}>
-              <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
+              <SelectValue placeholder={field.label} />
             </SelectTrigger>
             <SelectContent>
               {field.options?.map((option) => (
@@ -195,8 +182,7 @@ export default function AutomationConfigPage() {
         <Card>
           <CardContent className="py-12 text-center">
             <Zap className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="font-semibold text-lg mb-2">Template not found</h3>
-            <p className="text-muted-foreground">The requested template does not exist.</p>
+            <h3 className="font-semibold text-lg mb-2">{t("automations.config.notFound")}</h3>
           </CardContent>
         </Card>
       </div>
@@ -204,7 +190,6 @@ export default function AutomationConfigPage() {
   }
 
   const Icon = TEMPLATE_ICONS[template.key] || Zap;
-  const setupSteps = TEMPLATE_SETUP_STEPS[template.key] || [];
   const configSchema = template.configSchema || [];
 
   return (
@@ -223,19 +208,17 @@ export default function AutomationConfigPage() {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Configuration</CardTitle>
-              <CardDescription>
-                Set up the parameters for this automation
-              </CardDescription>
+              <CardTitle>{t("automations.config.title")}</CardTitle>
+              <CardDescription>{t("automations.config.subtitle")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="configName">Configuration Name</Label>
+                <Label htmlFor="configName">{t("automations.config.name")}</Label>
                 <Input
                   id="configName"
                   value={configName || existingConfig?.name || ""}
                   onChange={(e) => setConfigName(e.target.value)}
-                  placeholder={`${template.name} Config`}
+                  placeholder={template.name}
                   data-testid="input-config-name"
                 />
               </div>
@@ -252,9 +235,9 @@ export default function AutomationConfigPage() {
 
               <div className="flex items-center justify-between pt-4 border-t">
                 <div className="space-y-0.5">
-                  <Label htmlFor="isActive">Active</Label>
+                  <Label htmlFor="isActive">{t("automations.config.active")}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Enable or disable this automation
+                    {t("automations.config.activeDesc")}
                   </p>
                 </div>
                 <Switch
@@ -276,7 +259,7 @@ export default function AutomationConfigPage() {
                   ) : (
                     <Settings className="w-4 h-4 mr-2" />
                   )}
-                  Save Configuration
+                  {createConfigMutation.isPending ? t("automations.config.saving") : t("automations.config.save")}
                 </Button>
                 {existingConfig && (
                   <Button
@@ -290,7 +273,7 @@ export default function AutomationConfigPage() {
                     ) : (
                       <Play className="w-4 h-4 mr-2" />
                     )}
-                    Run Test
+                    {runMutation.isPending ? t("automations.config.running") : t("automations.config.runTest")}
                   </Button>
                 )}
               </div>
@@ -301,49 +284,41 @@ export default function AutomationConfigPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Setup Checklist</CardTitle>
-              <CardDescription>Complete these steps to enable this automation</CardDescription>
+              <CardTitle>{t("automations.config.checklist")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {setupSteps.map((step, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-xs text-muted-foreground">{index + 1}</span>
+              {configSchema.length > 0 ? (
+                <div className="space-y-3">
+                  {configSchema.map((field, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-xs text-muted-foreground">{index + 1}</span>
+                      </div>
+                      <p className="text-sm">{field.label}</p>
                     </div>
-                    <p className="text-sm">{step}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 pt-4 border-t">
-                <Badge variant="secondary">
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  MVP: Using simulated data
-                </Badge>
-              </div>
+                  ))}
+                </div>
+              ) : null}
+              {template.status === "demo" && (
+                <div className="mt-4 pt-4 border-t">
+                  <Badge variant="secondary" className="bg-amber-500/10 text-amber-700 dark:text-amber-400">
+                    <Info className="w-3 h-3 mr-1" />
+                    {t("automations.config.testModeNote")}
+                  </Badge>
+                </div>
+              )}
+              <p className="mt-4 text-xs text-muted-foreground">
+                {t("automations.config.connectionsNote")}
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>What This Does</CardTitle>
+              <CardTitle>{t("automations.config.whatItDoes")}</CardTitle>
             </CardHeader>
             <CardContent>
-              {template.key === "email_to_task_triage" ? (
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Fetches incoming emails</li>
-                  <li>• Classifies them by category</li>
-                  <li>• Creates tasks in your project tool</li>
-                  <li>• Escalates urgent items</li>
-                </ul>
-              ) : (
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Fetches leads from CRM</li>
-                  <li>• Generates personalized follow-ups</li>
-                  <li>• Queues messages for sending</li>
-                  <li>• Updates lead status</li>
-                </ul>
-              )}
+              <p className="text-sm text-muted-foreground">{template.description}</p>
             </CardContent>
           </Card>
         </div>

@@ -127,7 +127,7 @@ export default function BlueprintDetail() {
       setShareUrl(window.location.origin + data.shareUrl);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to create share link.", variant: "destructive" });
+      toast({ title: t("common.error"), description: t("blueprints.shareDesc"), variant: "destructive" });
     },
   });
 
@@ -325,8 +325,7 @@ export default function BlueprintDetail() {
         <Card>
           <CardContent className="py-12 text-center">
             <GitBranch className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="font-semibold text-lg mb-2">Blueprint not found</h3>
-            <p className="text-muted-foreground">The requested blueprint does not exist.</p>
+            <h3 className="font-semibold text-lg mb-2">{t("blueprints.notFound")}</h3>
           </CardContent>
         </Card>
       </div>
@@ -375,7 +374,7 @@ export default function BlueprintDetail() {
               <DialogHeader>
                 <DialogTitle>{t("blueprints.editBlueprint")}</DialogTitle>
                 <DialogDescription>
-                  Edit blueprint details, process steps, bottlenecks, and backlog items.
+                  {t("blueprints.processSteps")}
                 </DialogDescription>
               </DialogHeader>
               <Tabs value={editTab} onValueChange={setEditTab} className="w-full">
@@ -603,18 +602,18 @@ export default function BlueprintDetail() {
               <DropdownMenuTrigger asChild>
                 <Button size="sm" variant="outline" data-testid="button-export">
                   <Download className="w-4 h-4 mr-2" />
-                  Export
+                  {t("common.export")}
                   <ChevronDown className="w-3 h-3 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleExportMarkdown} data-testid="button-export-markdown">
                   <FileDown className="w-4 h-4 mr-2" />
-                  Export as Markdown
+                  {t("blueprints.exportMarkdown")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleExportPDF} data-testid="button-export-pdf">
                   <FileText className="w-4 h-4 mr-2" />
-                  Export as PDF
+                  {t("blueprints.exportPdf")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -622,15 +621,13 @@ export default function BlueprintDetail() {
               <DialogTrigger asChild>
                 <Button size="sm" onClick={() => shareMutation.mutate()} data-testid="button-share-blueprint">
                   <Share2 className="w-4 h-4 mr-2" />
-                  Share
+                  {t("blueprints.shareBlueprint")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Share Blueprint</DialogTitle>
-                  <DialogDescription>
-                    Anyone with this link can view this blueprint.
-                  </DialogDescription>
+                  <DialogTitle>{t("blueprints.shareBlueprint")}</DialogTitle>
+                  <DialogDescription>{t("blueprints.shareDesc")}</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                   {shareUrl ? (
@@ -641,7 +638,7 @@ export default function BlueprintDetail() {
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Generating share link...</p>
+                    <p className="text-sm text-muted-foreground">{t("blueprints.generatingLink")}</p>
                   )}
                 </div>
               </DialogContent>
@@ -652,23 +649,21 @@ export default function BlueprintDetail() {
       <Tabs defaultValue="process" className="space-y-4">
         <TabsList>
           <TabsTrigger value="process" data-testid="tab-process">
-            <GitBranch className="w-4 h-4 mr-2" /> Process Map
+            <GitBranch className="w-4 h-4 mr-2" /> {t("blueprints.processMap")}
           </TabsTrigger>
           <TabsTrigger value="bottlenecks" data-testid="tab-bottlenecks">
-            <AlertTriangle className="w-4 h-4 mr-2" /> Bottlenecks ({bottlenecks.length})
+            <AlertTriangle className="w-4 h-4 mr-2" /> {t("blueprints.bottlenecks")} ({bottlenecks.length})
           </TabsTrigger>
           <TabsTrigger value="backlog" data-testid="tab-backlog">
-            <CheckCircle className="w-4 h-4 mr-2" /> Backlog ({backlog.length})
+            <CheckCircle className="w-4 h-4 mr-2" /> {t("blueprints.backlog")} ({backlog.length})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="process">
           <Card>
             <CardHeader>
-              <CardTitle>Process Map</CardTitle>
-              <CardDescription>
-                Step-by-step breakdown of your current process
-              </CardDescription>
+              <CardTitle>{t("blueprints.processMap")}</CardTitle>
+              <CardDescription>{t("blueprints.processMapDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               {processSteps.length > 0 ? (
@@ -694,7 +689,7 @@ export default function BlueprintDetail() {
                           </div>
                           <div className="grid sm:grid-cols-2 gap-3 text-sm">
                             <div>
-                              <span className="text-muted-foreground">Owner:</span>{" "}
+                              <span className="text-muted-foreground">{t("blueprints.ownerLabel")}:</span>{" "}
                               <Badge variant="outline">{step.ownerRole}</Badge>
                             </div>
                             <div className="flex items-center gap-2">
@@ -724,10 +719,8 @@ export default function BlueprintDetail() {
         <TabsContent value="bottlenecks">
           <Card>
             <CardHeader>
-              <CardTitle>Identified Bottlenecks</CardTitle>
-              <CardDescription>
-                Key issues slowing down your process
-              </CardDescription>
+              <CardTitle>{t("blueprints.bottlenecks")}</CardTitle>
+              <CardDescription>{t("blueprints.bottlenecksDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               {bottlenecks.length > 0 ? (
@@ -766,21 +759,19 @@ export default function BlueprintDetail() {
         <TabsContent value="backlog">
           <Card>
             <CardHeader>
-              <CardTitle>Automation Backlog</CardTitle>
-              <CardDescription>
-                Prioritized list of improvements and automations
-              </CardDescription>
+              <CardTitle>{t("blueprints.backlog")}</CardTitle>
+              <CardDescription>{t("blueprints.backlogDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               {backlog.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Priority</TableHead>
-                      <TableHead>Item</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Impact</TableHead>
-                      <TableHead>Effort</TableHead>
+                      <TableHead>{t("blueprints.priorityLabel")}</TableHead>
+                      <TableHead>{t("blueprints.itemLabel")}</TableHead>
+                      <TableHead>{t("blueprints.typeLabel")}</TableHead>
+                      <TableHead>{t("blueprints.impactLabel")}</TableHead>
+                      <TableHead>{t("blueprints.effortLabel")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -808,7 +799,9 @@ export default function BlueprintDetail() {
                           </TableCell>
                           <TableCell>
                             <Badge className={getTypeBadgeColor(item.type)}>
-                              {item.type}
+                              {t(`blueprints.backlogTypes.${item.type}`) !== `blueprints.backlogTypes.${item.type}`
+                                ? t(`blueprints.backlogTypes.${item.type}`)
+                                : item.type}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-muted-foreground">
@@ -816,7 +809,9 @@ export default function BlueprintDetail() {
                           </TableCell>
                           <TableCell>
                             <Badge variant={getEffortBadgeVariant(item.effort)}>
-                              {item.effort === "S" ? "Small" : item.effort === "M" ? "Medium" : "Large"}
+                              {t(`blueprints.effortLabels.${item.effort}`) !== `blueprints.effortLabels.${item.effort}`
+                                ? t(`blueprints.effortLabels.${item.effort}`)
+                                : item.effort}
                             </Badge>
                           </TableCell>
                         </TableRow>

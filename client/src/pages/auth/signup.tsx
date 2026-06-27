@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Layers, Loader2, UserPlus, AlertCircle, Check } from "lucide-react";
 
 export default function SignUp() {
+  const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const { signUp, isSigningUp, startDemo, isStartingDemo } = useAuth();
   const [formData, setFormData] = useState({
@@ -34,17 +36,17 @@ export default function SignUp() {
     setError(null);
 
     if (!termsAccepted) {
-      setError("You must accept the Terms of Service and Privacy Policy");
+      setError(t("auth.signup.termsRequired"));
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("auth.signup.passwordsNoMatch"));
       return;
     }
 
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(t("auth.signup.passwordTooShort"));
       return;
     }
 
@@ -57,7 +59,7 @@ export default function SignUp() {
       });
       setLocation("/app");
     } catch (err: any) {
-      setError(err.message || "Failed to create account");
+      setError(err.message || t("auth.signup.failedSignUp"));
     }
   };
 
@@ -67,7 +69,7 @@ export default function SignUp() {
       await startDemo();
       setLocation("/app");
     } catch (err: any) {
-      setError(err.message || "Failed to start demo");
+      setError(err.message || t("auth.demo.failed"));
     }
   };
 
@@ -80,13 +82,13 @@ export default function SignUp() {
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
             <Layers className="w-6 h-6 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-semibold tracking-tight">Opsly</span>
+          <span className="text-2xl font-semibold tracking-tight">{t("common.appName")}</span>
         </div>
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Create your account</CardTitle>
-            <CardDescription>Get started with Opsly in minutes</CardDescription>
+            <CardTitle className="text-xl">{t("auth.signup.title")}</CardTitle>
+            <CardDescription>{t("auth.signup.subtitle")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -99,22 +101,22 @@ export default function SignUp() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First name</Label>
+                  <Label htmlFor="firstName">{t("auth.signup.firstName")}</Label>
                   <Input
                     id="firstName"
                     name="firstName"
-                    placeholder="John"
+                    placeholder={t("auth.signup.firstNamePlaceholder")}
                     value={formData.firstName}
                     onChange={handleChange}
                     data-testid="input-first-name"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last name</Label>
+                  <Label htmlFor="lastName">{t("auth.signup.lastName")}</Label>
                   <Input
                     id="lastName"
                     name="lastName"
-                    placeholder="Doe"
+                    placeholder={t("auth.signup.lastNamePlaceholder")}
                     value={formData.lastName}
                     onChange={handleChange}
                     data-testid="input-last-name"
@@ -123,12 +125,12 @@ export default function SignUp() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Work email</Label>
+                <Label htmlFor="email">{t("auth.signup.workEmail")}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="you@company.com"
+                  placeholder={t("auth.signup.emailPlaceholder")}
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -137,12 +139,12 @@ export default function SignUp() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("auth.signup.password")}</Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="Create a password"
+                  placeholder={t("auth.signup.passwordPlaceholder")}
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -155,18 +157,18 @@ export default function SignUp() {
                     {passwordRequirementsMet && <Check className="w-3 h-3" />}
                   </div>
                   <span className={passwordRequirementsMet ? "text-green-600" : "text-muted-foreground"}>
-                    At least 8 characters
+                    {t("auth.signup.minChars")}
                   </span>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm password</Label>
+                <Label htmlFor="confirmPassword">{t("auth.signup.confirmPassword")}</Label>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
-                  placeholder="Confirm your password"
+                  placeholder={t("auth.signup.confirmPasswordPlaceholder")}
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
@@ -183,13 +185,13 @@ export default function SignUp() {
                   data-testid="checkbox-terms"
                 />
                 <Label htmlFor="terms" className="text-sm font-normal cursor-pointer">
-                  I accept the{" "}
+                  {t("auth.signup.iAcceptThe")}{" "}
                   <Link href="/terms" className="text-primary hover:underline" target="_blank">
-                    Terms of Service
+                    {t("auth.signup.termsService")}
                   </Link>
-                  {" "}and{" "}
+                  {" "}{t("auth.signup.andThe")}{" "}
                   <Link href="/privacy" className="text-primary hover:underline" target="_blank">
-                    Privacy Policy
+                    {t("auth.signup.privacyPolicy")}
                   </Link>
                 </Label>
               </div>
@@ -203,12 +205,12 @@ export default function SignUp() {
                 {isSigningUp ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creating account...
+                    {t("auth.signup.creatingAccount")}
                   </>
                 ) : (
                   <>
                     <UserPlus className="w-4 h-4 mr-2" />
-                    Create account
+                    {t("auth.signup.createAccount")}
                   </>
                 )}
               </Button>
@@ -219,7 +221,7 @@ export default function SignUp() {
                 <div className="w-full border-t"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or</span>
+                <span className="bg-card px-2 text-muted-foreground">{t("auth.signup.orDivider")}</span>
               </div>
             </div>
 
@@ -234,29 +236,25 @@ export default function SignUp() {
               {isStartingDemo ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Starting demo...
+                  {t("auth.demo.starting")}
                 </>
               ) : (
-                "Try Live Demo"
+                t("auth.demo.start")
               )}
             </Button>
           </CardContent>
           <CardFooter className="flex flex-col gap-2 text-center text-sm text-muted-foreground">
             <p>
-              Already have an account?{" "}
+              {t("auth.signup.alreadyHaveAccount")}{" "}
               <Link href="/auth/signin" className="text-primary hover:underline" data-testid="link-signin">
-                Sign in
+                {t("common.signIn")}
               </Link>
             </p>
             <Link href="/" className="text-muted-foreground hover:text-foreground" data-testid="link-back-home">
-              Back to home
+              {t("auth.signup.backToHome")}
             </Link>
           </CardFooter>
         </Card>
-
-        <p className="text-xs text-center text-muted-foreground mt-4">
-          By creating an account, you agree to our Terms of Service and Privacy Policy.
-        </p>
       </div>
     </div>
   );

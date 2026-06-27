@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ const TEMPLATE_ICONS: Record<string, typeof Mail> = {
 };
 
 export default function Automations() {
+  const { t } = useTranslation();
   const { data: templates, isLoading: templatesLoading } = useQuery<AutomationTemplate[]>({
     queryKey: ["/api/automations/templates"],
   });
@@ -35,16 +37,14 @@ export default function Automations() {
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Automations</h1>
-          <p className="text-muted-foreground">
-            Configure and manage your automation templates.
-          </p>
+          <h1 className="text-2xl font-bold">{t("automations.title")}</h1>
+          <p className="text-muted-foreground">{t("automations.subtitle")}</p>
         </div>
       </div>
 
       <div className="space-y-8">
         <div>
-          <h2 className="text-lg font-semibold mb-4">Available Templates</h2>
+          <h2 className="text-lg font-semibold mb-4">{t("automations.availableTemplates")}</h2>
           {isLoading ? (
             <div className="grid gap-4 md:grid-cols-2">
               {[1, 2].map((i) => (
@@ -61,7 +61,11 @@ export default function Automations() {
                 const isPlaceholder = template.status === "placeholder";
 
                 return (
-                  <Card key={template.id} className={`hover-elevate ${isPlaceholder ? 'opacity-60' : ''}`} data-testid={`card-template-${template.key}`}>
+                  <Card
+                    key={template.id}
+                    className={`hover-elevate ${isPlaceholder ? "opacity-60" : ""}`}
+                    data-testid={`card-template-${template.key}`}
+                  >
                     <CardHeader>
                       <div className="flex items-start justify-between gap-4">
                         <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -69,18 +73,18 @@ export default function Automations() {
                         </div>
                         <div className="flex gap-2 shrink-0">
                           {isDemo && (
-                            <Badge variant="secondary" className="bg-orange-500/10 text-orange-700 dark:text-orange-400">
-                              ⚠️ Demo Mode
+                            <Badge variant="secondary" className="bg-amber-500/10 text-amber-700 dark:text-amber-400">
+                              {t("automations.testModeLabel")}
                             </Badge>
                           )}
                           {isPlaceholder && (
-                            <Badge variant="secondary" className="bg-gray-500/10 text-gray-700 dark:text-gray-400">
-                              🚫 Not Available
+                            <Badge variant="secondary" className="bg-muted text-muted-foreground">
+                              {t("automations.notAvailable")}
                             </Badge>
                           )}
                           {!isPlaceholder && activeConfigs.length > 0 && (
                             <Badge variant="secondary" className="shrink-0">
-                              {activeConfigs.length} active
+                              {activeConfigs.length} {t("automations.activeLabel").toLowerCase()}
                             </Badge>
                           )}
                         </div>
@@ -89,13 +93,13 @@ export default function Automations() {
                       <CardDescription>
                         {template.description}
                         {isDemo && (
-                          <span className="block mt-2 text-sm text-orange-600 dark:text-orange-400">
-                            ⚠️ Currently runs in demo mode with simulated data. Real integrations coming soon.
+                          <span className="block mt-2 text-sm text-amber-600 dark:text-amber-400">
+                            {t("automations.testModeDesc")}
                           </span>
                         )}
                         {isPlaceholder && (
-                          <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            🚫 This template is under development and not yet available for use.
+                          <span className="block mt-2 text-sm text-muted-foreground">
+                            {t("automations.noTemplatesDesc")}
                           </span>
                         )}
                       </CardDescription>
@@ -103,16 +107,19 @@ export default function Automations() {
                     <CardContent>
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-muted-foreground">
-                          {templateConfigs.length} configuration{templateConfigs.length !== 1 ? "s" : ""}
+                          {templateConfigs.length}{" "}
+                          {templateConfigs.length !== 1
+                            ? t("automations.configurations").toLowerCase()
+                            : t("automations.newConfig").toLowerCase()}
                         </div>
                         {isPlaceholder ? (
                           <Button disabled variant="ghost" size="sm" data-testid={`button-configure-${template.key}`}>
-                            🚫 Not Available Yet
+                            {t("automations.notAvailable")}
                           </Button>
                         ) : (
                           <Link href={`/app/automations/${template.id}`}>
                             <Button variant="outline" size="sm" data-testid={`button-configure-${template.key}`}>
-                              <Settings className="w-4 h-4 mr-2" /> Configure
+                              <Settings className="w-4 h-4 mr-2" /> {t("common.settings")}
                             </Button>
                           </Link>
                         )}
@@ -126,10 +133,8 @@ export default function Automations() {
             <Card>
               <CardContent className="py-12 text-center">
                 <Zap className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                <h3 className="font-semibold text-lg mb-2">No templates available</h3>
-                <p className="text-muted-foreground">
-                  Automation templates are being set up. Check back soon.
-                </p>
+                <h3 className="font-semibold text-lg mb-2">{t("automations.noTemplates")}</h3>
+                <p className="text-muted-foreground">{t("automations.noTemplatesDesc")}</p>
               </CardContent>
             </Card>
           )}
@@ -137,10 +142,10 @@ export default function Automations() {
 
         {configs && configs.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold mb-4">Your Configurations</h2>
+            <h2 className="text-lg font-semibold mb-4">{t("automations.yourConfigurations")}</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {configs.map((config) => {
-                const template = templates?.find((t) => t.id === config.templateId);
+                const template = templates?.find((tmpl) => tmpl.id === config.templateId);
                 const Icon = template ? TEMPLATE_ICONS[template.key] || Zap : Zap;
 
                 return (
@@ -153,17 +158,17 @@ export default function Automations() {
                         <div className="min-w-0 flex-1">
                           <p className="font-medium truncate">{config.name}</p>
                           <p className="text-sm text-muted-foreground truncate">
-                            {template?.name || "Unknown template"}
+                            {template?.name}
                           </p>
                         </div>
                         <Badge variant={config.isActive ? "default" : "secondary"}>
-                          {config.isActive ? "Active" : "Inactive"}
+                          {config.isActive ? t("automations.activeLabel") : t("automations.inactiveLabel")}
                         </Badge>
                       </div>
                       <div className="mt-3 flex items-center justify-end gap-2">
                         <Link href={`/app/automations/${config.templateId}`}>
                           <Button variant="ghost" size="sm">
-                            Edit <ArrowRight className="w-4 h-4 ml-1" />
+                            {t("common.edit")} <ArrowRight className="w-4 h-4 ml-1" />
                           </Button>
                         </Link>
                       </div>
