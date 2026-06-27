@@ -192,7 +192,7 @@ These require a human decision and are not performed automatically:
 
 - [ ] **GitHub organisation migration** — the repo currently lives under `github.com/Technivian`. Migrating ownership to Aurivian is a manual follow-up.
 - [ ] **Verified LinkedIn URL** — set `site.social.linkedin` in `client/src/config/site.ts` once a verified company page exists.
-- [ ] **`www.aurivian.nl` redirect** — `www` currently returns HTTP 525 (SSL handshake error via Cloudflare). Add a Cloudflare Redirect Rule `www.aurivian.nl → https://aurivian.nl` (301).
+- [x] **`www.aurivian.nl` redirect** — Cloudflare Redirect Rule `www.aurivian.nl → https://aurivian.nl` (301) is live. Path and query string are preserved.
 - [ ] **OG image** — replace `/og-image.png` with Aurivian-branded artwork.
 - [ ] **Legal text review** — entity and contact attribution have been updated to Aurivian B.V.; the substantive privacy/terms wording should be reviewed by counsel.
 - [ ] **Server-side contact form** — the contact form uses `mailto:` transport. A future API endpoint should add server-side validation, rate limiting, spam protection and a delivery provider.
@@ -202,7 +202,12 @@ These require a human decision and are not performed automatically:
 
 ## Status
 
-Opsly is currently in **pilot / early-production** phase. The focus is on stability, correctness and real-world SME use cases.
+Opsly is in **production**. Deployed at [aurivian.nl](https://aurivian.nl).
+
+All launch blockers resolved as of 2026-06-27:
+- Apex `https://aurivian.nl` — HTTP 200, TLS valid, CSP + rate limiting active
+- `www.aurivian.nl` — Cloudflare 301 redirect to apex, path-preserving
+- Database connected, WebSocket live, Dutch default locale, dark mode default
 
 ---
 

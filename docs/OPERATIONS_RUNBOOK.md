@@ -253,7 +253,7 @@ A spike in 429 responses on `/api/auth/signin` is expected behaviour — the rat
 
 | Item | Impact | Action required |
 |---|---|---|
-| `www.aurivian.nl` HTTP 525 | **P1 — launch blocker** | `www` returns HTTP 525 (Cloudflare SSL handshake error). Public launch is not ready until a Cloudflare Redirect Rule sends `www.aurivian.nl → https://aurivian.nl` (301). Apex `https://aurivian.nl` is unaffected. |
+| `www.aurivian.nl` redirect | ~~P1~~ **Resolved** | Cloudflare Redirect Rule `www.aurivian.nl → https://aurivian.nl` (301) is live as of 2026-06-27. Path and query string are preserved. |
 | Magic link email delivery | High | Token currently logged to console only; no email sent. Do not promote the magic-link flow to users until email delivery is implemented. |
 | `SameSite` cookie attribute | Low | Not explicitly set |
 | Rate-limit window reset | Informational | Signin window resets 15 min after first request in window; no manual action needed |

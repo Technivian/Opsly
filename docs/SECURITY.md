@@ -136,7 +136,7 @@ TLS is terminated by Cloudflare (Full strict mode). HSTS with `max-age=31536000;
 
 | Item | Severity | Notes |
 |---|---|---|
-| `www.aurivian.nl` HTTP 525 | **P1 — launch blocker** | `www` returns HTTP 525 (Cloudflare SSL handshake error). Public launch is not ready until a Cloudflare Redirect Rule sends `www.aurivian.nl → https://aurivian.nl` (301). Apex `https://aurivian.nl` works. |
+| `www.aurivian.nl` redirect | ~~P1~~ **Resolved** | Cloudflare Redirect Rule `www.aurivian.nl → https://aurivian.nl` (301) is live as of 2026-06-27. Path and query string are preserved. |
 | Magic link email delivery | High | Token is logged to server console (`console.log`), not emailed. The magic-link flow must not be promoted to users until email delivery is implemented. |
 | `SameSite` cookie attribute | Medium | Not explicitly set; inherits Express default |
 | Contact form server-side validation | Low | Current transport is `mailto:` |
