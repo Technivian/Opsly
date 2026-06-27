@@ -42,7 +42,14 @@
     "settings": "Settings",
     "docs": "Docs",
     "pricing": "Pricing",
-    "security": "Security"
+    "security": "Security",
+    "intakeManagement": "Intake Management",
+    "analytics": "Analytics",
+    "myOrganization": "My Organization",
+    "pilotLabel": "Pilot",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "signOut": "Sign Out"
   },
   "landing": {
     "hero": {
@@ -110,13 +117,52 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "subtitle": "Welcome to Opsly. Here's your operational overview.",
     "welcome": "Welcome back",
     "recentIntakes": "Recent Intakes",
+    "recentIntakesDesc": "Your latest process submissions",
     "recentRuns": "Recent Runs",
+    "recentRunsDesc": "Latest automation run results",
     "quickActions": "Quick Actions",
     "newIntake": "New Intake",
     "viewBlueprints": "View Blueprints",
     "manageAutomations": "Manage Automations",
+    "viewAll": "View All",
+    "noIntakes": "No intakes yet",
+    "createFirstIntake": "Create Your First Intake",
+    "noRuns": "No runs yet",
+    "configureAutomation": "Configure Automation",
+    "hoursSaved": "Hours Saved",
+    "hoursSavedDesc": "Total time saved through automation",
+    "cycleTime": "Cycle Time",
+    "cycleTimeDesc": "Reduction in process time",
+    "blueprintsCount": "Blueprints",
+    "blueprintsDesc": "Generated process blueprints",
+    "successRate": "Success Rate",
+    "successRateDesc": "{{success}} of {{total}} runs succeeded",
+    "successRateNone": "No runs yet",
+    "nextAction": {
+      "firstIntake": {
+        "title": "Create Your First Intake",
+        "desc": "Start by describing your operational challenges and let AI generate a process blueprint.",
+        "action": "Start Intake"
+      },
+      "processing": {
+        "title": "Your Intake Is Being Processed",
+        "desc": "{{count}} intake(s) being processed. Check back shortly for your blueprint.",
+        "action": "View Intakes"
+      },
+      "configureAutomation": {
+        "title": "Set Up Your First Automation",
+        "desc": "Your blueprints are ready. Configure an automation template to start saving time.",
+        "action": "View Automations"
+      },
+      "anotherIntake": {
+        "title": "Create Another Intake",
+        "desc": "Document more processes to discover additional automation opportunities.",
+        "action": "Start Intake"
+      }
+    },
     "stats": {
       "hoursSaved": "Hours Saved",
       "cycleTime": "Cycle Time",
@@ -128,14 +174,74 @@
     "subtitle": "Document operational pain points and challenges.",
     "newIntake": "New Intake",
     "wizard": {
+      "title": "New Intake",
+      "stepOf": "Step {{step}} of {{total}}",
+      "draftSaved": "Draft saved",
+      "lastSaved": "Saved at {{time}}",
       "step1": "Process Name",
       "step2": "Pain Area",
       "step3": "Problem Description",
       "step4": "Current Tools",
       "step5": "Volume Metrics",
-      "step6": "File Uploads"
+      "step6": "File Uploads",
+      "painAreas": {
+        "SALES": { "label": "Sales", "desc": "Lead management, follow-up, pipeline" },
+        "SUPPORT": { "label": "Customer Support", "desc": "Tickets, emails, escalations" },
+        "FINANCE": { "label": "Finance", "desc": "Invoicing, approvals, reconciliation" },
+        "OPS": { "label": "Operations", "desc": "Scheduling, logistics, workflows" }
+      },
+      "steps": {
+        "1": { "title": "Select a Process Area", "desc": "Which part of your business operations needs improvement?" },
+        "2": { "title": "Describe the Problem", "desc": "Tell us about the specific challenges you're facing." },
+        "3": { "title": "Current Tools", "desc": "Which tools do you currently use in this process?" },
+        "4": { "title": "Volume Metrics", "desc": "Helps us estimate the potential time savings. Estimates are fine." },
+        "5": { "title": "Upload Files", "desc": "Upload relevant documents (optional)." },
+        "6": { "title": "Review & Submit", "desc": "Review your information before submitting." }
+      },
+      "validation": {
+        "selectPainArea": "Please select a process area",
+        "descriptionTooShort": "Description must be at least 20 characters ({{current}}/20)",
+        "selectTool": "Please select at least one tool or add other tools"
+      },
+      "intakeTitle": "Title (optional)",
+      "titlePlaceholder": "e.g. email response process improvement",
+      "problemDescription": "Problem Description *",
+      "problemPlaceholder": "Describe the challenges you're facing. What causes delays? Which tasks are repetitive? What frustrates your team?",
+      "charCount": "{{count}} characters",
+      "charMin": "{{current}}/20 characters minimum",
+      "selectToolsLabel": "Select tools you currently use",
+      "otherTools": "Other tools",
+      "otherToolsPlaceholder": "Enter other tools, separated by commas",
+      "emailsPerDay": "Emails per day",
+      "leadsPerWeek": "Leads per week",
+      "invoicesPerMonth": "Invoices per month",
+      "ticketsPerDay": "Support tickets per day",
+      "volumeExplanation": "Volume data helps us calculate potential time savings and ROI more accurately. Estimates are fine — exact numbers are not required.",
+      "dragDrop": "Drag and drop files here, or click to browse",
+      "chooseFiles": "Choose files",
+      "titleLabel": "Title",
+      "painAreaLabel": "Process Area",
+      "toolsLabel": "Tools",
+      "selected": "{{count}} selected",
+      "filesLabel": "Files",
+      "uploaded": "{{count}} uploaded",
+      "readyTitle": "Ready to Submit",
+      "readyDesc": "After submission, our AI will analyze your input and generate a process blueprint with automation recommendations.",
+      "submitting": "Submitting...",
+      "submit": "Submit Intake",
+      "demoAlert": "You are in demo mode. Sign up for an account to submit your own intakes and generate custom blueprints.",
+      "successTitle": "Intake Submitted",
+      "successDesc": "Your intake is being processed. A blueprint will be generated shortly.",
+      "errorTitle": "Error",
+      "errorDemo": "Demo accounts cannot create new intakes. Sign up for a free account to get started.",
+      "errorGeneric": "Submission failed. Please try again."
     },
     "status": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Submitted",
+      "PROCESSING": "Processing...",
+      "PROCESSED": "Completed",
+      "FAILED": "Failed",
       "draft": "Draft",
       "submitted": "Submitted",
       "processing": "Processing...",
@@ -150,11 +256,17 @@
     "whatAre": "What are Blueprints?",
     "explanation": "Blueprints are AI-generated analyses of your operational processes. They identify bottlenecks, map workflows, and suggest automation opportunities.",
     "processMap": "Process Map",
+    "processMapDesc": "Step-by-step overview of your current process",
     "bottlenecks": "Bottlenecks",
-    "backlog": "Backlog",
+    "bottlenecksDesc": "Key obstacles in your process",
+    "backlog": "Improvement Backlog",
+    "backlogDesc": "Prioritized list of improvements and automations",
     "exportPdf": "Export PDF",
     "exportMarkdown": "Export Markdown",
     "shareLink": "Share Link",
+    "shareBlueprint": "Share Blueprint",
+    "shareDesc": "Anyone with this link can view this blueprint.",
+    "generatingLink": "Generating link...",
     "editBlueprint": "Edit Blueprint",
     "updateSuccess": "Your changes have been saved.",
     "updateError": "Failed to update blueprint.",
@@ -164,6 +276,7 @@
     "duration": "Duration (min)",
     "owner": "Owner",
     "tools": "Tools",
+    "toolsCommaSeparated": "Tools (comma-separated)",
     "addStep": "Add Step",
     "addBottleneck": "Add Bottleneck",
     "addBacklogItem": "Add Item",
@@ -171,17 +284,67 @@
     "description": "Description",
     "impact": "Impact",
     "itemDescription": "Item Description",
-    "effort": "Effort"
+    "effort": "Effort",
+    "noBlueprints": "No blueprints yet",
+    "noBlueprintsDesc": "Blueprints are generated automatically after your intake is processed.",
+    "createIntake": "Create Intake",
+    "stepsCount": "{{count}} steps",
+    "bottlenecksCount": "{{count}} bottlenecks",
+    "actionsCount": "{{count}} actions",
+    "notFound": "Blueprint not found",
+    "effortLabels": {
+      "S": "Small",
+      "M": "Medium",
+      "L": "Large"
+    },
+    "backlogTypes": {
+      "AUTOMATION": "Automation",
+      "SOP": "Work Instruction",
+      "DATA_FIX": "Data Fix"
+    },
+    "ownerLabel": "Owner",
+    "priorityLabel": "Priority",
+    "itemLabel": "Item",
+    "typeLabel": "Type",
+    "impactLabel": "Impact",
+    "effortLabel": "Effort"
   },
   "automations": {
     "title": "Automations",
     "subtitle": "Configure and manage automation templates.",
     "templates": "Templates",
+    "availableTemplates": "Available Templates",
+    "yourConfigurations": "Your Configurations",
     "configurations": "Configurations",
     "newConfig": "New Configuration",
     "testRun": "Test Run",
     "runNow": "Run Now",
-    "schedule": "Schedule"
+    "schedule": "Schedule",
+    "notAvailable": "Not Available",
+    "testModeLabel": "Test Mode",
+    "testModeDesc": "Works with sample data — results are not real",
+    "activeLabel": "Active",
+    "inactiveLabel": "Inactive",
+    "noTemplates": "No templates available",
+    "noTemplatesDesc": "Automation templates will be set up shortly.",
+    "config": {
+      "title": "Configuration",
+      "subtitle": "Set the parameters for this automation",
+      "name": "Configuration Name",
+      "active": "Active",
+      "activeDesc": "Enable or disable this automation",
+      "save": "Save Configuration",
+      "saving": "Saving...",
+      "runTest": "Run Test",
+      "running": "Running...",
+      "checklist": "Setup Checklist",
+      "testModeNote": "Test mode active — uses sample data",
+      "whatItDoes": "What does this automation do?",
+      "notFound": "Template not found",
+      "failedSave": "Failed to save. Please try again.",
+      "failedRun": "Failed to start test run. Please try again.",
+      "connectionsNote": "Missing a connection? Go to Connections to link your tools."
+    }
   },
   "runs": {
     "title": "Runs",
@@ -205,7 +368,11 @@
     "noRuns": "No runs yet",
     "noRunsDesc": "Runs will appear here once you execute an automation.",
     "runLogs": "Run Logs",
-    "executionLogs": "Execution logs for run"
+    "executionLogs": "Execution logs for run",
+    "demoSuccess": "Demo Success",
+    "simulatedOnly": "Sample Data",
+    "noLogs": "No logs available",
+    "logsDialogTitle": "Logs — run #{{id}}"
   },
   "roi": {
     "title": "ROI Dashboard",
@@ -248,6 +415,19 @@
     "pending": "Pending",
     "error": "Error",
     "expired": "Expired",
+    "connecting": "Connecting...",
+    "disconnecting": "Disconnecting...",
+    "connectSuccess": "Connection initiated",
+    "disconnectSuccess": "Connection removed",
+    "failedConnect": "Connection failed",
+    "comingSoon": "Coming soon",
+    "disconnectConfirmTitle": "Remove Connection?",
+    "disconnectConfirmDesc": "Active automations that depend on this connection may fail. Are you sure?",
+    "disconnectConfirmAction": "Yes, disconnect",
+    "apiKeyTitle": "Enter API Key",
+    "apiKeyDesc": "Enter your API key to connect to {{name}}.",
+    "apiKeyLabel": "API Key",
+    "apiKeyPlaceholder": "Enter your API key",
     "categories": {
       "email": "Email & Calendar",
       "communication": "Communication",
@@ -255,13 +435,13 @@
       "accounting": "Accounting"
     },
     "providers": {
-      "gmail": "Gmail / Google Workspace",
-      "outlook": "Outlook / Microsoft 365",
-      "slack": "Slack",
-      "hubspot": "HubSpot",
-      "salesforce": "Salesforce",
-      "exact": "Exact Online",
-      "afas": "AFAS Software"
+      "gmail": "Connect your Gmail inbox for email automation",
+      "outlook": "Connect Outlook for email and calendar automation",
+      "slack": "Send notifications and messages to Slack channels",
+      "hubspot": "Sync leads and contacts with HubSpot CRM",
+      "salesforce": "Connect to Salesforce for CRM automation",
+      "exact": "Dutch accounting and ERP integration",
+      "afas": "Dutch ERP and accounting system"
     }
   },
   "settings": {
@@ -753,6 +933,54 @@
         "legal": "Legal"
       },
       "linkedinLabel": "LinkedIn"
+    }
+  },
+  "auth": {
+    "signin": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your account to continue",
+      "email": "Email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "signingIn": "Signing in...",
+      "forgotPassword": "Forgot your password? Contact us at support@aurivian.nl",
+      "noAccount": "Don't have an account?",
+      "backToHome": "Back to home",
+      "failedSignIn": "Failed to sign in"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Get started with Opsly in minutes",
+      "firstName": "First name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Smith",
+      "workEmail": "Work email",
+      "emailPlaceholder": "you@company.com",
+      "password": "Password",
+      "passwordPlaceholder": "Create a password",
+      "minChars": "At least 8 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "termsRequired": "You must accept the Terms of Service and Privacy Policy",
+      "passwordsNoMatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "createAccount": "Create account",
+      "creatingAccount": "Creating account...",
+      "orDivider": "Or",
+      "alreadyHaveAccount": "Already have an account?",
+      "backToHome": "Back to home",
+      "agreeNotice": "By creating an account, you agree to our {{terms}} and {{privacy}}.",
+      "termsService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "iAcceptThe": "I accept the",
+      "andThe": "and",
+      "failedSignUp": "Failed to create account"
+    },
+    "demo": {
+      "start": "Try Live Demo",
+      "starting": "Starting demo...",
+      "failed": "Failed to start demo"
     }
   }
 }

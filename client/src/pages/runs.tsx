@@ -39,7 +39,8 @@ interface RunWithConfig extends Run {
 }
 
 export default function Runs() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === "nl" ? "nl-NL" : "en-GB";
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
 
   const { data: runs, isLoading: runsLoading } = useQuery<RunWithConfig[]>({
@@ -95,13 +96,15 @@ export default function Runs() {
   };
 
   const getStatusLabel = (status: string, isDemoRun?: boolean) => {
-    if (isDemoRun && status === "SUCCESS") {
-      return "DEMO SUCCESS";
-    }
-    if (status === "RETRYING") {
-      return "RETRYING";
-    }
-    return status;
+    if (isDemoRun && status === "SUCCESS") return t("runs.demoSuccess");
+    const map: Record<string, string> = {
+      SUCCESS: t("runs.status.success"),
+      FAILED: t("runs.status.failed"),
+      RUNNING: t("runs.status.running"),
+      QUEUED: t("runs.status.queued"),
+      RETRYING: t("runs.status.running"),
+    };
+    return map[status] ?? status;
   };
 
   const getLogIcon = (level: string) => {
@@ -181,14 +184,14 @@ export default function Runs() {
                           {getStatusLabel(run.status, run.isDemoRun)}
                         </Badge>
                         {run.isDemoRun && run.status === "SUCCESS" && (
-                          <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                            Simulated only
+                          <div className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                            {t("runs.simulatedOnly")}
                           </div>
                         )}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {run.startedAt
-                          ? new Date(run.startedAt).toLocaleString()
+                          ? new Date(run.startedAt).toLocaleString(locale)
                           : t("runs.status.queued")}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
@@ -238,17 +241,17 @@ export default function Runs() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Terminal className="w-5 h-5" />
-              {t("runs.runLogs")} #{selectedRunId}
+              {t("runs.logsDialogTitle", { id: selectedRunId })}
             </DialogTitle>
             <DialogDescription>
               {selectedRun && (
                 <div className="flex items-center gap-3 mt-2">
                   <Badge variant={getStatusVariant(selectedRun.status)}>
-                    {selectedRun.status}
+                    {getStatusLabel(selectedRun.status, selectedRun.isDemoRun)}
                   </Badge>
                   {selectedRun.startedAt && (
                     <span className="text-sm">
-                      {t("runs.started")}: {new Date(selectedRun.startedAt).toLocaleString()}
+                      {t("runs.started")}: {new Date(selectedRun.startedAt).toLocaleString(locale)}
                     </span>
                   )}
                 </div>
@@ -288,7 +291,7 @@ export default function Runs() {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-8">No logs available</p>
+              <p className="text-gray-500 text-center py-8">{t("runs.noLogs")}</p>
             )}
           </ScrollArea>
         </DialogContent>

@@ -1,4 +1,5 @@
 import { useLocation, Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import {
   Sidebar,
   SidebarContent,
@@ -35,32 +36,33 @@ import {
   FileText,
 } from "lucide-react";
 
-const navItems = [
-  { title: "Dashboard", url: "/app", icon: LayoutDashboard },
-];
-
-const intakeItems = [
-  { title: "Intakes", url: "/app/intakes", icon: ClipboardList },
-  { title: "Blueprints", url: "/app/blueprints", icon: GitBranch },
-];
-
-const automationItems = [
-  { title: "Automations", url: "/app/automations", icon: Sparkles },
-  { title: "Runs", url: "/app/runs", icon: Play },
-];
-
-const analyticsItems = [
-  { title: "ROI Dashboard", url: "/app/roi", icon: BarChart3 },
-];
-
-const settingsItems = [
-  { title: "Connections", url: "/app/connections", icon: Plug },
-  { title: "Settings", url: "/app/settings", icon: Settings },
-];
-
 export function AppSidebar() {
+  const { t } = useTranslation();
   const [location] = useLocation();
   const { user, logout } = useAuth();
+
+  const navItems = [
+    { titleKey: "nav.dashboard", url: "/app", icon: LayoutDashboard, testId: "nav-dashboard" },
+  ];
+
+  const intakeItems = [
+    { titleKey: "nav.intakes", url: "/app/intakes", icon: ClipboardList, testId: "nav-intakes" },
+    { titleKey: "nav.blueprints", url: "/app/blueprints", icon: GitBranch, testId: "nav-blueprints" },
+  ];
+
+  const automationItems = [
+    { titleKey: "nav.automations", url: "/app/automations", icon: Sparkles, testId: "nav-automations" },
+    { titleKey: "nav.runs", url: "/app/runs", icon: Play, testId: "nav-runs" },
+  ];
+
+  const analyticsItems = [
+    { titleKey: "nav.roi", url: "/app/roi", icon: BarChart3, testId: "nav-roi" },
+  ];
+
+  const settingsItems = [
+    { titleKey: "nav.connections", url: "/app/connections", icon: Plug, testId: "nav-connections" },
+    { titleKey: "nav.settings", url: "/app/settings", icon: Settings, testId: "nav-settings" },
+  ];
 
   const isActive = (url: string) => {
     if (url === "/app") return location === "/app";
@@ -77,6 +79,8 @@ export function AppSidebar() {
     return "U";
   };
 
+  const orgName = (user as any)?.org?.name || t("nav.myOrganization");
+
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
@@ -90,8 +94,8 @@ export function AppSidebar() {
                 <Layers className="w-3.5 h-3.5 text-white" />
               </div>
               <div className="flex-1 text-left min-w-0">
-                <p className="text-sm font-medium truncate">My Organization</p>
-                <p className="text-xs text-muted-foreground">Free</p>
+                <p className="text-sm font-medium truncate">{orgName}</p>
+                <p className="text-xs text-muted-foreground">{t("nav.pilotLabel")}</p>
               </div>
               <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
             </button>
@@ -99,7 +103,7 @@ export function AppSidebar() {
           <DropdownMenuContent align="start" className="w-56">
             <DropdownMenuItem>
               <Layers className="w-4 h-4 mr-2" />
-              My Organization
+              {orgName}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -110,11 +114,11 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.titleKey}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url} data-testid={`nav-${item.title.toLowerCase()}`}>
+                    <Link href={item.url} data-testid={item.testId}>
                       <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -124,15 +128,15 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Intake Management</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("nav.intakeManagement")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {intakeItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.titleKey}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url} data-testid={`nav-${item.title.toLowerCase()}`}>
+                    <Link href={item.url} data-testid={item.testId}>
                       <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -142,15 +146,15 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Automations</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("nav.automations")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {automationItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.titleKey}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url} data-testid={`nav-${item.title.toLowerCase()}`}>
+                    <Link href={item.url} data-testid={item.testId}>
                       <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -160,15 +164,15 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Analytics</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("nav.analytics")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {analyticsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.titleKey}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url} data-testid={`nav-${item.title.toLowerCase()}`}>
+                    <Link href={item.url} data-testid={item.testId}>
                       <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -181,11 +185,11 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {settingsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.titleKey}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url} data-testid={`nav-${item.title.toLowerCase()}`}>
+                    <Link href={item.url} data-testid={item.testId}>
                       <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -219,19 +223,19 @@ export function AppSidebar() {
             <DropdownMenuItem asChild>
               <a href="/privacy">
                 <Shield className="w-4 h-4 mr-2" />
-                Privacy Policy
+                {t("nav.privacyPolicy")}
               </a>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href="/terms">
                 <FileText className="w-4 h-4 mr-2" />
-                Terms of Service
+                {t("nav.termsOfService")}
               </a>
             </DropdownMenuItem>
             <div className="my-1 h-px bg-border" />
             <DropdownMenuItem onClick={() => logout()} data-testid="button-logout">
               <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
+              {t("nav.signOut")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Layers, Loader2, Mail, AlertCircle } from "lucide-react";
 
 export default function SignIn() {
+  const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const { signIn, isSigningIn, startDemo, isStartingDemo } = useAuth();
   const [email, setEmail] = useState("");
@@ -18,12 +20,12 @@ export default function SignIn() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    
+
     try {
       await signIn({ email, password });
       setLocation("/app");
     } catch (err: any) {
-      setError(err.message || "Failed to sign in");
+      setError(err.message || t("auth.signin.failedSignIn"));
     }
   };
 
@@ -33,7 +35,7 @@ export default function SignIn() {
       await startDemo();
       setLocation("/app");
     } catch (err: any) {
-      setError(err.message || "Failed to start demo");
+      setError(err.message || t("auth.demo.failed"));
     }
   };
 
@@ -44,13 +46,13 @@ export default function SignIn() {
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
             <Layers className="w-6 h-6 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-semibold tracking-tight">Opsly</span>
+          <span className="text-2xl font-semibold tracking-tight">{t("common.appName")}</span>
         </div>
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Welcome back</CardTitle>
-            <CardDescription>Sign in to your account to continue</CardDescription>
+            <CardTitle className="text-xl">{t("auth.signin.title")}</CardTitle>
+            <CardDescription>{t("auth.signin.subtitle")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -60,26 +62,26 @@ export default function SignIn() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("auth.signin.email")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@company.com"
+                  placeholder="u@bedrijf.nl"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   data-testid="input-email"
                 />
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("auth.signin.password")}</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t("auth.signin.passwordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -87,32 +89,36 @@ export default function SignIn() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full" 
+              <Button
+                type="submit"
+                className="w-full"
                 disabled={isSigningIn}
                 data-testid="button-signin"
               >
                 {isSigningIn ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Signing in...
+                    {t("auth.signin.signingIn")}
                   </>
                 ) : (
                   <>
                     <Mail className="w-4 h-4 mr-2" />
-                    Sign in
+                    {t("common.signIn")}
                   </>
                 )}
               </Button>
             </form>
+
+            <p className="mt-3 text-xs text-muted-foreground text-center">
+              {t("auth.signin.forgotPassword")}
+            </p>
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or</span>
+                <span className="bg-card px-2 text-muted-foreground">{t("auth.signup.orDivider")}</span>
               </div>
             </div>
 
@@ -127,22 +133,22 @@ export default function SignIn() {
               {isStartingDemo ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Starting demo...
+                  {t("auth.demo.starting")}
                 </>
               ) : (
-                "Try Live Demo"
+                t("auth.demo.start")
               )}
             </Button>
           </CardContent>
           <CardFooter className="flex flex-col gap-2 text-center text-sm text-muted-foreground">
             <p>
-              Don't have an account?{" "}
+              {t("auth.signin.noAccount")}{" "}
               <Link href="/auth/signup" className="text-primary hover:underline" data-testid="link-signup">
-                Sign up
+                {t("common.signUp")}
               </Link>
             </p>
             <Link href="/" className="text-muted-foreground hover:text-foreground" data-testid="link-back-home">
-              Back to home
+              {t("auth.signin.backToHome")}
             </Link>
           </CardFooter>
         </Card>

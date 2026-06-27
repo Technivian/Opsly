@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +15,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,7 +36,6 @@ import {
   XCircle,
   Clock,
   AlertTriangle,
-  ExternalLink,
   Plug,
   Unplug,
 } from "lucide-react";
@@ -36,18 +45,17 @@ import type { Connection } from "@shared/schema";
 interface Provider {
   key: string;
   name: string;
-  description: string;
+  descKey: string;
   icon: JSX.Element;
   category: "email" | "communication" | "crm" | "accounting";
   authType: "oauth" | "apikey";
-  comingSoon?: boolean;
 }
 
 const providers: Provider[] = [
   {
     key: "gmail",
     name: "Gmail / Google Workspace",
-    description: "Connect your Gmail inbox for email automation",
+    descKey: "connections.providers.gmail",
     icon: <SiGoogle className="w-6 h-6 text-red-500" />,
     category: "email",
     authType: "oauth",
@@ -55,7 +63,7 @@ const providers: Provider[] = [
   {
     key: "outlook",
     name: "Outlook / Microsoft 365",
-    description: "Connect Outlook for email and calendar automation",
+    descKey: "connections.providers.outlook",
     icon: <Mail className="w-6 h-6 text-blue-500" />,
     category: "email",
     authType: "oauth",
@@ -63,7 +71,7 @@ const providers: Provider[] = [
   {
     key: "slack",
     name: "Slack",
-    description: "Send notifications and messages to Slack channels",
+    descKey: "connections.providers.slack",
     icon: <SiSlack className="w-6 h-6 text-purple-500" />,
     category: "communication",
     authType: "oauth",
@@ -71,7 +79,7 @@ const providers: Provider[] = [
   {
     key: "hubspot",
     name: "HubSpot",
-    description: "Sync leads and contacts with HubSpot CRM",
+    descKey: "connections.providers.hubspot",
     icon: <SiHubspot className="w-6 h-6 text-orange-500" />,
     category: "crm",
     authType: "oauth",
@@ -79,7 +87,7 @@ const providers: Provider[] = [
   {
     key: "salesforce",
     name: "Salesforce",
-    description: "Connect to Salesforce for CRM automation",
+    descKey: "connections.providers.salesforce",
     icon: <SiSalesforce className="w-6 h-6 text-blue-400" />,
     category: "crm",
     authType: "oauth",
@@ -87,7 +95,7 @@ const providers: Provider[] = [
   {
     key: "exact",
     name: "Exact Online",
-    description: "Dutch accounting and ERP integration",
+    descKey: "connections.providers.exact",
     icon: <Calculator className="w-6 h-6 text-blue-600" />,
     category: "accounting",
     authType: "oauth",
@@ -95,19 +103,12 @@ const providers: Provider[] = [
   {
     key: "afas",
     name: "AFAS Software",
-    description: "Dutch ERP and accounting system",
+    descKey: "connections.providers.afas",
     icon: <Calculator className="w-6 h-6 text-green-600" />,
     category: "accounting",
     authType: "apikey",
   },
 ];
-
-const categoryInfo = {
-  email: { title: "Email & Calendar", icon: <Mail className="w-5 h-5" /> },
-  communication: { title: "Communication", icon: <MessageSquare className="w-5 h-5" /> },
-  crm: { title: "CRM & Sales", icon: <Users className="w-5 h-5" /> },
-  accounting: { title: "Accounting", icon: <Calculator className="w-5 h-5" /> },
-};
 
 export default function Connections() {
   const { t } = useTranslation();
@@ -115,6 +116,7 @@ export default function Connections() {
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   const [apiKeyValue, setApiKeyValue] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
+  const [pendingDisconnect, setPendingDisconnect] = useState<{ id: number; name: string } | null>(null);
 
   const { data: connections, isLoading } = useQuery<Connection[]>({
     queryKey: ["/api/connections"],
@@ -133,12 +135,12 @@ export default function Connections() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/connections"] });
-      toast({ title: t('common.success'), description: "Connection initiated successfully" });
+      toast({ title: t("common.success"), description: t("connections.connectSuccess") });
       setSelectedProvider(null);
       setApiKeyValue("");
     },
     onError: () => {
-      toast({ title: t('common.error'), description: "Failed to connect", variant: "destructive" });
+      toast({ title: t("common.error"), description: t("connections.failedConnect"), variant: "destructive" });
     },
   });
 
@@ -153,10 +155,12 @@ export default function Connections() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/connections"] });
-      toast({ title: t('common.success'), description: "Disconnected successfully" });
+      setPendingDisconnect(null);
+      toast({ title: t("common.success"), description: t("connections.disconnectSuccess") });
     },
     onError: () => {
-      toast({ title: t('common.error'), description: "Failed to disconnect", variant: "destructive" });
+      setPendingDisconnect(null);
+      toast({ title: t("common.error"), description: t("connections.failedConnect"), variant: "destructive" });
     },
   });
 
@@ -180,13 +184,21 @@ export default function Connections() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "connected":
-        return <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">{t('connections.connected')}</Badge>;
+        return (
+          <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
+            {t("connections.connected")}
+          </Badge>
+        );
       case "error":
-        return <Badge variant="destructive">{t('connections.error')}</Badge>;
+        return <Badge variant="destructive">{t("connections.error")}</Badge>;
       case "expired":
-        return <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20">{t('connections.expired')}</Badge>;
+        return (
+          <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20">
+            {t("connections.expired")}
+          </Badge>
+        );
       default:
-        return <Badge variant="secondary">{t('connections.pending')}</Badge>;
+        return <Badge variant="secondary">{t("connections.pending")}</Badge>;
     }
   };
 
@@ -208,13 +220,23 @@ export default function Connections() {
     await connectMutation.mutateAsync({ provider: selectedProvider.key, apiKey: apiKeyValue });
   };
 
+  const handleDisconnectRequest = (connectionId: number, providerName: string) => {
+    setPendingDisconnect({ id: connectionId, name: providerName });
+  };
+
+  const handleDisconnectConfirm = () => {
+    if (pendingDisconnect) {
+      disconnectMutation.mutate(pendingDisconnect.id);
+    }
+  };
+
   const categories = ["email", "communication", "crm", "accounting"] as const;
 
   return (
     <div className="p-6 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">{t('connections.title')}</h1>
-        <p className="text-muted-foreground">{t('connections.subtitle')}</p>
+        <h1 className="text-2xl font-bold">{t("connections.title")}</h1>
+        <p className="text-muted-foreground">{t("connections.subtitle")}</p>
       </div>
 
       {isLoading ? (
@@ -226,15 +248,11 @@ export default function Connections() {
       ) : (
         categories.map((category) => {
           const categoryProviders = providers.filter((p) => p.category === category);
-          const info = categoryInfo[category];
 
           return (
             <div key={category}>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                  {info.icon}
-                </div>
-                <h2 className="text-lg font-semibold">{info.title}</h2>
+                <h2 className="text-lg font-semibold">{t(`connections.categories.${category}`)}</h2>
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -275,7 +293,9 @@ export default function Connections() {
                       </CardHeader>
                       <CardContent className="pt-0">
                         <p className="text-sm text-muted-foreground mb-4">
-                          {provider.description}
+                          {t(provider.descKey) !== provider.descKey
+                            ? t(provider.descKey)
+                            : provider.name}
                         </p>
                         {isConnected ? (
                           <div className="flex gap-2">
@@ -283,12 +303,14 @@ export default function Connections() {
                               variant="outline"
                               size="sm"
                               className="flex-1"
-                              onClick={() => disconnectMutation.mutate(connection.id)}
+                              onClick={() => handleDisconnectRequest(connection.id, provider.name)}
                               disabled={disconnectMutation.isPending}
                               data-testid={`button-disconnect-${provider.key}`}
                             >
                               <Unplug className="w-4 h-4 mr-1.5" />
-                              {t('connections.disconnect')}
+                              {disconnectMutation.isPending && pendingDisconnect?.id === connection.id
+                                ? t("connections.disconnecting")
+                                : t("connections.disconnect")}
                             </Button>
                           </div>
                         ) : (
@@ -300,7 +322,7 @@ export default function Connections() {
                             data-testid={`button-connect-${provider.key}`}
                           >
                             <Plug className="w-4 h-4 mr-1.5" />
-                            {t('connections.connect')}
+                            {isConnecting ? t("connections.connecting") : t("connections.connect")}
                           </Button>
                         )}
                       </CardContent>
@@ -313,21 +335,22 @@ export default function Connections() {
         })
       )}
 
+      {/* API Key Dialog */}
       <Dialog open={!!selectedProvider} onOpenChange={() => setSelectedProvider(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Connect {selectedProvider?.name}</DialogTitle>
+            <DialogTitle>{t("connections.apiKeyTitle")}</DialogTitle>
             <DialogDescription>
-              Enter your API key to connect to {selectedProvider?.name}. You can find this in your account settings.
+              {t("connections.apiKeyDesc", { name: selectedProvider?.name ?? "" })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="apiKey">API Key</Label>
+              <Label htmlFor="apiKey">{t("connections.apiKeyLabel")}</Label>
               <Input
                 id="apiKey"
                 type="password"
-                placeholder="Enter your API key"
+                placeholder={t("connections.apiKeyPlaceholder")}
                 value={apiKeyValue}
                 onChange={(e) => setApiKeyValue(e.target.value)}
                 data-testid="input-api-key"
@@ -336,18 +359,40 @@ export default function Connections() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelectedProvider(null)}>
-              {t('common.cancel')}
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={handleApiKeySubmit}
               disabled={!apiKeyValue.trim() || connectMutation.isPending}
               data-testid="button-submit-api-key"
             >
-              {connectMutation.isPending ? "Connecting..." : t('connections.connect')}
+              {connectMutation.isPending ? t("connections.connecting") : t("connections.connect")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Disconnect Confirmation Dialog */}
+      <AlertDialog open={!!pendingDisconnect} onOpenChange={(open) => !open && setPendingDisconnect(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("connections.disconnectConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("connections.disconnectConfirmDesc")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDisconnectConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-disconnect"
+            >
+              {t("connections.disconnectConfirmAction")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
