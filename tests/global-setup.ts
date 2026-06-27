@@ -4,7 +4,7 @@
 export default async function setup() {
   // Set environment variables before any imports
   process.env.NODE_ENV = 'test';
-  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://haroonwahed@localhost:5432/opscopilot_test';
+  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://haroonwahed@localhost:5432/opsly_test';
   process.env.SESSION_SECRET = 'test-secret-key-do-not-use-in-production';
   
   console.log('🧪 Global test setup complete');

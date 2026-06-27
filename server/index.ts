@@ -66,8 +66,8 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Auto-run schema push on startup FIRST (needed for free Render tier without Shell access)
-  // This MUST happen before registerRoutes which tries to seed tables
+  // Auto-run schema push on startup FIRST — must happen before registerRoutes seeds tables.
+  // Northflank keeps devDependencies (drizzle-kit) present at runtime for this purpose.
   if (process.env.NODE_ENV === "production") {
     try {
       log("Pushing database schema...");
