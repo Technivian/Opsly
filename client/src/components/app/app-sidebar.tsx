@@ -42,12 +42,12 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
 
   const navItems = [
-    { titleKey: "nav.dashboard", url: "/app", icon: LayoutDashboard, testId: "nav-dashboard" },
+    { titleKey: "nav.overview", url: "/app", icon: LayoutDashboard, testId: "nav-dashboard" },
   ];
 
   const intakeItems = [
-    { titleKey: "nav.intakes", url: "/app/intakes", icon: ClipboardList, testId: "nav-intakes" },
-    { titleKey: "nav.blueprints", url: "/app/blueprints", icon: GitBranch, testId: "nav-blueprints" },
+    { titleKey: "nav.processes", url: "/app/intakes", icon: ClipboardList, testId: "nav-intakes" },
+    { titleKey: "nav.improvements", url: "/app/blueprints", icon: GitBranch, testId: "nav-blueprints" },
   ];
 
   const automationItems = [
@@ -56,11 +56,11 @@ export function AppSidebar() {
   ];
 
   const analyticsItems = [
-    { titleKey: "nav.roi", url: "/app/roi", icon: BarChart3, testId: "nav-roi" },
+    { titleKey: "nav.results", url: "/app/roi", icon: BarChart3, testId: "nav-roi" },
   ];
 
   const settingsItems = [
-    { titleKey: "nav.connections", url: "/app/connections", icon: Plug, testId: "nav-connections" },
+    { titleKey: "nav.integrations", url: "/app/connections", icon: Plug, testId: "nav-connections" },
     { titleKey: "nav.settings", url: "/app/settings", icon: Settings, testId: "nav-settings" },
   ];
 
@@ -128,7 +128,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>{t("nav.intakeManagement")}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("nav.processGroup")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {intakeItems.map((item) => (
@@ -146,7 +146,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>{t("nav.automations")}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("nav.automationGroup")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {automationItems.map((item) => (
@@ -164,7 +164,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>{t("nav.analytics")}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("nav.insightGroup")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {analyticsItems.map((item) => (

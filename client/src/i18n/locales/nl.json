@@ -29,7 +29,9 @@
     "confirm": "Bevestigen",
     "yes": "Ja",
     "no": "Nee",
-    "status": "Status"
+    "status": "Status",
+    "details": "Details",
+    "configure": "Configureren"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -49,7 +51,15 @@
     "pilotLabel": "Pilot",
     "privacyPolicy": "Privacybeleid",
     "termsOfService": "Algemene voorwaarden",
-    "signOut": "Uitloggen"
+    "signOut": "Uitloggen",
+    "overview": "Overzicht",
+    "processes": "Processen",
+    "improvements": "Verbeteringen",
+    "results": "Resultaten",
+    "integrations": "Integraties",
+    "processGroup": "Proces & verbetering",
+    "automationGroup": "Automatisering",
+    "insightGroup": "Inzicht"
   },
   "landing": {
     "hero": {
@@ -167,6 +177,97 @@
       "hoursSaved": "Uren bespaard",
       "cycleTime": "Cyclustijd",
       "confidence": "Betrouwbaarheid"
+    },
+    "greeting": {
+      "morning": "Goedemorgen",
+      "afternoon": "Goedemiddag",
+      "evening": "Goedenavond",
+      "fallbackName": "",
+      "noName": "Overzicht"
+    },
+    "headerSubtitle": "Hier zie je waar je processen staan en wat de volgende stap is.",
+    "nextStep": {
+      "stepOf": "Stap {{current}} van {{total}}",
+      "stepsCompleted": "{{done}} van {{total}} stappen voltooid",
+      "duration": "Duurt ongeveer 5–10 minuten",
+      "firstProcess": {
+        "title": "Breng je eerste proces in kaart",
+        "desc": "Beschrijf hoe het proces nu verloopt. Opsly zet dit om in een duidelijke procesblauwdruk en brengt mogelijke knelpunten in beeld.",
+        "action": "Start procesanalyse"
+      },
+      "processing": {
+        "title": "Je procesanalyse wordt verwerkt",
+        "desc": "{{count}} proces(sen) wordt geanalyseerd. Je blauwdruk staat zo voor je klaar.",
+        "action": "Bekijk processen"
+      },
+      "automate": {
+        "title": "Stel je eerste automatisering in",
+        "desc": "Je blauwdrukken zijn klaar. Kies een automatisering en bespaar tijd op terugkerend werk.",
+        "action": "Bekijk automatiseringen"
+      },
+      "nextProcess": {
+        "title": "Breng een volgend proces in kaart",
+        "desc": "Documenteer nog een proces om nieuwe verbeter- en automatiseringskansen te ontdekken.",
+        "action": "Start procesanalyse"
+      }
+    },
+    "journey": {
+      "title": "Jouw Opsly-traject",
+      "understand": {
+        "title": "Begrijpen",
+        "empty": "0 processen in kaart gebracht",
+        "value": "{{count}} processen in kaart gebracht",
+        "value_one": "{{count}} proces in kaart gebracht"
+      },
+      "improve": {
+        "title": "Verbeteren",
+        "empty": "0 verbeterkansen gevonden",
+        "value": "{{count}} verbeterkansen gevonden",
+        "ready": "Blauwdruk gereed"
+      },
+      "automate": {
+        "title": "Automatiseren",
+        "empty": "0 automatiseringen actief",
+        "value": "{{count}} uitvoeringen"
+      },
+      "measure": {
+        "title": "Meten",
+        "empty": "Nog geen resultaten gemeten",
+        "value": "{{hours}} uur bespaard"
+      }
+    },
+    "status": {
+      "notStarted": "Niet gestart",
+      "busy": "Bezig",
+      "done": "Gereed",
+      "attention": "Aandacht nodig"
+    },
+    "whatsNext": {
+      "title": "Wat gebeurt er na je eerste procesanalyse?",
+      "step1": "Je proces wordt in kaart gebracht",
+      "step2": "Knelpunten worden zichtbaar",
+      "step3": "Verbeteringen worden voorgesteld",
+      "step4": "Resultaten kun je volgen"
+    },
+    "metrics": {
+      "processesInAnalysis": "Processen in analyse",
+      "openImprovements": "Open verbeterkansen",
+      "activeAutomations": "Actieve automatiseringen",
+      "timeSaved": "Gemeten tijdwinst",
+      "notMeasured": "Nog niet gemeten",
+      "availableAfterRun": "Beschikbaar na de eerste run",
+      "hoursUnit": "uur",
+      "availableAfterAnalysis": "Beschikbaar na analyse"
+    },
+    "recentProcesses": {
+      "title": "Laatste processen",
+      "empty": "Je hebt nog geen processen toegevoegd.",
+      "emptyDesc": "Start met je eerste procesanalyse om hier voortgang te zien."
+    },
+    "activeAutomationsSection": {
+      "title": "Actieve automatiseringen",
+      "empty": "Er draaien nog geen automatiseringen.",
+      "emptyDesc": "Stel een automatisering in om hier de uitvoeringen te volgen."
     }
   },
   "intakes": {
@@ -185,18 +286,48 @@
       "step5": "Volume Metrieken",
       "step6": "Bestandsuploads",
       "painAreas": {
-        "SALES": { "label": "Verkoop", "desc": "Leadbeheer, opvolging, pipeline" },
-        "SUPPORT": { "label": "Klantenservice", "desc": "Tickets, e-mails, escalaties" },
-        "FINANCE": { "label": "Financiën", "desc": "Facturatie, goedkeuringen, afstemming" },
-        "OPS": { "label": "Operaties", "desc": "Planning, logistiek, werkstromen" }
+        "SALES": {
+          "label": "Verkoop",
+          "desc": "Leadbeheer, opvolging, pipeline"
+        },
+        "SUPPORT": {
+          "label": "Klantenservice",
+          "desc": "Tickets, e-mails, escalaties"
+        },
+        "FINANCE": {
+          "label": "Financiën",
+          "desc": "Facturatie, goedkeuringen, afstemming"
+        },
+        "OPS": {
+          "label": "Operaties",
+          "desc": "Planning, logistiek, werkstromen"
+        }
       },
       "steps": {
-        "1": { "title": "Selecteer een procesgebied", "desc": "Welk onderdeel van uw bedrijfsvoering heeft verbetering nodig?" },
-        "2": { "title": "Beschrijf het probleem", "desc": "Vertel ons over de specifieke uitdagingen waarmee u te maken heeft." },
-        "3": { "title": "Huidige tools", "desc": "Welke tools gebruikt u momenteel in dit proces?" },
-        "4": { "title": "Volumemetrieken", "desc": "Helpt ons de potentiële tijdwinst nauwkeuriger te berekenen. Schattingen zijn voldoende." },
-        "5": { "title": "Bestanden uploaden", "desc": "Upload relevante documenten (optioneel)." },
-        "6": { "title": "Controleren en verzenden", "desc": "Bekijk uw gegevens voordat u verzendt." }
+        "1": {
+          "title": "Selecteer een procesgebied",
+          "desc": "Welk onderdeel van uw bedrijfsvoering heeft verbetering nodig?"
+        },
+        "2": {
+          "title": "Beschrijf het probleem",
+          "desc": "Vertel ons over de specifieke uitdagingen waarmee u te maken heeft."
+        },
+        "3": {
+          "title": "Huidige tools",
+          "desc": "Welke tools gebruikt u momenteel in dit proces?"
+        },
+        "4": {
+          "title": "Volumemetrieken",
+          "desc": "Helpt ons de potentiële tijdwinst nauwkeuriger te berekenen. Schattingen zijn voldoende."
+        },
+        "5": {
+          "title": "Bestanden uploaden",
+          "desc": "Upload relevante documenten (optioneel)."
+        },
+        "6": {
+          "title": "Controleren en verzenden",
+          "desc": "Bekijk uw gegevens voordat u verzendt."
+        }
       },
       "validation": {
         "selectPainArea": "Selecteer een procesgebied",
@@ -939,48 +1070,59 @@
     "signin": {
       "title": "Welkom terug",
       "subtitle": "Meld u aan om verder te gaan",
-      "email": "E-mailadres",
+      "email": "Werk e-mail",
+      "emailPlaceholder": "jij@bedrijf.nl",
       "password": "Wachtwoord",
-      "passwordPlaceholder": "Uw wachtwoord",
-      "signingIn": "Bezig met aanmelden...",
-      "forgotPassword": "Wachtwoord vergeten? Neem contact op via support@aurivian.nl",
+      "passwordPlaceholder": "Voer je wachtwoord in",
+      "showPassword": "Wachtwoord tonen",
+      "hidePassword": "Wachtwoord verbergen",
+      "signingIn": "Bezig met inloggen...",
+      "forgotPassword": "Wachtwoord vergeten?",
       "noAccount": "Nog geen account?",
-      "backToHome": "Terug naar home",
-      "failedSignIn": "Aanmelden mislukt"
+      "backToHome": "Terug naar website",
+      "failedSignIn": "Inloggen mislukt. Controleer je gegevens.",
+      "continueWithGoogle": "Verdergaan met Google"
     },
     "signup": {
-      "title": "Account aanmaken",
+      "title": "Maak je account aan",
       "subtitle": "Start met Opsly in enkele minuten",
       "firstName": "Voornaam",
-      "firstNamePlaceholder": "Jan",
+      "firstNamePlaceholder": "Bijv. Jan",
       "lastName": "Achternaam",
-      "lastNamePlaceholder": "Jansen",
-      "workEmail": "Zakelijk e-mailadres",
-      "emailPlaceholder": "u@bedrijf.nl",
+      "lastNamePlaceholder": "Bijv. Jansen",
+      "workEmail": "Werk e-mail",
+      "emailPlaceholder": "jij@bedrijf.nl",
       "password": "Wachtwoord",
-      "passwordPlaceholder": "Maak een wachtwoord aan",
+      "passwordPlaceholder": "Voer je wachtwoord in",
       "minChars": "Minimaal 8 tekens",
-      "confirmPassword": "Wachtwoord bevestigen",
-      "confirmPasswordPlaceholder": "Bevestig uw wachtwoord",
-      "termsRequired": "Accepteer de Algemene voorwaarden en het Privacybeleid",
-      "passwordsNoMatch": "Wachtwoorden komen niet overeen",
-      "passwordTooShort": "Wachtwoord moet minimaal 8 tekens bevatten",
+      "confirmPassword": "Bevestig wachtwoord",
+      "confirmPasswordPlaceholder": "Herhaal je wachtwoord",
+      "termsRequired": "Accepteer de voorwaarden om door te gaan.",
+      "passwordsNoMatch": "Wachtwoorden komen niet overeen.",
+      "passwordTooShort": "Wachtwoord moet minimaal 8 tekens bevatten.",
       "createAccount": "Account aanmaken",
       "creatingAccount": "Account aanmaken...",
-      "orDivider": "Of",
-      "alreadyHaveAccount": "Al een account?",
-      "backToHome": "Terug naar home",
+      "orDivider": "Of ga verder met",
+      "alreadyHaveAccount": "Heb je al een account?",
+      "backToHome": "Terug naar website",
       "agreeNotice": "Door een account aan te maken, gaat u akkoord met onze {{terms}} en ons {{privacy}}.",
       "termsService": "Algemene voorwaarden",
       "privacyPolicy": "Privacybeleid",
-      "iAcceptThe": "Ik accepteer de",
+      "iAcceptThe": "Ik ga akkoord met de",
       "andThe": "en het",
-      "failedSignUp": "Aanmaken van account mislukt"
+      "failedSignUp": "Registratie mislukt. Probeer het opnieuw."
     },
     "demo": {
-      "start": "Probeer live demo",
-      "starting": "Demo starten...",
-      "failed": "Demo starten mislukt"
+      "start": "Probeer de live demo",
+      "starting": "Demo wordt gestart...",
+      "failed": "Demo starten mislukt."
     }
+  },
+  "cookieConsent": {
+    "title": "We gebruiken cookies",
+    "desc": "We gebruiken cookies om je ervaring te verbeteren en websiteverkeer te analyseren. Door verder te gaan ga je akkoord met ons",
+    "privacyPolicy": "privacybeleid",
+    "accept": "Accepteren",
+    "decline": "Weigeren"
   }
 }

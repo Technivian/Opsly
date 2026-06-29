@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "./use-auth";
+import { LANG_EXPLICIT_KEY } from "@/i18n";
 
 interface UserPreferences {
   id: number;
@@ -37,6 +38,13 @@ export function usePreferences() {
   });
 
   const setLocale = (locale: string) => {
+    // Record that the user made a deliberate language choice so the Dutch-first
+    // migration in i18n/index.ts no longer resets it.
+    try {
+      window.localStorage.setItem(LANG_EXPLICIT_KEY, "1");
+    } catch {
+      // ignore unavailable localStorage
+    }
     i18n.changeLanguage(locale);
     if (isAuthenticated) {
       updatePreferencesMutation.mutate({ locale });

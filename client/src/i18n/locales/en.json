@@ -29,7 +29,9 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
-    "status": "Status"
+    "status": "Status",
+    "details": "Details",
+    "configure": "Configure"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -49,7 +51,15 @@
     "pilotLabel": "Pilot",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "overview": "Overview",
+    "processes": "Processes",
+    "improvements": "Improvements",
+    "results": "Results",
+    "integrations": "Integrations",
+    "processGroup": "Process & improvement",
+    "automationGroup": "Automation",
+    "insightGroup": "Insight"
   },
   "landing": {
     "hero": {
@@ -167,6 +177,97 @@
       "hoursSaved": "Hours Saved",
       "cycleTime": "Cycle Time",
       "confidence": "Confidence"
+    },
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "fallbackName": "",
+      "noName": "Overview"
+    },
+    "headerSubtitle": "See where your processes stand and what the next step is.",
+    "nextStep": {
+      "stepOf": "Step {{current}} of {{total}}",
+      "stepsCompleted": "{{done}} of {{total}} steps completed",
+      "duration": "Takes about 5–10 minutes",
+      "firstProcess": {
+        "title": "Map your first process",
+        "desc": "Describe how the process works today. Opsly turns it into a clear process blueprint and surfaces possible bottlenecks.",
+        "action": "Start process analysis"
+      },
+      "processing": {
+        "title": "Your process analysis is being processed",
+        "desc": "{{count}} process(es) being analysed. Your blueprint will be ready shortly.",
+        "action": "View processes"
+      },
+      "automate": {
+        "title": "Set up your first automation",
+        "desc": "Your blueprints are ready. Pick an automation and save time on recurring work.",
+        "action": "View automations"
+      },
+      "nextProcess": {
+        "title": "Map your next process",
+        "desc": "Document another process to discover new improvement and automation opportunities.",
+        "action": "Start process analysis"
+      }
+    },
+    "journey": {
+      "title": "Your Opsly journey",
+      "understand": {
+        "title": "Understand",
+        "empty": "0 processes mapped",
+        "value": "{{count}} processes mapped",
+        "value_one": "{{count}} process mapped"
+      },
+      "improve": {
+        "title": "Improve",
+        "empty": "0 improvement opportunities found",
+        "value": "{{count}} improvement opportunities found",
+        "ready": "Blueprint ready"
+      },
+      "automate": {
+        "title": "Automate",
+        "empty": "0 automations active",
+        "value": "{{count}} runs"
+      },
+      "measure": {
+        "title": "Measure",
+        "empty": "No results measured yet",
+        "value": "{{hours}} hours saved"
+      }
+    },
+    "status": {
+      "notStarted": "Not started",
+      "busy": "In progress",
+      "done": "Ready",
+      "attention": "Needs attention"
+    },
+    "whatsNext": {
+      "title": "What happens after your first process analysis?",
+      "step1": "Your process is mapped",
+      "step2": "Bottlenecks become visible",
+      "step3": "Improvements are proposed",
+      "step4": "You can track results"
+    },
+    "metrics": {
+      "processesInAnalysis": "Processes in analysis",
+      "openImprovements": "Open improvements",
+      "activeAutomations": "Active automations",
+      "timeSaved": "Measured time saved",
+      "notMeasured": "Not measured yet",
+      "availableAfterRun": "Available after the first run",
+      "hoursUnit": "hrs",
+      "availableAfterAnalysis": "Available after analysis"
+    },
+    "recentProcesses": {
+      "title": "Latest processes",
+      "empty": "You haven't added any processes yet.",
+      "emptyDesc": "Start with your first process analysis to see progress here."
+    },
+    "activeAutomationsSection": {
+      "title": "Active automations",
+      "empty": "No automations are running yet.",
+      "emptyDesc": "Set up an automation to track its runs here."
     }
   },
   "intakes": {
@@ -185,18 +286,48 @@
       "step5": "Volume Metrics",
       "step6": "File Uploads",
       "painAreas": {
-        "SALES": { "label": "Sales", "desc": "Lead management, follow-up, pipeline" },
-        "SUPPORT": { "label": "Customer Support", "desc": "Tickets, emails, escalations" },
-        "FINANCE": { "label": "Finance", "desc": "Invoicing, approvals, reconciliation" },
-        "OPS": { "label": "Operations", "desc": "Scheduling, logistics, workflows" }
+        "SALES": {
+          "label": "Sales",
+          "desc": "Lead management, follow-up, pipeline"
+        },
+        "SUPPORT": {
+          "label": "Customer Support",
+          "desc": "Tickets, emails, escalations"
+        },
+        "FINANCE": {
+          "label": "Finance",
+          "desc": "Invoicing, approvals, reconciliation"
+        },
+        "OPS": {
+          "label": "Operations",
+          "desc": "Scheduling, logistics, workflows"
+        }
       },
       "steps": {
-        "1": { "title": "Select a Process Area", "desc": "Which part of your business operations needs improvement?" },
-        "2": { "title": "Describe the Problem", "desc": "Tell us about the specific challenges you're facing." },
-        "3": { "title": "Current Tools", "desc": "Which tools do you currently use in this process?" },
-        "4": { "title": "Volume Metrics", "desc": "Helps us estimate the potential time savings. Estimates are fine." },
-        "5": { "title": "Upload Files", "desc": "Upload relevant documents (optional)." },
-        "6": { "title": "Review & Submit", "desc": "Review your information before submitting." }
+        "1": {
+          "title": "Select a Process Area",
+          "desc": "Which part of your business operations needs improvement?"
+        },
+        "2": {
+          "title": "Describe the Problem",
+          "desc": "Tell us about the specific challenges you're facing."
+        },
+        "3": {
+          "title": "Current Tools",
+          "desc": "Which tools do you currently use in this process?"
+        },
+        "4": {
+          "title": "Volume Metrics",
+          "desc": "Helps us estimate the potential time savings. Estimates are fine."
+        },
+        "5": {
+          "title": "Upload Files",
+          "desc": "Upload relevant documents (optional)."
+        },
+        "6": {
+          "title": "Review & Submit",
+          "desc": "Review your information before submitting."
+        }
       },
       "validation": {
         "selectPainArea": "Please select a process area",
@@ -939,48 +1070,59 @@
     "signin": {
       "title": "Welcome back",
       "subtitle": "Sign in to your account to continue",
-      "email": "Email",
+      "email": "Work email",
+      "emailPlaceholder": "you@company.com",
       "password": "Password",
       "passwordPlaceholder": "Enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
       "signingIn": "Signing in...",
-      "forgotPassword": "Forgot your password? Contact us at support@aurivian.nl",
+      "forgotPassword": "Forgot your password?",
       "noAccount": "Don't have an account?",
-      "backToHome": "Back to home",
-      "failedSignIn": "Failed to sign in"
+      "backToHome": "Back to website",
+      "failedSignIn": "Sign in failed. Please check your credentials.",
+      "continueWithGoogle": "Continue with Google"
     },
     "signup": {
       "title": "Create your account",
       "subtitle": "Get started with Opsly in minutes",
       "firstName": "First name",
-      "firstNamePlaceholder": "John",
+      "firstNamePlaceholder": "e.g. John",
       "lastName": "Last name",
-      "lastNamePlaceholder": "Smith",
+      "lastNamePlaceholder": "e.g. Smith",
       "workEmail": "Work email",
       "emailPlaceholder": "you@company.com",
       "password": "Password",
-      "passwordPlaceholder": "Create a password",
+      "passwordPlaceholder": "Enter your password",
       "minChars": "At least 8 characters",
       "confirmPassword": "Confirm password",
-      "confirmPasswordPlaceholder": "Confirm your password",
-      "termsRequired": "You must accept the Terms of Service and Privacy Policy",
-      "passwordsNoMatch": "Passwords do not match",
-      "passwordTooShort": "Password must be at least 8 characters",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "termsRequired": "Accept the terms to continue.",
+      "passwordsNoMatch": "Passwords do not match.",
+      "passwordTooShort": "Password must be at least 8 characters.",
       "createAccount": "Create account",
       "creatingAccount": "Creating account...",
-      "orDivider": "Or",
+      "orDivider": "Or continue with",
       "alreadyHaveAccount": "Already have an account?",
-      "backToHome": "Back to home",
+      "backToHome": "Back to website",
       "agreeNotice": "By creating an account, you agree to our {{terms}} and {{privacy}}.",
       "termsService": "Terms of Service",
       "privacyPolicy": "Privacy Policy",
       "iAcceptThe": "I accept the",
       "andThe": "and",
-      "failedSignUp": "Failed to create account"
+      "failedSignUp": "Failed to create account. Please try again."
     },
     "demo": {
-      "start": "Try Live Demo",
+      "start": "Try live demo",
       "starting": "Starting demo...",
-      "failed": "Failed to start demo"
+      "failed": "Failed to start demo."
     }
+  },
+  "cookieConsent": {
+    "title": "We use cookies",
+    "desc": "We use cookies to improve your experience and analyze site traffic. By continuing, you agree to our",
+    "privacyPolicy": "privacy policy",
+    "accept": "Accept",
+    "decline": "Decline"
   }
 }

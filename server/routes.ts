@@ -565,7 +565,7 @@ export async function registerRoutes(
       const userId = req.user.id;
       let prefs = await storage.getUserPreferences(userId);
       if (!prefs) {
-        prefs = await storage.upsertUserPreferences({ userId, locale: "en", theme: "system" });
+        prefs = await storage.upsertUserPreferences({ userId, locale: "nl", theme: "system" });
       }
       res.json(prefs);
     } catch (error) {

@@ -9,7 +9,9 @@ export function configureHelmet(app: Express): void {
 
   const devConnectSrc = isProd
     ? []
-    : ["ws://localhost:*", "ws://127.0.0.1:*"];
+    : ["ws://localhost:*", "ws://127.0.0.1:*", "ws://0.0.0.0:*"];
+
+  const devScriptSrc = isProd ? [] : ["'unsafe-inline'"];
 
   app.use(
     helmet({
@@ -20,7 +22,7 @@ export function configureHelmet(app: Express): void {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'"],
+          scriptSrc: ["'self'", ...devScriptSrc],
           // 'unsafe-inline' for Radix UI / shadcn dynamic styles;
           // Google Fonts stylesheet served from fonts.googleapis.com.
           styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],

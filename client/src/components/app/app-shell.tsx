@@ -11,76 +11,59 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 
 interface AppShellProps {
   children: React.ReactNode;
 }
 
-const pageTitles: Record<string, string> = {
-  "/app": "Dashboard",
-  "/app/intakes": "Intakes",
-  "/app/intakes/new": "New Intake",
-  "/app/blueprints": "Blueprints",
-  "/app/automations": "Automations",
-  "/app/runs": "Runs",
-  "/app/roi": "ROI Dashboard",
-  "/app/settings": "Settings",
-};
-
 export function AppShell({ children }: AppShellProps) {
   const [location] = useLocation();
-  
-  const getPageTitle = () => {
-    if (location.startsWith("/app/blueprints/") && location !== "/app/blueprints") {
-      return "Blueprint Details";
-    }
-    if (location.startsWith("/app/automations/") && location !== "/app/automations") {
-      return "Configure Automation";
-    }
-    return pageTitles[location] || "Dashboard";
-  };
+  const { t } = useTranslation();
 
   const getBreadcrumbs = () => {
     const parts = location.split("/").filter(Boolean);
     const breadcrumbs: { label: string; href?: string }[] = [];
-    
+
     if (parts[0] === "app") {
       if (parts.length === 1) {
-        breadcrumbs.push({ label: "Dashboard" });
+        breadcrumbs.push({ label: t("nav.overview") });
       } else {
-        breadcrumbs.push({ label: "Dashboard", href: "/app" });
-        
+        breadcrumbs.push({ label: t("nav.overview"), href: "/app" });
+
         if (parts[1] === "intakes") {
           if (parts.length === 2) {
-            breadcrumbs.push({ label: "Intakes" });
+            breadcrumbs.push({ label: t("nav.processes") });
           } else if (parts[2] === "new") {
-            breadcrumbs.push({ label: "Intakes", href: "/app/intakes" });
-            breadcrumbs.push({ label: "New Intake" });
+            breadcrumbs.push({ label: t("nav.processes"), href: "/app/intakes" });
+            breadcrumbs.push({ label: t("intakes.wizard.title") });
           }
         } else if (parts[1] === "blueprints") {
           if (parts.length === 2) {
-            breadcrumbs.push({ label: "Blueprints" });
+            breadcrumbs.push({ label: t("nav.improvements") });
           } else {
-            breadcrumbs.push({ label: "Blueprints", href: "/app/blueprints" });
-            breadcrumbs.push({ label: "Details" });
+            breadcrumbs.push({ label: t("nav.improvements"), href: "/app/blueprints" });
+            breadcrumbs.push({ label: t("common.details") });
           }
         } else if (parts[1] === "automations") {
           if (parts.length === 2) {
-            breadcrumbs.push({ label: "Automations" });
+            breadcrumbs.push({ label: t("nav.automations") });
           } else {
-            breadcrumbs.push({ label: "Automations", href: "/app/automations" });
-            breadcrumbs.push({ label: "Configure" });
+            breadcrumbs.push({ label: t("nav.automations"), href: "/app/automations" });
+            breadcrumbs.push({ label: t("common.configure") });
           }
         } else if (parts[1] === "runs") {
-          breadcrumbs.push({ label: "Runs" });
+          breadcrumbs.push({ label: t("nav.runs") });
         } else if (parts[1] === "roi") {
-          breadcrumbs.push({ label: "ROI Dashboard" });
+          breadcrumbs.push({ label: t("nav.results") });
+        } else if (parts[1] === "connections") {
+          breadcrumbs.push({ label: t("nav.integrations") });
         } else if (parts[1] === "settings") {
-          breadcrumbs.push({ label: "Settings" });
+          breadcrumbs.push({ label: t("nav.settings") });
         }
       }
     }
-    
+
     return breadcrumbs;
   };
 

@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import connectPg from "connect-pg-simple";
@@ -86,6 +87,46 @@ export async function createDemoUser() {
   return result[0];
 }
 
+export async function findOrCreateGoogleUser(
+  googleId: string,
+  email: string,
+  firstName?: string,
+  lastName?: string,
+  profileImageUrl?: string,
+) {
+  // Already linked by Google ID
+  const byGoogle = await db.select().from(users).where(eq(users.googleId, googleId));
+  if (byGoogle[0]) return byGoogle[0];
+
+  // Existing account with same email → link Google to it
+  const byEmail = await getUserByEmail(email);
+  if (byEmail) {
+    const updated = await db.update(users)
+      .set({
+        googleId,
+        emailVerified: true,
+        profileImageUrl: byEmail.profileImageUrl || profileImageUrl,
+        firstName: byEmail.firstName || firstName,
+        lastName: byEmail.lastName || lastName,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, byEmail.id))
+      .returning();
+    return updated[0];
+  }
+
+  // Brand new user
+  const result = await db.insert(users).values({
+    email: email.toLowerCase(),
+    googleId,
+    firstName,
+    lastName,
+    profileImageUrl,
+    emailVerified: true,
+  }).returning();
+  return result[0];
+}
+
 export async function generateMagicLinkToken(email: string): Promise<string | null> {
   const user = await getUserByEmail(email);
   if (!user) return null;
@@ -144,6 +185,47 @@ export async function setupAuth(app: Express) {
       }
     )
   );
+
+  // Google OAuth — only registered when credentials are configured.
+  // Falls back to the existing Gmail OAuth client (same Google Cloud project).
+  const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.GMAIL_CLIENT_ID;
+  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || process.env.GMAIL_CLIENT_SECRET;
+  const googleCallbackUrl =
+    process.env.GOOGLE_CALLBACK_URL ||
+    `${process.env.BASE_URL || "http://localhost:3000"}/api/auth/google/callback`;
+
+  if (googleClientId && googleClientSecret) {
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: googleClientId,
+          clientSecret: googleClientSecret,
+          callbackURL: googleCallbackUrl,
+        },
+        async (_accessToken, _refreshToken, profile, done) => {
+          try {
+            const email = profile.emails?.[0]?.value;
+            if (!email) {
+              return done(null, false, { message: "Google account has no email" });
+            }
+            const user = await findOrCreateGoogleUser(
+              profile.id,
+              email,
+              profile.name?.givenName,
+              profile.name?.familyName,
+              profile.photos?.[0]?.value,
+            );
+            return done(null, user);
+          } catch (error) {
+            return done(error as Error);
+          }
+        }
+      )
+    );
+    console.log("[auth] Google SSO enabled");
+  } else {
+    console.log("[auth] Google SSO disabled (no GOOGLE_CLIENT_ID/GMAIL_CLIENT_ID)");
+  }
 
   passport.serializeUser((user: any, done) => {
     done(null, user.id);
@@ -288,6 +370,29 @@ export function registerAuthRoutes(app: Express, rateLimitOpts: RateLimitConfig 
       console.error("Demo login error:", error);
       res.status(500).json({ message: "Failed to start demo" });
     }
+  });
+
+  // Google OAuth — start flow. Returns 404-style redirect if not configured.
+  app.get("/api/auth/google", (req, res, next) => {
+    if (!(passport as any)._strategy("google")) {
+      return res.redirect("/auth/signin?error=google_not_configured");
+    }
+    passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+  });
+
+  app.get("/api/auth/google/callback", (req, res, next) => {
+    passport.authenticate("google", (err: any, user: any, info: any) => {
+      if (err || !user) {
+        console.error("[auth] Google callback failed:", err || info);
+        return res.redirect("/auth/signin?error=google_failed");
+      }
+      req.login(user, (loginErr) => {
+        if (loginErr) {
+          return res.redirect("/auth/signin?error=login_failed");
+        }
+        return res.redirect("/app");
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res) => {
