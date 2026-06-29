@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { X, Cookie } from "lucide-react";
 import { Link } from "wouter";
 
 export function CookieConsent() {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -36,21 +38,20 @@ export function CookieConsent() {
               <Cookie className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium mb-1">We use cookies</p>
+              <p className="text-sm font-medium mb-1">{t("cookieConsent.title")}</p>
               <p className="text-xs text-muted-foreground mb-3">
-                We use cookies to improve your experience and analyze site traffic. 
-                By continuing, you agree to our{" "}
+                {t("cookieConsent.desc")}{" "}
                 <Link href="/security" className="underline hover:text-foreground">
-                  privacy policy
+                  {t("cookieConsent.privacyPolicy")}
                 </Link>
                 .
               </p>
               <div className="flex items-center gap-2">
                 <Button size="sm" onClick={handleAccept} data-testid="button-accept-cookies">
-                  Accept
+                  {t("cookieConsent.accept")}
                 </Button>
                 <Button size="sm" variant="outline" onClick={handleDecline} data-testid="button-decline-cookies">
-                  Decline
+                  {t("cookieConsent.decline")}
                 </Button>
               </div>
             </div>

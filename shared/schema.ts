@@ -284,7 +284,7 @@ export type BlueprintVersion = typeof blueprintVersions.$inferSelect;
 export const userPreferences = pgTable("user_preferences", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().unique(),
-  locale: text("locale").notNull().default("en"),
+  locale: text("locale").notNull().default("nl"),
   theme: text("theme").notNull().default("system"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
