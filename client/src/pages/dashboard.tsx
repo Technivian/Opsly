@@ -1,380 +1,251 @@
-import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  ArrowRight,
   ClipboardList,
   GitBranch,
   Sparkles,
   BarChart3,
-  TrendingUp,
   Clock,
-  CheckCircle,
-  AlertCircle,
+  Lightbulb,
+  TrendingUp,
 } from "lucide-react";
 import type { Intake, Blueprint, Run } from "@shared/schema";
+import { useAuth } from "@/hooks/use-auth";
+import { DashboardHeader } from "@/components/app/dashboard/dashboard-header";
+import { NextStepCard, type NextStep } from "@/components/app/dashboard/next-step-card";
+import { JourneyProgress } from "@/components/app/dashboard/journey-progress";
+import type { JourneyStage, StageStatus } from "@/components/app/dashboard/journey-stage-card";
+import { WhatsNext } from "@/components/app/dashboard/whats-next";
+import { OperationalMetric } from "@/components/app/dashboard/operational-metric";
+import { RecentProcesses } from "@/components/app/dashboard/recent-processes";
+import { ActiveAutomations } from "@/components/app/dashboard/active-automations";
 
-function getIntakeStatusLabel(status: string, t: (key: string) => string): string {
-  const key = `intakes.status.${status}`;
-  const translated = t(key);
-  return translated !== key ? translated : status;
-}
-
-function getRunStatusLabel(status: string, t: (key: string) => string): string {
-  const map: Record<string, string> = {
-    SUCCESS: t("runs.status.success"),
-    FAILED: t("runs.status.failed"),
-    RUNNING: t("runs.status.running"),
-    QUEUED: t("runs.status.queued"),
-  };
-  return map[status] ?? status;
-}
-
-function getPainAreaLabel(painArea: string, t: (key: string) => string): string {
-  const key = `intakes.wizard.painAreas.${painArea}.label`;
-  const translated = t(key);
-  return translated !== key ? translated : painArea;
+interface RoiData {
+  hoursSaved: number;
+  cycleTimeReduction: number;
+  confidenceScore: number;
 }
 
 export default function Dashboard() {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const locale = i18n.language === "nl" ? "nl-NL" : "en-GB";
 
   const { data: intakes, isLoading: intakesLoading } = useQuery<Intake[]>({
     queryKey: ["/api/intakes"],
   });
-
   const { data: blueprints, isLoading: blueprintsLoading } = useQuery<Blueprint[]>({
     queryKey: ["/api/blueprints"],
   });
-
   const { data: runs, isLoading: runsLoading } = useQuery<Run[]>({
     queryKey: ["/api/runs"],
   });
-
-  const { data: roiData, isLoading: roiLoading } = useQuery<{
-    hoursSaved: number;
-    cycleTimeReduction: number;
-    confidenceScore: number;
-  }>({
+  const { data: roiData, isLoading: roiLoading } = useQuery<RoiData>({
     queryKey: ["/api/roi"],
   });
 
-  const pendingIntakes = intakes?.filter((i) => i.status === "SUBMITTED") || [];
-  const recentRuns = runs?.slice(0, 5) || [];
-  const successfulRuns = runs?.filter((r) => r.status === "SUCCESS").length || 0;
-  const totalRuns = runs?.length || 0;
+  const isLoading = intakesLoading || blueprintsLoading || runsLoading || roiLoading;
 
-  const getNextAction = () => {
-    if (!intakes?.length) {
+  // ---- Derived state -------------------------------------------------------
+  const intakeList = intakes ?? [];
+  const blueprintList = blueprints ?? [];
+  const runList = runs ?? [];
+
+  const pendingIntakes = intakeList.filter(
+    (i) => i.status === "SUBMITTED" || i.status === "PROCESSING",
+  );
+  const improvementCount = blueprintList.reduce(
+    (acc, b) => acc + ((b as any).bottlenecksJson?.length ?? 0),
+    0,
+  );
+  const hoursSaved = roiData?.hoursSaved ?? 0;
+
+  const hasProcesses = intakeList.length > 0;
+  const hasBlueprints = blueprintList.length > 0;
+  const hasRuns = runList.length > 0;
+  const hasResults = hoursSaved > 0 || (roiData?.cycleTimeReduction ?? 0) > 0;
+  const isNewUser = !hasProcesses && !hasBlueprints && !hasRuns;
+
+  // ---- Journey stages ------------------------------------------------------
+  const understandStatus: StageStatus = pendingIntakes.length
+    ? "busy"
+    : hasProcesses
+    ? "done"
+    : "notStarted";
+
+  const stages: JourneyStage[] = [
+    {
+      key: "understand",
+      title: t("dashboard.journey.understand.title"),
+      value: hasProcesses
+        ? t("dashboard.journey.understand.value", { count: intakeList.length })
+        : t("dashboard.journey.understand.empty"),
+      status: understandStatus,
+      icon: ClipboardList,
+    },
+    {
+      key: "improve",
+      title: t("dashboard.journey.improve.title"),
+      value: improvementCount
+        ? t("dashboard.journey.improve.value", { count: improvementCount })
+        : hasBlueprints
+        ? t("dashboard.journey.improve.ready")
+        : t("dashboard.journey.improve.empty"),
+      status: hasBlueprints ? "done" : "notStarted",
+      icon: Lightbulb,
+    },
+    {
+      key: "automate",
+      title: t("dashboard.journey.automate.title"),
+      value: hasRuns
+        ? t("dashboard.journey.automate.value", { count: runList.length })
+        : t("dashboard.journey.automate.empty"),
+      status: hasRuns ? "done" : "notStarted",
+      icon: Sparkles,
+    },
+    {
+      key: "measure",
+      title: t("dashboard.journey.measure.title"),
+      value: hasResults
+        ? t("dashboard.journey.measure.value", { hours: hoursSaved })
+        : t("dashboard.journey.measure.empty"),
+      status: hasResults ? "done" : "notStarted",
+      icon: BarChart3,
+    },
+  ];
+
+  const firstIncomplete = stages.findIndex((s) => s.status !== "done");
+  const activeIndex = firstIncomplete === -1 ? stages.length - 1 : firstIncomplete;
+  const completedSteps = stages.filter((s) => s.status === "done").length;
+
+  // ---- Next step -----------------------------------------------------------
+  const nextStep = getNextStep();
+
+  function getNextStep(): NextStep {
+    if (!hasProcesses) {
       return {
-        title: t("dashboard.nextAction.firstIntake.title"),
-        description: t("dashboard.nextAction.firstIntake.desc"),
-        action: t("dashboard.nextAction.firstIntake.action"),
+        title: t("dashboard.nextStep.firstProcess.title"),
+        description: t("dashboard.nextStep.firstProcess.desc"),
+        action: t("dashboard.nextStep.firstProcess.action"),
         href: "/app/intakes/new",
         icon: ClipboardList,
-        color: "text-primary",
+        currentStep: 1,
+        completedSteps,
+        showDuration: true,
       };
     }
     if (pendingIntakes.length > 0) {
       return {
-        title: t("dashboard.nextAction.processing.title"),
-        description: t("dashboard.nextAction.processing.desc", { count: pendingIntakes.length }),
-        action: t("dashboard.nextAction.processing.action"),
+        title: t("dashboard.nextStep.processing.title"),
+        description: t("dashboard.nextStep.processing.desc", { count: pendingIntakes.length }),
+        action: t("dashboard.nextStep.processing.action"),
         href: "/app/intakes",
         icon: Clock,
-        color: "text-chart-4",
+        currentStep: 1,
+        completedSteps,
       };
     }
-    if (blueprints?.length && !runs?.length) {
+    if (hasBlueprints && !hasRuns) {
       return {
-        title: t("dashboard.nextAction.configureAutomation.title"),
-        description: t("dashboard.nextAction.configureAutomation.desc"),
-        action: t("dashboard.nextAction.configureAutomation.action"),
+        title: t("dashboard.nextStep.automate.title"),
+        description: t("dashboard.nextStep.automate.desc"),
+        action: t("dashboard.nextStep.automate.action"),
         href: "/app/automations",
         icon: Sparkles,
-        color: "text-chart-3",
+        currentStep: 3,
+        completedSteps,
       };
     }
     return {
-      title: t("dashboard.nextAction.anotherIntake.title"),
-      description: t("dashboard.nextAction.anotherIntake.desc"),
-      action: t("dashboard.nextAction.anotherIntake.action"),
+      title: t("dashboard.nextStep.nextProcess.title"),
+      description: t("dashboard.nextStep.nextProcess.desc"),
+      action: t("dashboard.nextStep.nextProcess.action"),
       href: "/app/intakes/new",
       icon: ClipboardList,
-      color: "text-primary",
+      currentStep: activeIndex + 1,
+      completedSteps,
     };
-  };
+  }
 
-  const nextAction = getNextAction();
-
-  return (
-    <div className="p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
-          <p className="text-muted-foreground">{t("dashboard.subtitle")}</p>
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-8 p-6">
+        <Skeleton className="h-12 w-72" />
+        <Skeleton className="h-40 w-full" />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-32 w-full" />
+          ))}
         </div>
       </div>
+    );
+  }
 
-      <Card className="border-l-2 border-l-primary">
-        <CardContent className="p-5">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <nextAction.icon className={`w-5 h-5 ${nextAction.color}`} />
-              </div>
-              <div>
-                <h3 className="font-medium">{nextAction.title}</h3>
-                <p className="text-sm text-muted-foreground max-w-md">{nextAction.description}</p>
-              </div>
-            </div>
-            <Link href={nextAction.href}>
-              <Button size="sm" data-testid="button-next-action">
-                {nextAction.action} <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
+  return (
+    <div className="mx-auto max-w-6xl space-y-8 p-6">
+      {/* Level 1 — who you are + the single next action */}
+      <DashboardHeader firstName={user?.firstName} />
+      <NextStepCard step={nextStep} />
+
+      {/* Level 2 — progress through the Opsly journey */}
+      <JourneyProgress stages={stages} activeIndex={activeIndex} />
+
+      {/* Level 3 — what to expect (new) OR real operational data */}
+      {isNewUser ? (
+        <WhatsNext />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <OperationalMetric
+              icon={ClipboardList}
+              label={t("dashboard.metrics.processesInAnalysis")}
+              value={String(pendingIntakes.length || intakeList.length)}
+              href="/app/intakes"
+              testId="metric-processes"
+            />
+            <OperationalMetric
+              icon={GitBranch}
+              label={t("dashboard.metrics.openImprovements")}
+              value={
+                hasBlueprints
+                  ? String(improvementCount)
+                  : t("dashboard.metrics.availableAfterAnalysis")
+              }
+              href="/app/blueprints"
+              testId="metric-improvements"
+            />
+            <OperationalMetric
+              icon={Sparkles}
+              label={t("dashboard.metrics.activeAutomations")}
+              value={String(runList.length)}
+              href="/app/runs"
+              testId="metric-automations"
+            />
+            <OperationalMetric
+              icon={TrendingUp}
+              label={t("dashboard.metrics.timeSaved")}
+              value={
+                hasResults
+                  ? `${hoursSaved} ${t("dashboard.metrics.hoursUnit")}`
+                  : t("dashboard.metrics.notMeasured")
+              }
+              hint={hasResults ? undefined : t("dashboard.metrics.availableAfterRun")}
+              href="/app/roi"
+              testId="metric-time-saved"
+            />
           </div>
-        </CardContent>
-      </Card>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("dashboard.hoursSaved")}</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {roiLoading ? (
-              <Skeleton className="h-8 w-20" />
-            ) : (
-              <div className="text-2xl font-bold">{roiData?.hoursSaved || 0}</div>
-            )}
-            <p className="text-xs text-muted-foreground">{t("dashboard.hoursSavedDesc")}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("dashboard.cycleTime")}</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {roiLoading ? (
-              <Skeleton className="h-8 w-20" />
-            ) : (
-              <div className="text-2xl font-bold text-chart-3">
-                {roiData?.cycleTimeReduction || 0}%
-              </div>
-            )}
-            <p className="text-xs text-muted-foreground">{t("dashboard.cycleTimeDesc")}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("dashboard.blueprintsCount")}</CardTitle>
-            <GitBranch className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {blueprintsLoading ? (
-              <Skeleton className="h-8 w-20" />
-            ) : (
-              <div className="text-2xl font-bold">{blueprints?.length || 0}</div>
-            )}
-            <p className="text-xs text-muted-foreground">{t("dashboard.blueprintsDesc")}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("dashboard.successRate")}</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {runsLoading ? (
-              <Skeleton className="h-8 w-20" />
-            ) : (
-              <div className="text-2xl font-bold">
-                {totalRuns > 0 ? Math.round((successfulRuns / totalRuns) * 100) : 0}%
-              </div>
-            )}
-            <p className="text-xs text-muted-foreground">
-              {totalRuns > 0
-                ? t("dashboard.successRateDesc", { success: successfulRuns, total: totalRuns })
-                : t("dashboard.successRateNone")}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>{t("dashboard.recentIntakes")}</CardTitle>
-              <Link href="/app/intakes">
-                <Button variant="ghost" size="sm" data-testid="link-view-all-intakes">
-                  {t("dashboard.viewAll")} <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-            <CardDescription>{t("dashboard.recentIntakesDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {intakesLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-14 w-full" />
-                ))}
-              </div>
-            ) : intakes?.length ? (
-              <div className="space-y-3">
-                {intakes.slice(0, 5).map((intake) => {
-                  const blueprint = blueprints?.find(b => b.intakeId === intake.id);
-                  const isClickable = intake.status === "PROCESSED" && blueprint;
-
-                  const content = (
-                    <div
-                      className={`flex items-center justify-between p-3 rounded-lg ${
-                        isClickable
-                          ? "bg-gradient-to-r from-primary/10 to-muted/50 border-l-2 border-l-primary/60 hover-elevate cursor-pointer"
-                          : "bg-muted/50"
-                      }`}
-                      data-testid={`intake-item-${intake.id}`}
-                    >
-                      <div className="min-w-0">
-                        <p className="font-medium truncate">{intake.title}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {getPainAreaLabel(intake.painArea ?? "", t)} &middot;{" "}
-                          {new Date(intake.createdAt).toLocaleDateString(locale)}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={
-                            intake.status === "PROCESSED"
-                              ? "default"
-                              : intake.status === "SUBMITTED"
-                              ? "secondary"
-                              : "outline"
-                          }
-                        >
-                          {getIntakeStatusLabel(intake.status, t)}
-                        </Badge>
-                        {isClickable && (
-                          <ArrowRight className="w-4 h-4 text-primary" />
-                        )}
-                      </div>
-                    </div>
-                  );
-
-                  return isClickable ? (
-                    <Link key={intake.id} href={`/app/blueprints/${blueprint.id}`}>
-                      {content}
-                    </Link>
-                  ) : (
-                    <div key={intake.id}>{content}</div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <ClipboardList className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                <p>{t("dashboard.noIntakes")}</p>
-                <Link href="/app/intakes/new">
-                  <Button variant="ghost" size="sm" data-testid="button-create-first-intake">
-                    {t("dashboard.createFirstIntake")}
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>{t("dashboard.recentRuns")}</CardTitle>
-              <Link href="/app/runs">
-                <Button variant="ghost" size="sm" data-testid="link-view-all-runs">
-                  {t("dashboard.viewAll")} <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-            <CardDescription>{t("dashboard.recentRunsDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {runsLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-14 w-full" />
-                ))}
-              </div>
-            ) : recentRuns.length ? (
-              <div className="space-y-3">
-                {recentRuns.map((run) => (
-                  <Link key={run.id} href="/app/runs">
-                    <div
-                      className={`flex items-center justify-between p-3 rounded-lg hover-elevate cursor-pointer ${
-                        run.status === "SUCCESS"
-                          ? "bg-gradient-to-r from-chart-3/10 to-muted/50 border-l-2 border-l-chart-3/60"
-                          : run.status === "FAILED"
-                          ? "bg-gradient-to-r from-destructive/10 to-muted/50 border-l-2 border-l-destructive/60"
-                          : "bg-gradient-to-r from-chart-4/10 to-muted/50 border-l-2 border-l-chart-4/60"
-                      }`}
-                      data-testid={`run-item-${run.id}`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        {run.status === "SUCCESS" ? (
-                          <CheckCircle className="w-5 h-5 text-chart-3 shrink-0" />
-                        ) : run.status === "FAILED" ? (
-                          <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
-                        ) : (
-                          <Clock className="w-5 h-5 text-chart-4 shrink-0" />
-                        )}
-                        <div className="min-w-0">
-                          <p className="font-medium truncate">Run #{run.id}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {run.startedAt
-                              ? new Date(run.startedAt).toLocaleString(locale)
-                              : t("runs.status.queued")}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={
-                            run.status === "SUCCESS"
-                              ? "default"
-                              : run.status === "FAILED"
-                              ? "destructive"
-                              : "secondary"
-                          }
-                        >
-                          {getRunStatusLabel(run.status, t)}
-                        </Badge>
-                        <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Sparkles className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                <p>{t("dashboard.noRuns")}</p>
-                <Link href="/app/automations">
-                  <Button variant="ghost" size="sm" data-testid="button-configure-automation">
-                    {t("dashboard.configureAutomation")}
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <RecentProcesses
+              intakes={intakeList}
+              blueprints={blueprintList}
+              locale={locale}
+            />
+            <ActiveAutomations runs={runList} locale={locale} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
